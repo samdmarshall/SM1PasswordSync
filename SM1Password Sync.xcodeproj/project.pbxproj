@@ -14,6 +14,7 @@
 		22412A2E16F7B2C1000DE1D7 /* MobileDeviceAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412A2B16F7B2C1000DE1D7 /* MobileDeviceAccess.m */; };
 		22412A3216F7B2D7000DE1D7 /* libMobileDeviceAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22412A2616F7B28F000DE1D7 /* libMobileDeviceAccess.a */; };
 		22412A3D16F7B332000DE1D7 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412A3C16F7B332000DE1D7 /* JSONKit.m */; };
+		22412A5816F7C178000DE1D7 /* SMOPInterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412A5716F7C178000DE1D7 /* SMOPInterfaceController.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -41,6 +42,9 @@
 		22412A2B16F7B2C1000DE1D7 /* MobileDeviceAccess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileDeviceAccess.m; sourceTree = "<group>"; };
 		22412A3B16F7B332000DE1D7 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
 		22412A3C16F7B332000DE1D7 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
+		22412A5616F7C178000DE1D7 /* SMOPInterfaceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPInterfaceController.h; sourceTree = "<group>"; };
+		22412A5716F7C178000DE1D7 /* SMOPInterfaceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOPInterfaceController.m; sourceTree = "<group>"; };
+		22412A5F16F7C282000DE1D7 /* SMOPFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPFunctions.h; sourceTree = "<group>"; };
 		256AC3F00F4B6AF500CF3369 /* SM1Password_Sync_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SM1Password_Sync_Prefix.pch; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -73,8 +77,11 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				22412A5F16F7C282000DE1D7 /* SMOPFunctions.h */,
+				22412A5616F7C178000DE1D7 /* SMOPInterfaceController.h */,
+				22412A5716F7C178000DE1D7 /* SMOPInterfaceController.m */,
 			);
-			name = Classes;
+			path = Classes;
 			sourceTree = "<group>";
 		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
@@ -112,7 +119,7 @@
 				22412A2A16F7B2C1000DE1D7 /* MobileDeviceAccess.h */,
 				22412A2B16F7B2C1000DE1D7 /* MobileDeviceAccess.m */,
 			);
-			name = MobileDeviceAccess;
+			path = MobileDeviceAccess;
 			sourceTree = "<group>";
 		};
 		22412A3A16F7B322000DE1D7 /* JSONKit */ = {
@@ -121,7 +128,7 @@
 				22412A3B16F7B332000DE1D7 /* JSONKit.h */,
 				22412A3C16F7B332000DE1D7 /* JSONKit.m */,
 			);
-			name = JSONKit;
+			path = JSONKit;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* SM1Password Sync */ = {
@@ -269,6 +276,7 @@
 			files = (
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				22412A3D16F7B332000DE1D7 /* JSONKit.m in Sources */,
+				22412A5816F7C178000DE1D7 /* SMOPInterfaceController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
