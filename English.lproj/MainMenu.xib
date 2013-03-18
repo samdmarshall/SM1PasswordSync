@@ -12,8 +12,8 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="533"/>
 			<integer value="29"/>
+			<integer value="536"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1415,7 +1415,7 @@
 													<reference key="NSTableView" ref="1057812110"/>
 												</object>
 												<object class="NSTableColumn" id="335768092">
-													<string key="NSIdentifier">DeviceType</string>
+													<string key="NSIdentifier">DeviceClass</string>
 													<double key="NSWidth">195</double>
 													<double key="NSMinWidth">40</double>
 													<double key="NSMaxWidth">1000</double>
@@ -1441,7 +1441,7 @@
 													<reference key="NSTableView" ref="1057812110"/>
 												</object>
 												<object class="NSTableColumn" id="565276586">
-													<string key="NSIdentifier">LastSync</string>
+													<string key="NSIdentifier">SyncDate</string>
 													<double key="NSWidth">229</double>
 													<double key="NSMinWidth">10</double>
 													<double key="NSMaxWidth">3.4028234663852886e+38</double>

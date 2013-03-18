@@ -17,7 +17,10 @@
 	NSMutableArray *deviceList;
 	
 	SMOPDeviceManager *deviceAccess;
+	BOOL hadError;
 }
+
+- (void)errorWithAFC:(NSNotification *)notification;
 
 - (void)refreshWithData:(NSArray *)devices;
 

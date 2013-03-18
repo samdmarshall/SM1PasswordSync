@@ -26,7 +26,7 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 22412A2516F7B28F000DE1D7 /* MobileDeviceAccess */;
+			remoteGlobalIDString = 22412A2516F7B28F000DE1D7;
 			remoteInfo = MobileDeviceAccess;
 		};
 /* End PBXContainerItemProxy section */
@@ -48,6 +48,7 @@
 		22412A5F16F7C282000DE1D7 /* SMOPFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPFunctions.h; sourceTree = "<group>"; };
 		22412A7C16F7C658000DE1D7 /* SMOPDeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPDeviceManager.h; sourceTree = "<group>"; };
 		22412A7D16F7C658000DE1D7 /* SMOPDeviceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOPDeviceManager.m; sourceTree = "<group>"; };
+		22412AA416F7C962000DE1D7 /* SMOPDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPDefines.h; sourceTree = "<group>"; };
 		256AC3F00F4B6AF500CF3369 /* SM1Password_Sync_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SM1Password_Sync_Prefix.pch; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -80,6 +81,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				22412AA416F7C962000DE1D7 /* SMOPDefines.h */,
 				22412A5F16F7C282000DE1D7 /* SMOPFunctions.h */,
 				22412A5616F7C178000DE1D7 /* SMOPInterfaceController.h */,
 				22412A5716F7C178000DE1D7 /* SMOPInterfaceController.m */,
