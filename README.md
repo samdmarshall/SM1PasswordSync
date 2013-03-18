@@ -3,7 +3,7 @@ SM1Password Sync
 
 SM1Password Sync is a *third party* application that allows you to sync your 1Password keychain with your iOS devices. The official 1Password USB syncing application can be found on their [website](http://blog.agilebits.com/tag/1password-usb-sync/). At the encouragement from the fine folks at AgileBits, I decided to post this as an open source tool as an example of how to do file synchronizing between iOS and OS X. 
 
-*This is a third party project developed outside the auspices of AgileBits. Nothing here should imply their cooperation or any association.*
+*This is a third party project developed outside the auspices of AgileBits. Nothing here should imply their cooperation, association, or endorsement.*
 
 System Requirements
 -------------------
