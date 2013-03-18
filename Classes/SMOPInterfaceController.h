@@ -18,11 +18,12 @@
 	
 	SMOPDeviceManager *deviceAccess;
 	BOOL hadError;
+	BOOL isUpdating;
 }
 
 - (void)errorWithAFC:(NSNotification *)notification;
 
-- (void)refreshWithData:(NSArray *)devices;
+- (void)refreshListWithData:(NSArray *)devices;
 
 - (IBAction)syncData:(id)sender;
 - (IBAction)refreshList:(id)sender;

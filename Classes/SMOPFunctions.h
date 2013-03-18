@@ -8,6 +8,7 @@
  */
 
 #import <CommonCrypto/CommonDigest.h>
+#import "SMOPDefines.h"
 
 CFDataRef SHA1HashOfFileAtPath(NSString *path) {
 	unsigned char hashBytes[CC_SHA1_DIGEST_LENGTH];
@@ -16,3 +17,7 @@ CFDataRef SHA1HashOfFileAtPath(NSString *path) {
     return (CFDataRef)[NSData dataWithBytes:hashBytes length:CC_SHA1_DIGEST_LENGTH];
 }
 
+CFStringRef OnePasswordKeychainPath() {
+	NSDictionary *preferenceFile = [NSDictionary dictionaryWithContentsOfFile:kOnePasswordPreferencesPath];
+	return (CFStringRef)[[preferenceFile objectForKey:@"AgileKeychainLocation"] stringByExpandingTildeInPath];
+}

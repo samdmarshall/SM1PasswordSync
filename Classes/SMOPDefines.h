@@ -9,3 +9,4 @@
 
 #define kOnePasswordBundleId @"com.agilebits.onepassword-ios"
 #define kOnePasswordRemotePath @"/Documents/1Password.agilekeychain"
+#define kOnePasswordPreferencesPath [@"~/Library/Preferences/ws.agile.1Password.plist" stringByExpandingTildeInPath]
