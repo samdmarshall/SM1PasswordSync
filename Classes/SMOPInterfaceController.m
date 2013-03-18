@@ -74,7 +74,7 @@
 						[dateFormatter release];
 					}
 					[fileService close];
-					NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device deviceClass], @"DeviceClass", lastSyncDate, @"SyncDate", nil];
+					NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", nil];
 					[deviceList addObject:deviceDict];
 				} else {
 					[[NSNotificationCenter defaultCenter] postNotificationName:@"kAFCFailedToConnectError" object:self userInfo:nil];

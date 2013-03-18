@@ -2535,6 +2535,38 @@ bail:
 	return [NSString stringWithFormat:@"AMDevice('%@')", _deviceName];
 }
 
+- (NSString *)modelName {
+	NSString *platformType = [self productType];
+	if ([platformType isEqualToString:@"iPhone1,1"]) return @"iPhone 1G";
+	if ([platformType isEqualToString:@"iPhone1,2"]) return @"iPhone 3G";
+	if ([platformType isEqualToString:@"iPhone2,1"]) return @"iPhone 3GS";
+	if ([platformType isEqualToString:@"iPhone3,1"]) return @"iPhone 4";
+	if ([platformType isEqualToString:@"iPhone3,3"]) return @"Verizon iPhone 4";
+	if ([platformType isEqualToString:@"iPhone4,1"]) return @"iPhone 4S";
+	if ([platformType isEqualToString:@"iPhone5,1"]) return @"iPhone 5 (GSM)";
+	if ([platformType isEqualToString:@"iPhone5,2"]) return @"iPhone 5 (GSM + CDMA)";
+	if ([platformType isEqualToString:@"iPod1,1"]) return @"iPod Touch 1G";
+	if ([platformType isEqualToString:@"iPod2,1"]) return @"iPod Touch 2G";
+	if ([platformType isEqualToString:@"iPod3,1"]) return @"iPod Touch 3G";
+	if ([platformType isEqualToString:@"iPod4,1"]) return @"iPod Touch 4G";
+	if ([platformType isEqualToString:@"iPod5,1"]) return @"iPod Touch 5G";
+	if ([platformType isEqualToString:@"iPad1,1"]) return @"iPad";
+	if ([platformType isEqualToString:@"iPad2,1"]) return @"iPad 2 (WiFi)";
+	if ([platformType isEqualToString:@"iPad2,2"]) return @"iPad 2 (GSM)";
+	if ([platformType isEqualToString:@"iPad2,3"]) return @"iPad 2 (CDMA)";
+	if ([platformType isEqualToString:@"iPad2,4"]) return @"iPad 2 (WiFi)";
+	if ([platformType isEqualToString:@"iPad2,5"]) return @"iPad Mini (WiFi)";
+	if ([platformType isEqualToString:@"iPad2,6"]) return @"iPad Mini (GSM)";
+	if ([platformType isEqualToString:@"iPad2,7"]) return @"iPad Mini (GSM + CDMA)";
+	if ([platformType isEqualToString:@"iPad3,1"]) return @"iPad 3 (WiFi)";
+	if ([platformType isEqualToString:@"iPad3,2"]) return @"iPad 3 (GSM + CDMA)";
+	if ([platformType isEqualToString:@"iPad3,3"]) return @"iPad 3 (GSM)";
+	if ([platformType isEqualToString:@"iPad3,4"]) return @"iPad 4 (WiFi)";
+	if ([platformType isEqualToString:@"iPad3,5"]) return @"iPad 4 (GSM)";
+	if ([platformType isEqualToString:@"iPad3,6"]) return @"iPad 4 (GSM + CDMA)";
+	return [NSString stringWithFormat:@"Unknown %@",[self deviceClass]];
+}
+
 - (id)initWithDevice:(am_device)device orBust:(NSString**)msg {
 	self=[super init];
 	if (self) {

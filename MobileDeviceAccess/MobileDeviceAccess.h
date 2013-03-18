@@ -973,6 +973,8 @@ com.apple.mobile.application_uninstalled
 /// \p "DeviceClass" to \p -deviceValueForKey:
 @property (readonly) NSString *deviceClass;
 
+@property (readonly) NSString *modelName;
+
 /// Returns the serial number (the field labeled as Serial Number: in the Summary pane
 /// in iTunes - if its not visible, click the Identifier: label)
 ///
