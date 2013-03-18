@@ -7,8 +7,29 @@
 //
 
 #import "SMOPSyncProcess.h"
-
+#import "SMOPFunctions.h"
 
 @implementation SMOPSyncProcess
+
+- (id)init {
+	self = [super init];
+	if (self) {
+		localKeychainPath = (NSString *)OnePasswordKeychainPath();
+		mergeKeychainPath = kSMOPApplicationSupportPath;
+	}
+	return self;
+}
+
+- (void)setSyncDevice:(AMDevice *)syncDevice {
+	[device release];
+	device = syncDevice;
+}
+
+- (void)dealloc {
+	[localKeychainPath release];
+	[mergeKeychainPath release];
+	[device release];
+	[super dealloc];
+}
 
 @end

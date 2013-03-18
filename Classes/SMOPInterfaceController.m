@@ -87,6 +87,11 @@
 	}
 }
 
+- (void)performSync {
+	SMOPSyncProcess *newSync = [[SMOPSyncProcess alloc] init];
+	[newSync setSyncDevice:[[deviceAccess getDevices] objectAtIndex:[deviceTable selectedRow]]];
+}
+
 - (IBAction)syncData:(id)sender {
 	if (!isUpdating) {
 		[syncButton setEnabled:NO];

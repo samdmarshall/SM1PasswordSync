@@ -7,10 +7,15 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
+#import "MobileDeviceAccess.h"
 
 @interface SMOPSyncProcess : NSObject {
-
+	NSString *localKeychainPath;
+	NSString *mergeKeychainPath;
+	
+	AMDevice *device;
 }
+
+- (void)setSyncDevice:(AMDevice *)syncDevice;
 
 @end

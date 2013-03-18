@@ -2536,6 +2536,7 @@ bail:
 }
 
 - (NSString *)modelName {
+	// all models taken from: http://theiphonewiki.com/wiki/Models
 	NSString *platformType = [self productType];
 	if ([platformType isEqualToString:@"iPhone1,1"]) return @"iPhone 1G";
 	if ([platformType isEqualToString:@"iPhone1,2"]) return @"iPhone 3G";

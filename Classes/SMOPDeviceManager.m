@@ -37,9 +37,11 @@
 #pragma mark MobileDeviceAccessListener
 
 - (void)deviceConnected:(AMDevice *)device {
+	// post notification to refresh
 }
 
 - (void)deviceDisconnected:(AMDevice *)device {
+	// post notification to refresh and cancel any syncs to this device
 }
 
 @end
