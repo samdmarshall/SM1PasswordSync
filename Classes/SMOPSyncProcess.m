@@ -16,18 +16,25 @@
 	if (self) {
 		localKeychainPath = (NSString *)OnePasswordKeychainPath();
 		mergeKeychainPath = kSMOPApplicationSupportPath;
+		localContents = [NSMutableSet new];
+		deviceContents = [NSMutableSet new];
 	}
 	return self;
 }
 
 - (void)setSyncDevice:(AMDevice *)syncDevice {
-	[device release];
 	device = syncDevice;
+}
+
+- (void)synchronizePasswords {
+	
 }
 
 - (void)dealloc {
 	[localKeychainPath release];
 	[mergeKeychainPath release];
+	[localContents release];
+	[deviceContents release];
 	[device release];
 	[super dealloc];
 }

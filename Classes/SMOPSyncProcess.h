@@ -14,8 +14,12 @@
 	NSString *mergeKeychainPath;
 	
 	AMDevice *device;
+	
+	NSMutableSet *localContents;
+	NSMutableSet *deviceContents;
 }
 
 - (void)setSyncDevice:(AMDevice *)syncDevice;
+- (void)synchronizePasswords;
 
 @end
