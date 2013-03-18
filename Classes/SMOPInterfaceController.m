@@ -90,6 +90,7 @@
 - (void)performSync {
 	SMOPSyncProcess *newSync = [[SMOPSyncProcess alloc] init];
 	[newSync setSyncDevice:[[deviceAccess getDevices] objectAtIndex:[deviceTable selectedRow]]];
+	[newSync synchronizePasswords];
 }
 
 - (IBAction)syncData:(id)sender {

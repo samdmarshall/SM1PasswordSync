@@ -27,7 +27,11 @@
 }
 
 - (void)synchronizePasswords {
+	NSMutableSet *sameItems = [NSMutableSet new];
+	NSMutableSet *differentItems = [NSMutableSet new];
 	
+	[sameItems release];
+	[differentItems release];
 }
 
 - (void)dealloc {
