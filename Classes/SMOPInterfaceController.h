@@ -7,15 +7,19 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
+#import "SMOPDeviceManager.h"
 
 @interface SMOPInterfaceController : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
 	IBOutlet NSTableView *deviceTable;
 	IBOutlet NSButton *syncButton;
 	IBOutlet NSButton *refreshButton;
 	
-	NSArray *deviceList;
+	NSMutableArray *deviceList;
+	
+	SMOPDeviceManager *deviceAccess;
 }
+
+- (void)refreshWithData:(NSArray *)devices;
 
 - (IBAction)syncData:(id)sender;
 - (IBAction)refreshList:(id)sender;

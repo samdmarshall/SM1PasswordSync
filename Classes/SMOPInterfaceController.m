@@ -12,12 +12,21 @@
 @implementation SMOPInterfaceController
 
 - (void)awakeFromNib {
-	
+	deviceList = [NSMutableArray new];
+	deviceAccess = [[SMOPDeviceManager alloc] init];
+	if ([deviceAccess watchForConnection]) {
+		[self refreshWithData:[deviceAccess getDevices]];
+	}
 }
 
 - (void)dealloc {
 	[deviceList release];
+	[deviceAccess release];
 	[super dealloc];
+}
+
+- (void)refreshWithData:(NSArray *)devices {
+	
 }
 
 - (IBAction)syncData:(id)sender {
