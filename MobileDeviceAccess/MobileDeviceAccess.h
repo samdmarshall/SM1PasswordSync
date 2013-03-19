@@ -852,6 +852,8 @@ com.apple.mobile.application_uninstalled
 
 - (NSData *)getFileHash:(NSString *)path;
 
+- (bool)ensureConnectionIsOpen;
+
 @end
 
 /// This class represents an AFC connection that is rooted to the devices

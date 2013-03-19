@@ -1045,27 +1045,31 @@ static BOOL read_dir( AFCDirectoryAccess *self, afc_connection afc, NSString *pa
 			if (in) {
 				// open local file for write - stupidly we need to create it before
 				// we can make an NSFileHandle
-				[fm createFileAtPath:path2 contents:nil attributes:nil];
-				NSFileHandle *out = [NSFileHandle fileHandleForWritingAtPath:path2];
-				if (!out) {
-					[self setLastError:@"Can't open output file"];
-				} else {
-					// copy all content across 10K at a time...  use
-					// malloc for the buffer rather than NSData because I've noticed
-					// strange problems in the debugger
-					const uint32_t bufsz = 10240;
-					char *buff = malloc(bufsz);
-					while (1) {
-						uint32_t n = [in readN:bufsz bytes:buff];
-						if (n==0) break;
-						NSData *b2 = [[NSData alloc] initWithBytesNoCopy:buff length:n freeWhenDone:NO];
-						[out writeData:b2];
-						[b2 release];
+				result = [[NSFileManager defaultManager] createDirectoryAtPath:[path2 stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:nil];
+				
+				if (result) {
+					[fm createFileAtPath:path2 contents:nil attributes:nil];
+					NSFileHandle *out = [NSFileHandle fileHandleForWritingAtPath:path2];
+					if (!out) {
+						[self setLastError:@"Can't open output file"];
+					} else {
+						// copy all content across 10K at a time...  use
+						// malloc for the buffer rather than NSData because I've noticed
+						// strange problems in the debugger
+						const uint32_t bufsz = 10240;
+						char *buff = malloc(bufsz);
+						while (1) {
+							uint32_t n = [in readN:bufsz bytes:buff];
+							if (n==0) break;
+							NSData *b2 = [[NSData alloc] initWithBytesNoCopy:buff length:n freeWhenDone:NO];
+							[out writeData:b2];
+							[b2 release];
+						}
+						free(buff);
+						[out closeFile];
+						[self clearLastError];
+						result = YES;
 					}
-					free(buff);
-					[out closeFile];
-					[self clearLastError];
-					result = YES;
 				}
 				// close output file
 				[in closeFile];

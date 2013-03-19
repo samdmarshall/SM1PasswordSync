@@ -21,8 +21,6 @@
 	BOOL isUpdating;
 }
 
-- (void)errorWithAFC:(NSNotification *)notification;
-
 - (void)refreshListWithData:(NSArray *)devices;
 
 - (IBAction)syncData:(id)sender;

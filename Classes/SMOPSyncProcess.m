@@ -8,6 +8,9 @@
 
 #import "SMOPSyncProcess.h"
 #import "SMOPFunctions.h"
+#import "JSONKit.h"
+#import "NSAlert+Additions.h"
+#import "SMOPContentsMerge.h"
 
 @implementation SMOPSyncProcess
 
@@ -16,8 +19,8 @@
 	if (self) {
 		localKeychainPath = (NSString *)OnePasswordKeychainPath();
 		mergeKeychainPath = kSMOPApplicationSupportPath;
-		localContents = [NSMutableSet new];
 		deviceContents = [NSMutableSet new];
+		localContents = [NSMutableSet new];
 	}
 	return self;
 }
@@ -26,12 +29,77 @@
 	device = syncDevice;
 }
 
-- (void)synchronizePasswords {
-	NSMutableSet *sameItems = [NSMutableSet new];
-	NSMutableSet *differentItems = [NSMutableSet new];
+- (void)loadContentsData {
+	NSError *err;
 	
-	[sameItems release];
-	[differentItems release];
+	NSString *localDataJSON = [NSString stringWithContentsOfFile:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] encoding:NSUTF8StringEncoding error:&err];
+	NSString *deviceDataJSON = [NSString stringWithContentsOfFile:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] encoding:NSUTF8StringEncoding error:&err];
+	
+	NSArray *localData = [localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];							
+	NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];
+	
+	[localContents addObjectsFromArray:localData];
+	[deviceContents addObjectsFromArray:remoteData];
+}
+
+- (BOOL)keychainChecks {
+	BOOL directory;
+	BOOL result = [[NSFileManager defaultManager] fileExistsAtPath:localKeychainPath isDirectory:&directory];
+	if (result && directory) {
+		result = [[NSFileManager defaultManager] fileExistsAtPath:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] isDirectory:&directory];
+		if (!result) {
+			// empty local keychain file, prompt.
+			if ([NSAlert emptyKeychainAlertAtPath:localKeychainPath] == NSAlertFirstButtonReturn) {
+				return NO;
+			}
+		}
+		// check device file
+		BOOL deviceContentsCheck = FALSE;
+		AFCApplicationDirectory *fileCheck = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+		if ([fileCheck ensureConnectionIsOpen]) {
+			deviceContentsCheck = [fileCheck fileExistsAtPath:[kOnePasswordRemotePath stringByAppendingPathComponent:kOnePasswordInternalContentsPath]];
+			[fileCheck close];
+		}
+		[fileCheck release];
+		
+		// move to merge
+		BOOL copyToMerge = FALSE;
+		if (!deviceContentsCheck) {
+			if ([NSAlert emptyKeychainAlertAtPath:[device deviceName]] == NSAlertFirstButtonReturn) {
+				return NO;
+			}
+		} else {
+			AFCApplicationDirectory *fileMerge = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+			if ([fileMerge ensureConnectionIsOpen]) {
+				copyToMerge = [fileMerge copyRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] toLocalFile:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath]];
+				[fileMerge close];
+			}
+			[fileMerge release];
+		}
+		result = ((deviceContentsCheck && copyToMerge) ? TRUE : FALSE);
+	}
+	return result;
+}
+
+- (NSSet *)mergeLocalAndDeviceContents {
+	return (NSSet *)ContentsIntersectSet(localContents, deviceContents);
+}
+
+- (void)cleanUpMergeData {
+	
+}
+
+- (void)synchronizePasswords {
+	BOOL result = [self keychainChecks];
+	if (result) {
+		[self loadContentsData];
+		NSMutableSet *conflictItems = [NSMutableSet new];
+		[conflictItems setSet:[self mergeLocalAndDeviceContents]];
+		NSLog(@"conflicts: %i",[conflictItems count]);
+		[self cleanUpMergeData];
+	} else {
+		NSLog(@"Connection Failed");
+	}
 }
 
 - (void)dealloc {

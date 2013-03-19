@@ -20,6 +20,7 @@
 }
 
 - (void)setSyncDevice:(AMDevice *)syncDevice;
+- (void)loadContentsData;
 - (void)synchronizePasswords;
 
 @end
