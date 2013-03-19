@@ -47,10 +47,6 @@
 		SMOPContentsItem *newDeviceItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[deviceContents addObject:newDeviceItem];
 	}];
-	
-	
-	//[localContents addObjectsFromArray:localData];
-	//[deviceContents addObjectsFromArray:remoteData];
 }
 
 - (BOOL)keychainChecks {
@@ -138,6 +134,7 @@
 				break;
 			};
 			case NSOrderedSame: {
+				// ignore, both are the same
 				break;
 			};
 			case NSOrderedDescending: {

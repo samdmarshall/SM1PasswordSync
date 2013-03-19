@@ -8,7 +8,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-
 @interface SMOPContentsItem : NSObject {
 	NSString *uniqueId;
 	NSString *folder;
