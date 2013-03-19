@@ -35,18 +35,19 @@
 	NSString *localDataJSON = [NSString stringWithContentsOfFile:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] encoding:NSUTF8StringEncoding error:&err];
 	NSString *deviceDataJSON = [NSString stringWithContentsOfFile:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] encoding:NSUTF8StringEncoding error:&err];
 	
-	[[localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err] enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
-		SMOPContentsItem *newLocalItem = [[[SMOPContentsItem alloc] initWithArray:obj] autorelease];
+	NSArray *localData = [localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];							
+	NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];
+	
+	[localData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
+		SMOPContentsItem *newLocalItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[localContents addObject:newLocalItem];
 	}];
 	
-	[[deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err] enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
-		SMOPContentsItem *newDeviceItem = [[[SMOPContentsItem alloc] initWithArray:obj] autorelease];
+	[remoteData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
+		SMOPContentsItem *newDeviceItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[deviceContents addObject:newDeviceItem];
 	}];
 	
-	//NSArray *localData = [localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];							
-	//NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];
 	
 	//[localContents addObjectsFromArray:localData];
 	//[deviceContents addObjectsFromArray:remoteData];
@@ -91,10 +92,42 @@
 	return result;
 }
 
-- (NSSet *)mergeLocalAndDeviceContents {
-	NSMutableSet *conflictItems = [NSMutableSet new];
+- (void)mergeLocalAndDeviceContents {
+	NSSet *deviceIds = [deviceContents valueForKey:@"uniqueId"];
+	NSSet *localIds = [localContents valueForKey:@"uniqueId"];
+	BOOL copyResult = FALSE;
 	
-	return conflictItems;
+	NSMutableSet *addToLocal = [NSMutableSet setWithSet:deviceIds];
+	[addToLocal minusSet:localIds];
+	NSArray *copyToLocal = [addToLocal allObjects];
+	AFCApplicationDirectory *copyToLocalService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+	if ([copyToLocalService ensureConnectionIsOpen]) {
+		for (NSString *item in copyToLocal) {
+			//copyResult = [copyToLocalService copyRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]] toLocalFile:[localKeychainPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]]];
+		}
+		[copyToLocalService close];
+	}
+	[copyToLocalService release];
+	
+	NSMutableSet *addToDevice = [NSMutableSet setWithSet:localIds];
+	[addToDevice minusSet:deviceIds];
+	NSArray *copyToDevice = [addToDevice allObjects];
+	AFCApplicationDirectory *copyToDeviceService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+	if ([copyToDeviceService ensureConnectionIsOpen]) {
+		for (NSString *item in copyToDevice) {
+			//copyResult = [copyToDeviceService copyLocalFile:[localKeychainPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]]];
+		}
+		[copyToDeviceService close];
+	}
+	[copyToDeviceService release];
+	
+	
+	NSMutableSet *conflicts = [NSMutableSet setWithSet:localIds];
+	[conflicts unionSet:deviceIds];
+	[conflicts minusSet:addToLocal];
+	[conflicts minusSet:addToDevice];
+	
+	
 }
 
 - (void)cleanUpMergeData {
@@ -105,7 +138,7 @@
 	BOOL result = [self keychainChecks];
 	if (result) {
 		[self loadContentsData];
-		
+		[self mergeLocalAndDeviceContents];
 		[self cleanUpMergeData];
 	} else {
 		NSLog(@"Connection Failed");
