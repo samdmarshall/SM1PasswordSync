@@ -131,11 +131,19 @@
 		NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",obj];
 		SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
 		SMOPContentsItem *deviceItem = [[deviceContents filteredSetUsingPredicate:filterPredicate] anyObject];
-		if ([localItem.modifiedDate integerValue] != [deviceItem.modifiedDate integerValue]) {
-			NSLog(@"%@",localItem);
-			NSLog(@"%@",deviceItem);
-		}
-			
+		NSComparisonResult conflictComopare = [localItem.modifiedDate compare:deviceItem.modifiedDate];
+		switch (conflictComopare) {
+			case NSOrderedAscending: {
+				// device newer
+				break;
+			}
+			case NSOrderedSame: { break; }
+			case NSOrderedDescending: {
+				// local newer
+				break;
+			}
+			default: { break; }
+		}	
 	}];
 }
 
