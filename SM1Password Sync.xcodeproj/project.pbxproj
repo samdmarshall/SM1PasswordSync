@@ -18,7 +18,7 @@
 		22412C0716F8E3F5000DE1D7 /* NSAlert+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412C0616F8E3F5000DE1D7 /* NSAlert+Additions.m */; };
 		22412C2616F8EF4C000DE1D7 /* MobileDeviceAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = 22412C2416F8EF4C000DE1D7 /* MobileDeviceAccess.h */; };
 		22412C2716F8EF4C000DE1D7 /* MobileDeviceAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412C2516F8EF4C000DE1D7 /* MobileDeviceAccess.m */; };
-		22412CBF16F8FE8A000DE1D7 /* SMOPContentsMerge.c in Sources */ = {isa = PBXBuildFile; fileRef = 22412CBE16F8FE8A000DE1D7 /* SMOPContentsMerge.c */; };
+		22412D0916F90983000DE1D7 /* SMOPContentsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412D0816F90983000DE1D7 /* SMOPContentsItem.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -56,8 +56,8 @@
 		22412C0616F8E3F5000DE1D7 /* NSAlert+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAlert+Additions.m"; sourceTree = "<group>"; };
 		22412C2416F8EF4C000DE1D7 /* MobileDeviceAccess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileDeviceAccess.h; sourceTree = "<group>"; };
 		22412C2516F8EF4C000DE1D7 /* MobileDeviceAccess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MobileDeviceAccess.m; sourceTree = "<group>"; };
-		22412CBD16F8FE8A000DE1D7 /* SMOPContentsMerge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPContentsMerge.h; sourceTree = "<group>"; };
-		22412CBE16F8FE8A000DE1D7 /* SMOPContentsMerge.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = SMOPContentsMerge.c; sourceTree = "<group>"; };
+		22412D0716F90983000DE1D7 /* SMOPContentsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPContentsItem.h; sourceTree = "<group>"; };
+		22412D0816F90983000DE1D7 /* SMOPContentsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOPContentsItem.m; sourceTree = "<group>"; };
 		256AC3F00F4B6AF500CF3369 /* SM1Password_Sync_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SM1Password_Sync_Prefix.pch; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -99,8 +99,8 @@
 				22412A7D16F7C658000DE1D7 /* SMOPDeviceManager.m */,
 				22412B0D16F7CE97000DE1D7 /* SMOPSyncProcess.h */,
 				22412B0E16F7CE97000DE1D7 /* SMOPSyncProcess.m */,
-				22412CBD16F8FE8A000DE1D7 /* SMOPContentsMerge.h */,
-				22412CBE16F8FE8A000DE1D7 /* SMOPContentsMerge.c */,
+				22412D0716F90983000DE1D7 /* SMOPContentsItem.h */,
+				22412D0816F90983000DE1D7 /* SMOPContentsItem.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -310,7 +310,7 @@
 				22412A7E16F7C658000DE1D7 /* SMOPDeviceManager.m in Sources */,
 				22412B0F16F7CE97000DE1D7 /* SMOPSyncProcess.m in Sources */,
 				22412C0716F8E3F5000DE1D7 /* NSAlert+Additions.m in Sources */,
-				22412CBF16F8FE8A000DE1D7 /* SMOPContentsMerge.c in Sources */,
+				22412D0916F90983000DE1D7 /* SMOPContentsItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

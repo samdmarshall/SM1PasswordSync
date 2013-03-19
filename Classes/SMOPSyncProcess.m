@@ -10,7 +10,7 @@
 #import "SMOPFunctions.h"
 #import "JSONKit.h"
 #import "NSAlert+Additions.h"
-#import "SMOPContentsMerge.h"
+#import "SMOPContentsItem.h"
 
 @implementation SMOPSyncProcess
 
@@ -35,11 +35,21 @@
 	NSString *localDataJSON = [NSString stringWithContentsOfFile:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] encoding:NSUTF8StringEncoding error:&err];
 	NSString *deviceDataJSON = [NSString stringWithContentsOfFile:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] encoding:NSUTF8StringEncoding error:&err];
 	
-	NSArray *localData = [localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];							
-	NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];
+	[[localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err] enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
+		SMOPContentsItem *newLocalItem = [[[SMOPContentsItem alloc] initWithArray:obj] autorelease];
+		[localContents addObject:newLocalItem];
+	}];
 	
-	[localContents addObjectsFromArray:localData];
-	[deviceContents addObjectsFromArray:remoteData];
+	[[deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err] enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
+		SMOPContentsItem *newDeviceItem = [[[SMOPContentsItem alloc] initWithArray:obj] autorelease];
+		[deviceContents addObject:newDeviceItem];
+	}];
+	
+	//NSArray *localData = [localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];							
+	//NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];
+	
+	//[localContents addObjectsFromArray:localData];
+	//[deviceContents addObjectsFromArray:remoteData];
 }
 
 - (BOOL)keychainChecks {
@@ -82,7 +92,9 @@
 }
 
 - (NSSet *)mergeLocalAndDeviceContents {
-	return (NSSet *)ContentsIntersectSet(localContents, deviceContents);
+	NSMutableSet *conflictItems = [NSMutableSet new];
+	
+	return conflictItems;
 }
 
 - (void)cleanUpMergeData {
@@ -93,9 +105,7 @@
 	BOOL result = [self keychainChecks];
 	if (result) {
 		[self loadContentsData];
-		NSMutableSet *conflictItems = [NSMutableSet new];
-		[conflictItems setSet:[self mergeLocalAndDeviceContents]];
-		NSLog(@"conflicts: %i",[conflictItems count]);
+		
 		[self cleanUpMergeData];
 	} else {
 		NSLog(@"Connection Failed");
