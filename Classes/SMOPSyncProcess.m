@@ -136,13 +136,17 @@
 			case NSOrderedAscending: {
 				// device newer
 				break;
-			}
-			case NSOrderedSame: { break; }
+			};
+			case NSOrderedSame: {
+				break;
+			};
 			case NSOrderedDescending: {
 				// local newer
 				break;
-			}
-			default: { break; }
+			};
+			default: {
+				break;
+			};
 		}	
 	}];
 }
