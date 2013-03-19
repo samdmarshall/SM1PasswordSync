@@ -122,12 +122,21 @@
 	[copyToDeviceService release];
 	
 	
-	NSMutableSet *conflicts = [NSMutableSet setWithSet:localIds];
-	[conflicts unionSet:deviceIds];
-	[conflicts minusSet:addToLocal];
-	[conflicts minusSet:addToDevice];
+	NSMutableSet *matches = [NSMutableSet setWithSet:localIds];
+	[matches unionSet:deviceIds];
+	[matches minusSet:addToLocal];
+	[matches minusSet:addToDevice];
 	
-	
+	[matches enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+		NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",obj];
+		SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
+		SMOPContentsItem *deviceItem = [[deviceContents filteredSetUsingPredicate:filterPredicate] anyObject];
+		if ([localItem.modifiedDate integerValue] != [deviceItem.modifiedDate integerValue]) {
+			NSLog(@"%@",localItem);
+			NSLog(@"%@",deviceItem);
+		}
+			
+	}];
 }
 
 - (void)cleanUpMergeData {
