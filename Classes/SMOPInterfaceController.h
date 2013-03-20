@@ -26,6 +26,8 @@
 - (IBAction)syncData:(id)sender;
 - (IBAction)refreshList:(id)sender;
 
+- (AMDevice *)selectedDevice;
+
 #pragma mark -
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView;

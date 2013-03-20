@@ -26,7 +26,7 @@
 }
 
 - (void)setSyncDevice:(AMDevice *)syncDevice {
-	device = syncDevice;
+	device = [syncDevice retain];
 }
 
 - (void)loadContentsData {
@@ -39,13 +39,15 @@
 	NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];
 	
 	[localData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
-		SMOPContentsItem *newLocalItem = [[SMOPContentsItem alloc] initWithArray:obj];
+		SMOPContentsItem *newLocalItem = [[SMOPContentsItem alloc] initWithArray:[obj retain]];
 		[localContents addObject:newLocalItem];
+		[newLocalItem release];
 	}];
 	
 	[remoteData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
-		SMOPContentsItem *newDeviceItem = [[SMOPContentsItem alloc] initWithArray:obj];
+		SMOPContentsItem *newDeviceItem = [[SMOPContentsItem alloc] initWithArray:[obj retain]];
 		[deviceContents addObject:newDeviceItem];
+		[newDeviceItem release];
 	}];
 }
 

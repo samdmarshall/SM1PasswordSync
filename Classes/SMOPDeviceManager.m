@@ -34,7 +34,7 @@
 }
 
 - (NSArray *)devicesWithOnePassword4:(NSArray *)devices {
-	NSMutableArray *deviceList = [NSMutableArray new];
+	NSMutableArray *deviceList = [[[NSMutableArray alloc] init] autorelease];
 	for (AMDevice *device in devices) {
 		NSPredicate *findOnePassword = [NSPredicate predicateWithFormat:@"bundleid == %@",kOnePasswordBundleId];
 		NSArray *results = [device.installedApplications filteredArrayUsingPredicate:findOnePassword];

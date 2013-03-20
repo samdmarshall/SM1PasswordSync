@@ -54,8 +54,9 @@
 
 - (void)performSync {
 	SMOPSyncProcess *newSync = [[SMOPSyncProcess alloc] init];
-	[newSync setSyncDevice:[[deviceAccess getDevices] objectAtIndex:[deviceTable selectedRow]]];
+	[newSync setSyncDevice:[self selectedDevice]];
 	[newSync synchronizePasswords];
+	[newSync release];
 }
 
 - (IBAction)syncData:(id)sender {
@@ -75,6 +76,10 @@
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		[self refreshListWithData:[deviceAccess getDevices]];
 	});
+}
+
+- (AMDevice *)selectedDevice {
+	return [[deviceAccess getDevices] objectAtIndex:[deviceTable selectedRow]];
 }
 
 #pragma mark -
