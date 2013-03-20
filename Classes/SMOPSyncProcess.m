@@ -10,7 +10,7 @@
 #import "SMOPFunctions.h"
 #import "NSAlert+Additions.h"
 #import "SMOPContentsItem.h"
-#import "jsmn.h"
+#import "JSMNParser.h"
 
 @implementation SMOPSyncProcess
 
@@ -30,7 +30,7 @@
 }
 
 - (void)loadContentsData {
-	NSError *err;
+	/*NSError *err;
 	
 	NSString *localDataPath = [localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath];
 	
@@ -43,7 +43,7 @@
 	jsmntok_t tokens[token_count];
 	jsmn_init(&localParser);
 	
-	jsmn_parse(&localParser, [localDataJSON UTF8String], tokens, token_count);
+	jsmn_parse(&localParser, [localDataJSON UTF8String], tokens, token_count);*/
 
 	
 	/*NSArray *localData = [localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];							

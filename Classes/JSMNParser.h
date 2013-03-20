@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
+#import "jsmn.h"
 
 @interface JSMNParser : NSObject {
 
