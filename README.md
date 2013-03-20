@@ -15,7 +15,7 @@ System Requirements
 
 Code Libraries
 --------------
-* [JSONKit](https://github.com/johnezang/JSONKit)
+* [jsmn](https://bitbucket.org/zserge/jsmn)
 * [MobileDeviceAccess](https://bitbucket.org/tristero/mobiledeviceaccess)
 
 	### Notes:
@@ -23,11 +23,11 @@ Code Libraries
 	* There was no license posted with MobileDeviceAccess, and this project uses very modified version of that code. 
 
 Disclaimer
-==========
+----------
 It is mentioned with the code license below, however I am in no way responsible for any fault in this code and/or damage it may cause to the 1Password keychain files. USE AT YOUR OWN RISK. If you find a bug, please report an issue or submit a pull request and I will get to it as soon as possible. 
 
 License
-=======
+-------
 	Copyright (c) 2013, Sam Marshall
 	All rights reserved.
 	
