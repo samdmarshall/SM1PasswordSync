@@ -46,7 +46,8 @@
 		isUpdating = TRUE;
 		[deviceList removeAllObjects];
 		NSArray *results = [deviceAccess devicesWithOnePassword4:devices];
-		[deviceList addObjectsFromArray:results];
+		if (results.count)
+			[deviceList addObjectsFromArray:results];
 		[deviceTable reloadData];
 		isUpdating = FALSE;
 	}

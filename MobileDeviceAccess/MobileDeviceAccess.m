@@ -625,7 +625,7 @@ AMDShutdownNotificationProxy(socket);
 				afc_error_t e = AFCOperationGetResultStatus(op);
 				if (e == 0) {
 					[self clearLastError];
-					result = [(NSData *)AFCOperationGetResultObject(op) retain];
+					result = [NSData dataWithData:AFCOperationGetResultObject(op)];
 				} else {
 					CFTypeRef err = AFCConnectionCopyLastErrorInfo(_afc);
 					if (err) {

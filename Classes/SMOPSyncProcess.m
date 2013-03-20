@@ -39,13 +39,13 @@
 	NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];
 	
 	[localData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
-		SMOPContentsItem *newLocalItem = [[SMOPContentsItem alloc] initWithArray:[obj retain]];
+		SMOPContentsItem *newLocalItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[localContents addObject:newLocalItem];
 		[newLocalItem release];
 	}];
 	
 	[remoteData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
-		SMOPContentsItem *newDeviceItem = [[SMOPContentsItem alloc] initWithArray:[obj retain]];
+		SMOPContentsItem *newDeviceItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[deviceContents addObject:newDeviceItem];
 		[newDeviceItem release];
 	}];

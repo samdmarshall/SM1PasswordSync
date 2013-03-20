@@ -63,7 +63,7 @@
 			[fileService release];
 		}
 	}
-	return deviceList;
+	return [NSArray arrayWithArray:deviceList];
 }
 
 #pragma mark -
