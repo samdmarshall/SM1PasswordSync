@@ -8,10 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
+		2203C0C016FA1DE400D961E1 /* jsmn.c in Sources */ = {isa = PBXBuildFile; fileRef = 2203C05316FA1B9900D961E1 /* jsmn.c */; };
+		2203C0C116FA1DE600D961E1 /* jsmn.h in Headers */ = {isa = PBXBuildFile; fileRef = 2203C05216FA1B9900D961E1 /* jsmn.h */; };
+		2203C0C416FA1DF400D961E1 /* libjsmn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2203C0BD16FA1DD600D961E1 /* libjsmn.a */; };
+		2203C0F116FA23F100D961E1 /* JSMNParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2203C0F016FA23F100D961E1 /* JSMNParser.m */; };
 		22412A1C16F7B268000DE1D7 /* MobileDevice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22412A1B16F7B268000DE1D7 /* MobileDevice.framework */; };
 		22412A2C16F7B2C1000DE1D7 /* MobileDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 22412A2916F7B2C1000DE1D7 /* MobileDevice.h */; };
 		22412A3216F7B2D7000DE1D7 /* libMobileDeviceAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22412A2616F7B28F000DE1D7 /* libMobileDeviceAccess.a */; };
-		22412A3D16F7B332000DE1D7 /* JSONKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412A3C16F7B332000DE1D7 /* JSONKit.m */; };
 		22412A5816F7C178000DE1D7 /* SMOPInterfaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412A5716F7C178000DE1D7 /* SMOPInterfaceController.m */; };
 		22412A7E16F7C658000DE1D7 /* SMOPDeviceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412A7D16F7C658000DE1D7 /* SMOPDeviceManager.m */; };
 		22412B0F16F7CE97000DE1D7 /* SMOPSyncProcess.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412B0E16F7CE97000DE1D7 /* SMOPSyncProcess.m */; };
@@ -25,6 +28,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		2203C0C216FA1DEB00D961E1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2203C0BC16FA1DD600D961E1 /* jsmn */;
+			remoteInfo = jsmn;
+		};
 		22412A3316F7B2DA000DE1D7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -39,11 +49,14 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		1DDD58150DA1D0A300B32029 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		2203C05216FA1B9900D961E1 /* jsmn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jsmn.h; sourceTree = "<group>"; };
+		2203C05316FA1B9900D961E1 /* jsmn.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = jsmn.c; sourceTree = "<group>"; };
+		2203C0BD16FA1DD600D961E1 /* libjsmn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjsmn.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		2203C0EF16FA23F100D961E1 /* JSMNParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSMNParser.h; sourceTree = "<group>"; };
+		2203C0F016FA23F100D961E1 /* JSMNParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSMNParser.m; sourceTree = "<group>"; };
 		22412A1B16F7B268000DE1D7 /* MobileDevice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileDevice.framework; path = /System/Library/PrivateFrameworks/MobileDevice.framework; sourceTree = "<absolute>"; };
 		22412A2616F7B28F000DE1D7 /* libMobileDeviceAccess.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMobileDeviceAccess.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		22412A2916F7B2C1000DE1D7 /* MobileDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileDevice.h; sourceTree = "<group>"; };
-		22412A3B16F7B332000DE1D7 /* JSONKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONKit.h; sourceTree = "<group>"; };
-		22412A3C16F7B332000DE1D7 /* JSONKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONKit.m; sourceTree = "<group>"; };
 		22412A5616F7C178000DE1D7 /* SMOPInterfaceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPInterfaceController.h; sourceTree = "<group>"; };
 		22412A5716F7C178000DE1D7 /* SMOPInterfaceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOPInterfaceController.m; sourceTree = "<group>"; };
 		22412A5F16F7C282000DE1D7 /* SMOPFunctions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPFunctions.h; sourceTree = "<group>"; };
@@ -67,6 +80,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		2203C0BB16FA1DD600D961E1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		22412A2416F7B28F000DE1D7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -81,6 +101,7 @@
 				22412A3216F7B2D7000DE1D7 /* libMobileDeviceAccess.a in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				22412A1C16F7B268000DE1D7 /* MobileDevice.framework in Frameworks */,
+				2203C0C416FA1DF400D961E1 /* libjsmn.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +122,8 @@
 				22412B0E16F7CE97000DE1D7 /* SMOPSyncProcess.m */,
 				22412D0716F90983000DE1D7 /* SMOPContentsItem.h */,
 				22412D0816F90983000DE1D7 /* SMOPContentsItem.m */,
+				2203C0EF16FA23F100D961E1 /* JSMNParser.h */,
+				2203C0F016FA23F100D961E1 /* JSMNParser.m */,
 			);
 			path = Classes;
 			sourceTree = "<group>";
@@ -129,8 +152,18 @@
 			children = (
 				8D1107320486CEB800E47090 /* SM1Password Sync.app */,
 				22412A2616F7B28F000DE1D7 /* libMobileDeviceAccess.a */,
+				2203C0BD16FA1DD600D961E1 /* libjsmn.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		2203C05116FA1B8300D961E1 /* jsmn */ = {
+			isa = PBXGroup;
+			children = (
+				2203C05216FA1B9900D961E1 /* jsmn.h */,
+				2203C05316FA1B9900D961E1 /* jsmn.c */,
+			);
+			path = jsmn;
 			sourceTree = "<group>";
 		};
 		22412A3716F7B302000DE1D7 /* MobileDeviceAccess */ = {
@@ -141,15 +174,6 @@
 				22412C2516F8EF4C000DE1D7 /* MobileDeviceAccess.m */,
 			);
 			path = MobileDeviceAccess;
-			sourceTree = "<group>";
-		};
-		22412A3A16F7B322000DE1D7 /* JSONKit */ = {
-			isa = PBXGroup;
-			children = (
-				22412A3B16F7B332000DE1D7 /* JSONKit.h */,
-				22412A3C16F7B332000DE1D7 /* JSONKit.m */,
-			);
-			path = JSONKit;
 			sourceTree = "<group>";
 		};
 		22412C0316F8E3C9000DE1D7 /* Additions */ = {
@@ -165,7 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				080E96DDFE201D6D7F000001 /* Classes */,
-				22412A3A16F7B322000DE1D7 /* JSONKit */,
+				2203C05116FA1B8300D961E1 /* jsmn */,
 				22412A3716F7B302000DE1D7 /* MobileDeviceAccess */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -206,6 +230,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		2203C0B916FA1DD600D961E1 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2203C0C116FA1DE600D961E1 /* jsmn.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		22412A2216F7B28F000DE1D7 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -218,6 +250,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		2203C0BC16FA1DD600D961E1 /* jsmn */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2203C0CF16FA1E0C00D961E1 /* Build configuration list for PBXNativeTarget "jsmn" */;
+			buildPhases = (
+				2203C0B916FA1DD600D961E1 /* Headers */,
+				2203C0BA16FA1DD600D961E1 /* Sources */,
+				2203C0BB16FA1DD600D961E1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = jsmn;
+			productName = jsmn;
+			productReference = 2203C0BD16FA1DD600D961E1 /* libjsmn.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		22412A2516F7B28F000DE1D7 /* MobileDeviceAccess */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 22412A2F16F7B2C1000DE1D7 /* Build configuration list for PBXNativeTarget "MobileDeviceAccess" */;
@@ -246,6 +295,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				2203C0C316FA1DEB00D961E1 /* PBXTargetDependency */,
 				22412A3416F7B2DA000DE1D7 /* PBXTargetDependency */,
 			);
 			name = "SM1Password Sync";
@@ -275,6 +325,7 @@
 			targets = (
 				8D1107260486CEB800E47090 /* SM1Password Sync */,
 				22412A2516F7B28F000DE1D7 /* MobileDeviceAccess */,
+				2203C0BC16FA1DD600D961E1 /* jsmn */,
 			);
 		};
 /* End PBXProject section */
@@ -292,6 +343,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		2203C0BA16FA1DD600D961E1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2203C0C016FA1DE400D961E1 /* jsmn.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		22412A2316F7B28F000DE1D7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -305,18 +364,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
-				22412A3D16F7B332000DE1D7 /* JSONKit.m in Sources */,
 				22412A5816F7C178000DE1D7 /* SMOPInterfaceController.m in Sources */,
 				22412A7E16F7C658000DE1D7 /* SMOPDeviceManager.m in Sources */,
 				22412B0F16F7CE97000DE1D7 /* SMOPSyncProcess.m in Sources */,
 				22412C0716F8E3F5000DE1D7 /* NSAlert+Additions.m in Sources */,
 				22412D0916F90983000DE1D7 /* SMOPContentsItem.m in Sources */,
+				2203C0F116FA23F100D961E1 /* JSMNParser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		2203C0C316FA1DEB00D961E1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2203C0BC16FA1DD600D961E1 /* jsmn */;
+			targetProxy = 2203C0C216FA1DEB00D961E1 /* PBXContainerItemProxy */;
+		};
 		22412A3416F7B2DA000DE1D7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 22412A2516F7B28F000DE1D7 /* MobileDeviceAccess */;
@@ -344,6 +408,40 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		2203C0BE16FA1DD600D961E1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = jsmn;
+			};
+			name = Debug;
+		};
+		2203C0BF16FA1DD600D961E1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				INSTALL_PATH = /usr/local/lib;
+				PREBINDING = NO;
+				PRODUCT_NAME = jsmn;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 		22412A2716F7B28F000DE1D7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -403,6 +501,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
+					"\"$(SRCROOT)/../../Downloads/json-framework-master/build/Release\"",
 				);
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -426,6 +525,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks\"",
+					"\"$(SRCROOT)/../../Downloads/json-framework-master/build/Release\"",
 				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -466,6 +566,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		2203C0CF16FA1E0C00D961E1 /* Build configuration list for PBXNativeTarget "jsmn" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2203C0BE16FA1DD600D961E1 /* Debug */,
+				2203C0BF16FA1DD600D961E1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		22412A2F16F7B2C1000DE1D7 /* Build configuration list for PBXNativeTarget "MobileDeviceAccess" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

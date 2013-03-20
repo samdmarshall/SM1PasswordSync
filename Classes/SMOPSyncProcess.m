@@ -8,9 +8,9 @@
 
 #import "SMOPSyncProcess.h"
 #import "SMOPFunctions.h"
-#import "JSONKit.h"
 #import "NSAlert+Additions.h"
 #import "SMOPContentsItem.h"
+#import "jsmn.h"
 
 @implementation SMOPSyncProcess
 
@@ -32,10 +32,21 @@
 - (void)loadContentsData {
 	NSError *err;
 	
+	NSString *localDataPath = [localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath];
+	
 	NSString *localDataJSON = [NSString stringWithContentsOfFile:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] encoding:NSUTF8StringEncoding error:&err];
 	NSString *deviceDataJSON = [NSString stringWithContentsOfFile:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] encoding:NSUTF8StringEncoding error:&err];
 	
-	NSArray *localData = [localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];							
+	uint32_t localTokenCount = ;
+	
+	jsmn_parser localParser;
+	jsmntok_t tokens[token_count];
+	jsmn_init(&localParser);
+	
+	jsmn_parse(&localParser, [localDataJSON UTF8String], tokens, token_count);
+
+	
+	/*NSArray *localData = [localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];							
 	NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];
 	
 	[localData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
@@ -48,7 +59,7 @@
 		SMOPContentsItem *newDeviceItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[deviceContents addObject:newDeviceItem];
 		[newDeviceItem release];
-	}];
+	}];*/
 }
 
 - (BOOL)keychainChecks {
