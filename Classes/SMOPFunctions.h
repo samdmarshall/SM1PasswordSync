@@ -6,7 +6,6 @@
  *  Copyright 2013 Sam Marshall. All rights reserved.
  *
  */
-
 #import <CommonCrypto/CommonDigest.h>
 #import "SMOPDefines.h"
 
@@ -20,4 +19,10 @@ CFDataRef SHA1HashOfFileAtPath(NSString *path) {
 CFStringRef OnePasswordKeychainPath() {
 	NSDictionary *preferenceFile = [NSDictionary dictionaryWithContentsOfFile:kOnePasswordPreferencesPath];
 	return (CFStringRef)[[preferenceFile objectForKey:@"AgileKeychainLocation"] stringByExpandingTildeInPath];
+}
+
+NSInteger GetContentsItemCount() {
+	NSString *localPath = [[(NSString *)OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] stringByDeletingLastPathComponent];
+	NSInteger contentsDirectoryCount = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:localPath error:nil] count];
+	return ((contentsDirectoryCount-5)*9)+1;
 }

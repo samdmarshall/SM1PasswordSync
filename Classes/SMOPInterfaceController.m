@@ -36,6 +36,7 @@
 }
 
 - (void)dealloc {
+	[deviceSync release];
 	[deviceList release];
 	[deviceAccess release];
 	[super dealloc];
@@ -54,10 +55,11 @@
 }
 
 - (void)performSync {
-	SMOPSyncProcess *newSync = [[SMOPSyncProcess alloc] init];
-	[newSync setSyncDevice:[self selectedDevice]];
-	[newSync synchronizePasswords];
-	[newSync release];
+	if (deviceSync)
+		[deviceSync release];
+	deviceSync = [[SMOPSyncProcess alloc] init];
+	[deviceSync setSyncDevice:[self selectedDevice]];
+	[deviceSync synchronizePasswords];
 }
 
 - (IBAction)syncData:(id)sender {

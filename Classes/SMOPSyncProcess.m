@@ -17,8 +17,8 @@
 - (id)init {
 	self = [super init];
 	if (self) {
-		localKeychainPath = (NSString *)OnePasswordKeychainPath();
-		mergeKeychainPath = kSMOPApplicationSupportPath;
+		localKeychainPath = [(NSString *)OnePasswordKeychainPath() retain];
+		mergeKeychainPath = [kSMOPApplicationSupportPath retain];
 		deviceContents = [NSMutableSet new];
 		localContents = [NSMutableSet new];
 	}
@@ -30,6 +30,12 @@
 }
 
 - (void)loadContentsData {
+	
+	
+	JSMNParser *localParser = [[JSMNParser alloc] initWithPath:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetContentsItemCount()];
+	//JSMNParser *deviceParser = [[[JSMNParser alloc] initWithPath:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:] autorelease];
+	NSLog(@"%@",[localParser deserializeJSON]);
+	
 	/*NSError *err;
 	
 	NSString *localDataPath = [localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath];
@@ -102,63 +108,65 @@
 }
 
 - (void)mergeLocalAndDeviceContents {
-	NSSet *deviceIds = [deviceContents valueForKey:@"uniqueId"];
-	NSSet *localIds = [localContents valueForKey:@"uniqueId"];
-	BOOL copyResult = FALSE;
-	
-	NSMutableSet *addToLocal = [NSMutableSet setWithSet:deviceIds];
-	[addToLocal minusSet:localIds];
-	NSArray *copyToLocal = [addToLocal allObjects];
-	AFCApplicationDirectory *copyToLocalService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
-	if ([copyToLocalService ensureConnectionIsOpen]) {
-		for (NSString *item in copyToLocal) {
-			//copyResult = [copyToLocalService copyRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]] toLocalFile:[localKeychainPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]]];
+	if ([deviceContents count] && [localContents count]) {
+		NSSet *deviceIds = [deviceContents valueForKey:@"uniqueId"];
+		NSSet *localIds = [localContents valueForKey:@"uniqueId"];
+		BOOL copyResult = FALSE;
+
+		NSMutableSet *addToLocal = [NSMutableSet setWithSet:deviceIds];
+		[addToLocal minusSet:localIds];
+		NSArray *copyToLocal = [addToLocal allObjects];
+		AFCApplicationDirectory *copyToLocalService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+		if ([copyToLocalService ensureConnectionIsOpen]) {
+			for (NSString *item in copyToLocal) {
+				//copyResult = [copyToLocalService copyRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]] toLocalFile:[localKeychainPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]]];
+			}
+			[copyToLocalService close];
 		}
-		[copyToLocalService close];
-	}
-	[copyToLocalService release];
-	
-	NSMutableSet *addToDevice = [NSMutableSet setWithSet:localIds];
-	[addToDevice minusSet:deviceIds];
-	NSArray *copyToDevice = [addToDevice allObjects];
-	AFCApplicationDirectory *copyToDeviceService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
-	if ([copyToDeviceService ensureConnectionIsOpen]) {
-		for (NSString *item in copyToDevice) {
-			//copyResult = [copyToDeviceService copyLocalFile:[localKeychainPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]]];
+		[copyToLocalService release];
+
+		NSMutableSet *addToDevice = [NSMutableSet setWithSet:localIds];
+		[addToDevice minusSet:deviceIds];
+		NSArray *copyToDevice = [addToDevice allObjects];
+		AFCApplicationDirectory *copyToDeviceService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+		if ([copyToDeviceService ensureConnectionIsOpen]) {
+			for (NSString *item in copyToDevice) {
+				//copyResult = [copyToDeviceService copyLocalFile:[localKeychainPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]]];
+			}
+			[copyToDeviceService close];
 		}
-		[copyToDeviceService close];
+		[copyToDeviceService release];
+
+
+		NSMutableSet *matches = [NSMutableSet setWithSet:localIds];
+		[matches unionSet:deviceIds];
+		[matches minusSet:addToLocal];
+		[matches minusSet:addToDevice];
+
+		[matches enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+			NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",obj];
+			SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
+			SMOPContentsItem *deviceItem = [[deviceContents filteredSetUsingPredicate:filterPredicate] anyObject];
+			NSComparisonResult conflictComopare = [localItem.modifiedDate compare:deviceItem.modifiedDate];
+			switch (conflictComopare) {
+				case NSOrderedAscending: {
+					// device newer
+					break;
+				};
+				case NSOrderedSame: {
+					// ignore, both are the same
+					break;
+				};
+				case NSOrderedDescending: {
+					// local newer
+					break;
+				};
+				default: {
+					break;
+				};
+			}	
+		}];
 	}
-	[copyToDeviceService release];
-	
-	
-	NSMutableSet *matches = [NSMutableSet setWithSet:localIds];
-	[matches unionSet:deviceIds];
-	[matches minusSet:addToLocal];
-	[matches minusSet:addToDevice];
-	
-	[matches enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
-		NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",obj];
-		SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
-		SMOPContentsItem *deviceItem = [[deviceContents filteredSetUsingPredicate:filterPredicate] anyObject];
-		NSComparisonResult conflictComopare = [localItem.modifiedDate compare:deviceItem.modifiedDate];
-		switch (conflictComopare) {
-			case NSOrderedAscending: {
-				// device newer
-				break;
-			};
-			case NSOrderedSame: {
-				// ignore, both are the same
-				break;
-			};
-			case NSOrderedDescending: {
-				// local newer
-				break;
-			};
-			default: {
-				break;
-			};
-		}	
-	}];
 }
 
 - (void)cleanUpMergeData {

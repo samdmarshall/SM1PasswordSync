@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "SMOPDeviceManager.h"
+#import "SMOPSyncProcess.h"
 
 @interface SMOPInterfaceController : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
 	IBOutlet NSTableView *deviceTable;
@@ -17,6 +18,7 @@
 	NSMutableArray *deviceList;
 	
 	SMOPDeviceManager *deviceAccess;
+	SMOPSyncProcess *deviceSync;
 	BOOL hadError;
 	BOOL isUpdating;
 }
