@@ -30,43 +30,23 @@
 }
 
 - (void)loadContentsData {
-	
-	
 	JSMNParser *localParser = [[JSMNParser alloc] initWithPath:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetLocalContentsItemCount()];
-	JSMNParser *deviceParser = [[JSMNParser alloc] initWithPath:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetRemoteContentsItemCount(device)];
-	NSArray *localData = [localParser deserializeJSON];
-	NSArray *remoteData = [deviceParser deserializeJSON];
-	
-	/*NSError *err;
-	
-	NSString *localDataPath = [localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath];
-	
-	NSString *localDataJSON = [NSString stringWithContentsOfFile:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] encoding:NSUTF8StringEncoding error:&err];
-	NSString *deviceDataJSON = [NSString stringWithContentsOfFile:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] encoding:NSUTF8StringEncoding error:&err];
-	
-	uint32_t localTokenCount = ;
-	
-	jsmn_parser localParser;
-	jsmntok_t tokens[token_count];
-	jsmn_init(&localParser);
-	
-	jsmn_parse(&localParser, [localDataJSON UTF8String], tokens, token_count);*/
-
-	
-	/*NSArray *localData = [localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];							
-	NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];*/
-	
+	NSArray *localData = [localParser deserializeJSON];	
 	[localData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
 		SMOPContentsItem *newLocalItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[localContents addObject:newLocalItem];
 		[newLocalItem release];
 	}];
+	[localParser release];
 	
+	JSMNParser *deviceParser = [[JSMNParser alloc] initWithPath:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetRemoteContentsItemCount(device)];	
+	NSArray *remoteData = [deviceParser deserializeJSON];
 	[remoteData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
 		SMOPContentsItem *newDeviceItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[deviceContents addObject:newDeviceItem];
 		[newDeviceItem release];
 	}];
+	[deviceParser release];
 }
 
 - (BOOL)keychainChecks {
@@ -152,6 +132,7 @@
 			[copyToLocalService close];
 		}
 		[copyToLocalService release];
+		[addToLocal release];
 
 		NSArray *copyToDevice = [addToDevice allObjects];
 		AFCApplicationDirectory *copyToDeviceService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
@@ -162,6 +143,7 @@
 			[copyToDeviceService close];
 		}
 		[copyToDeviceService release];
+		[addToDevice release];
 		
 		[matches enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
 			NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",obj];
@@ -188,11 +170,12 @@
 				};
 			}	
 		}];
+		[matches release];
 	}
 }
 
 - (void)cleanUpMergeData {
-	
+	[[NSFileManager defaultManager] removeItemAtPath:[kSMOPApplicationSupportPath stringByAppendingPathComponent:@"/data/"] error:nil];
 }
 
 - (void)synchronizePasswords {

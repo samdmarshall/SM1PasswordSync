@@ -17,8 +17,7 @@
 	if (self) {
 		count = total;
 		offset = 0;
-		NSError *err;
-		jsonData = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&err];		
+		jsonData = [[NSString alloc] initWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];		
 		jsmn_parser localParser;
 		jsmn_init(&localParser);
 		jsmn_parse(&localParser, [jsonData cStringUsingEncoding:NSUnicodeStringEncoding], tokens, total);
@@ -45,6 +44,7 @@
 			NSNumberFormatter *stringFormatter = [[NSNumberFormatter alloc] init];
 			[stringFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
 			parsed = [stringFormatter numberFromString:valueString];
+			[stringFormatter release];
 			break;
 		};
 		case JSMN_OBJECT: {
@@ -59,7 +59,7 @@
 			break;
 		};
 		case JSMN_ARRAY: {
-			parsed = [NSMutableArray new];
+			parsed = [[NSMutableArray new] autorelease];
 			for (uint32_t i = 0; i < tokens[index].size; i++) {
 				offset++;
 				[parsed addObject:[self parseFromIndex:offset]];

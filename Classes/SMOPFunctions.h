@@ -32,7 +32,8 @@ NSInteger GetRemoteContentsItemCount(AMDevice *device) {
 	NSInteger count = 1;
 	AFCApplicationDirectory *contentsCount = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 	if ([contentsCount ensureConnectionIsOpen]) {
-		count = (([[contentsCount directoryContents:[kOnePasswordRemotePath stringByAppendingPathComponent:@"/data/default/"]] count]-5)*9)+1;
+		NSInteger deviceDirContentsCount = [[contentsCount directoryContents:[kOnePasswordRemotePath stringByAppendingPathComponent:@"/data/default/"]] count];
+		count = ((deviceDirContentsCount-3)*9)+1;
 	}
 	return count;
 }

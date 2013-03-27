@@ -1137,8 +1137,7 @@ static BOOL read_dir( AFCDirectoryAccess *self, afc_connection afc, NSString *pa
 - (id)initWithAMDevice:(AMDevice*)device andName:(NSString*)identifier {
 	self = [super initWithName:@"com.apple.mobile.house_arrest" onDevice:device];
 	if (self) {
-		NSDictionary *message;
-		message = [NSDictionary dictionaryWithObjectsAndKeys:
+		NSDictionary *message = [NSDictionary dictionaryWithObjectsAndKeys:
 						// value			key
 						@"VendContainer",	@"Command",
 						identifier,			@"Identifier",

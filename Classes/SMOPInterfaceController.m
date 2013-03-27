@@ -15,7 +15,9 @@
 - (void)awakeFromNib {
 	hadError = FALSE;
 	isUpdating = FALSE;
-	deviceList = [NSMutableArray new];
+	if (!deviceList) {
+		deviceList = [NSMutableArray new];
+	}
 	deviceAccess = [[SMOPDeviceManager alloc] init];
 	
 	if ([deviceAccess watchForConnection]) {
