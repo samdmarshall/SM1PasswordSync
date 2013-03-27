@@ -225,6 +225,10 @@
 				} else {
 					// throw error
 				}
+				afc_error_t updateError = AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"SMOPUpdate"] UTF8String]);		
+				if (updateError == 0) {
+					updateError = AFCRemovePath(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"SMOPUpdate"] UTF8String]);
+				}
 				[contentsToDevice close];
 			}
 			[contentsToDevice release];
