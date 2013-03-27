@@ -27,7 +27,7 @@
 }
 
 + (NSString *)serializeJSON:(id)obj {
-	NSMutableString *serialize = [NSMutableString new];
+	NSMutableString *serialize = [[NSMutableString new] autorelease];
 	
 	if ([obj isKindOfClass:[SMOPContentsItem class]]) {
 		obj = [obj returnAsArray];
