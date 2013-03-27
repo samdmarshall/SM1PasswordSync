@@ -34,8 +34,8 @@
 	
 	JSMNParser *localParser = [[JSMNParser alloc] initWithPath:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetLocalContentsItemCount()];
 	JSMNParser *deviceParser = [[JSMNParser alloc] initWithPath:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetRemoteContentsItemCount(device)];
-	NSArray *localContents = [localParser deserializeJSON];
-	NSArray *remoteContents = [deviceParser deserializeJSON];
+	NSArray *localData = [localParser deserializeJSON];
+	NSArray *remoteData = [deviceParser deserializeJSON];
 	
 	/*NSError *err;
 	
@@ -54,7 +54,7 @@
 
 	
 	/*NSArray *localData = [localDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];							
-	NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];
+	NSArray *remoteData = [deviceDataJSON objectFromJSONStringWithParseOptions:JKParseOptionStrict error:&err];*/
 	
 	[localData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
 		SMOPContentsItem *newLocalItem = [[SMOPContentsItem alloc] initWithArray:obj];
@@ -66,7 +66,7 @@
 		SMOPContentsItem *newDeviceItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[deviceContents addObject:newDeviceItem];
 		[newDeviceItem release];
-	}];*/
+	}];
 }
 
 - (BOOL)keychainChecks {
@@ -112,10 +112,37 @@
 	if ([deviceContents count] && [localContents count]) {
 		NSSet *deviceIds = [deviceContents valueForKey:@"uniqueId"];
 		NSSet *localIds = [localContents valueForKey:@"uniqueId"];
+		
 		BOOL copyResult = FALSE;
+		NSMutableSet *matches = [NSMutableSet new];
+		
+		NSMutableSet *addToDevice = [NSMutableSet new];
+		[localIds enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+			NSPredicate *devicePredicate = [NSPredicate predicateWithFormat:@"SELF IN %@", deviceIds];
+		 	if ([devicePredicate evaluateWithObject:obj]) {
+				NSPredicate *matchesPredicate = [NSPredicate predicateWithFormat:@"SELF IN %@", matches];
+				if (![matchesPredicate evaluateWithObject:obj]) {
+					[matches addObject:obj];
+				}
+			} else {
+				[addToDevice addObject:obj];
+			}
+		}];
+		
+		NSMutableSet *addToLocal = [NSMutableSet new];
+		[deviceIds enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
+			NSPredicate *localPredicate = [NSPredicate predicateWithFormat:@"SELF IN %@", localIds];
+		 	if ([localPredicate evaluateWithObject:obj]) {
+				NSPredicate *matchesPredicate = [NSPredicate predicateWithFormat:@"SELF IN %@", matches];
+				if (![matchesPredicate evaluateWithObject:obj]) {
+					[matches addObject:obj];
+				}
+			} else {
+				[addToLocal addObject:obj];
+			}
+		}];
+		
 
-		NSMutableSet *addToLocal = [NSMutableSet setWithSet:deviceIds];
-		[addToLocal minusSet:localIds];
 		NSArray *copyToLocal = [addToLocal allObjects];
 		AFCApplicationDirectory *copyToLocalService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 		if ([copyToLocalService ensureConnectionIsOpen]) {
@@ -126,8 +153,6 @@
 		}
 		[copyToLocalService release];
 
-		NSMutableSet *addToDevice = [NSMutableSet setWithSet:localIds];
-		[addToDevice minusSet:deviceIds];
 		NSArray *copyToDevice = [addToDevice allObjects];
 		AFCApplicationDirectory *copyToDeviceService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 		if ([copyToDeviceService ensureConnectionIsOpen]) {
@@ -137,21 +162,16 @@
 			[copyToDeviceService close];
 		}
 		[copyToDeviceService release];
-
-
-		NSMutableSet *matches = [NSMutableSet setWithSet:localIds];
-		[matches unionSet:deviceIds];
-		[matches minusSet:addToLocal];
-		[matches minusSet:addToDevice];
-
+		
 		[matches enumerateObjectsUsingBlock:^(id obj, BOOL *stop) {
 			NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",obj];
 			SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
 			SMOPContentsItem *deviceItem = [[deviceContents filteredSetUsingPredicate:filterPredicate] anyObject];
-			NSComparisonResult conflictComopare = [localItem.modifiedDate compare:deviceItem.modifiedDate];
-			switch (conflictComopare) {
+			NSComparisonResult conflictCompare = [localItem.modifiedDate compare:deviceItem.modifiedDate];
+			switch (conflictCompare) {
 				case NSOrderedAscending: {
 					// device newer
+					NSLog(@"Conflict Found From Device");
 					break;
 				};
 				case NSOrderedSame: {
@@ -160,6 +180,7 @@
 				};
 				case NSOrderedDescending: {
 					// local newer
+					NSLog(@"Conflict Found From Local");
 					break;
 				};
 				default: {
