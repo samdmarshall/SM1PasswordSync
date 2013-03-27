@@ -20,6 +20,7 @@ enum JSMNParserType {
 	NSString *jsonData;
 	uint32_t offset;
 }
++ (NSString *)serializeJSON:(id)obj;
 
 - (id)initWithPath:(NSString *)path tokenCount:(NSInteger)total;
 - (id)deserializeJSON;

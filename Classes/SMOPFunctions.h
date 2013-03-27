@@ -17,9 +17,9 @@ CFDataRef SHA1HashOfFileAtPath(NSString *path) {
     return (CFDataRef)[NSData dataWithBytes:hashBytes length:CC_SHA1_DIGEST_LENGTH];
 }
 
-CFStringRef OnePasswordKeychainPath() {
+NSString* OnePasswordKeychainPath() {
 	NSDictionary *preferenceFile = [NSDictionary dictionaryWithContentsOfFile:kOnePasswordPreferencesPath];
-	return (CFStringRef)[[preferenceFile objectForKey:@"AgileKeychainLocation"] stringByExpandingTildeInPath];
+	return [[preferenceFile objectForKey:@"AgileKeychainLocation"] stringByExpandingTildeInPath];
 }
 
 NSInteger GetLocalContentsItemCount() {
@@ -37,3 +37,16 @@ NSInteger GetRemoteContentsItemCount(AMDevice *device) {
 	}
 	return count;
 }
+
+NSString* GetLocalOnePasswordItemWithName(NSString *name) {
+	return [OnePasswordKeychainPath() stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",name]];
+}
+
+NSString* GetMergeOnePasswordItemWithName(NSString *name) {
+	return [kSMOPApplicationSupportPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",name]];
+}
+
+NSString* GetDeviceOnePasswordItemWithName(NSString *name) {
+	return [kOnePasswordRemotePath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",name]];
+}
+

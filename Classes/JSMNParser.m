@@ -7,13 +7,14 @@
 //
 
 #import "JSMNParser.h"
+#import "SMOPContentsItem.h"
 
-
-@implementation JSMNParser
+@implementation JSMNParser 
 
 - (id)initWithPath:(NSString *)path tokenCount:(NSInteger)total {
 	self = [super init];
-	tokens = (jsmntok_t *)malloc(sizeof(jsmntok_t)*total);
+	if (total)
+		tokens = (jsmntok_t *)malloc(sizeof(jsmntok_t)*total);
 	if (self) {
 		count = total;
 		offset = 0;
@@ -23,6 +24,34 @@
 		jsmn_parse(&localParser, [jsonData cStringUsingEncoding:NSUnicodeStringEncoding], tokens, total);
 	}
 	return self;
+}
+
++ (NSString *)serializeJSON:(id)obj {
+	NSMutableString *serialize = [NSMutableString new];
+	
+	if ([obj isKindOfClass:[SMOPContentsItem class]]) {
+		obj = [obj returnAsArray];
+	}
+	
+	if ([obj isKindOfClass:[NSArray class]]) {
+		NSMutableArray *arrayItems = [NSMutableArray new];
+		for (id item in obj) {
+			[arrayItems addObject:[JSMNParser serializeJSON:item]];
+		}
+		[serialize appendString:[NSString stringWithFormat:@"[%@]",[arrayItems componentsJoinedByString:@","]]];
+		[arrayItems release];
+	}
+	if ([obj isKindOfClass:[NSDictionary class]]) {
+		
+	}
+	if ([obj isKindOfClass:[NSNumber class]]) {
+		[serialize appendString:[NSString stringWithFormat:@"%@",[obj stringValue]]];
+	}
+	if ([obj isKindOfClass:[NSString class]]) {
+		[serialize appendString:[NSString stringWithFormat:@"\"%@\"",obj]];
+	}
+	
+	return serialize;
 }
 
 - (id)deserializeJSON {	
@@ -51,11 +80,12 @@
 			if (tokens[index].size%2 == 0) {
 				parsed = [NSMutableDictionary dictionaryWithCapacity:tokens[index].size/2];
 				for (uint32_t i = 0; i < tokens[index].size; i+=2) {
-					[parsed setObject:[self parseFromIndex:index+1+i] forKey:[self parseFromIndex:index+2+i]];
+					NSString *keyName = [self parseFromIndex:offset+index+1+i];
+					[parsed setObject:[self parseFromIndex:offset+index+2+i] forKey:keyName];
 				}
 			}
-			//if (tokens[index].start)
-			//	offset = tokens[index].size;
+			if (tokens[index].start)
+				offset = offset + tokens[index].size;
 			break;
 		};
 		case JSMN_ARRAY: {
@@ -84,7 +114,8 @@
 
 - (void)dealloc {
 	[jsonData release];
-	free(tokens);
+	if (count)
+		free(tokens);
 	[super dealloc];
 }
 

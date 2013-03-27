@@ -29,5 +29,6 @@
 @property (nonatomic, retain) NSNumber *trashed;
 
 - (id)initWithArray:(NSArray *)data;
+- (NSArray *)returnAsArray;
 
 @end
