@@ -42,7 +42,8 @@
 		[arrayItems release];
 	}
 	if ([obj isKindOfClass:[NSDictionary class]]) {
-		
+		// not really necessary for the code so far.
+		NSLog(@"Not implemented dictionary serialization yet");
 	}
 	if ([obj isKindOfClass:[NSNumber class]]) {
 		[serialize appendString:[NSString stringWithFormat:@"%@",[obj stringValue]]];
