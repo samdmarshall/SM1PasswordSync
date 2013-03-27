@@ -32,9 +32,10 @@
 - (void)loadContentsData {
 	
 	
-	JSMNParser *localParser = [[JSMNParser alloc] initWithPath:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetContentsItemCount()];
-	//JSMNParser *deviceParser = [[[JSMNParser alloc] initWithPath:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:] autorelease];
-	NSLog(@"%@",[localParser deserializeJSON]);
+	JSMNParser *localParser = [[JSMNParser alloc] initWithPath:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetLocalContentsItemCount()];
+	JSMNParser *deviceParser = [[JSMNParser alloc] initWithPath:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetRemoteContentsItemCount(device)];
+	NSArray *localContents = [localParser deserializeJSON];
+	NSArray *remoteContents = [deviceParser deserializeJSON];
 	
 	/*NSError *err;
 	

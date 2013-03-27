@@ -16,12 +16,12 @@
 	tokens = (jsmntok_t *)malloc(sizeof(jsmntok_t)*total);
 	if (self) {
 		count = total;
-		offset = 1;
+		offset = 0;
 		NSError *err;
 		jsonData = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&err];		
 		jsmn_parser localParser;
 		jsmn_init(&localParser);
-		jsmn_parse(&localParser, [jsonData UTF8String], tokens, total);
+		jsmn_parse(&localParser, [jsonData cStringUsingEncoding:NSUnicodeStringEncoding], tokens, total);
 	}
 	return self;
 }
@@ -61,17 +61,18 @@
 		case JSMN_ARRAY: {
 			parsed = [NSMutableArray new];
 			for (uint32_t i = 0; i < tokens[index].size; i++) {
-				NSLog(@"%i",i);
-				//offset = offset + tokens[index+i+offset].size;
-				//[parsed addObject:[self parseFromIndex:index+i+offset]];
+				offset++;
+				[parsed addObject:[self parseFromIndex:offset]];
+				offset = offset + tokens[offset].size;
 			}
-			if (tokens[index].start)
-				offset = offset + tokens[index].size;
-			NSLog(@"======");
 			break;
 		};
 		case JSMN_STRING: {
-			parsed = [jsonData substringWithRange:NSMakeRange(tokens[index].start,tokens[index].end-tokens[index].start)];
+			if (tokens[index].end-tokens[index].start) {
+				parsed = [jsonData substringWithRange:NSMakeRange(tokens[index].start,tokens[index].end-tokens[index].start)];
+			} else {
+				parsed = @"";
+			}
 			break;
 		};
 		default: {
