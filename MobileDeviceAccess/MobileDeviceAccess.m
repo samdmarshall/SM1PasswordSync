@@ -2443,6 +2443,7 @@ plist_t build_contact_hello_msg(iphone_env *env)
 
 - (bool)startSession
 {
+	if (_device)
 	if ([self checkStatus:AMDeviceStartSession(_device) from:"AMDeviceStartSession"]) {
 		_insession = YES;
 		return YES;
@@ -2655,6 +2656,7 @@ bail:
 	AFCApplicationDirectory *result = nil;
 	if ([self deviceConnect]) {
 		if ([self startSession]) {
+			if (_device)
 			result = [[AFCApplicationDirectory alloc] initWithAMDevice:self andName:name];
 			[self stopSession];
 		}
@@ -2821,10 +2823,8 @@ bail:
 		if ([self startSession]) {
 			CFDictionaryRef dict = nil;
 			CFDictionaryRef options = [self defaultReturnAttributes];
-			if (
-				[self checkStatus:AMDeviceLookupApplications(_device, options, &dict)
-							 from:"AMDeviceLookupApplications"]
-			) {
+			if (_device)
+			if ([self checkStatus:AMDeviceLookupApplications(_device, options, &dict) from:"AMDeviceLookupApplications"]) {
 				result = [[NSMutableArray new] autorelease];
 				// each key here is the ID of an application
 				for (NSString *key in (NSDictionary*)dict) {
@@ -2853,10 +2853,8 @@ bail:
 		if ([self startSession]) {
 			CFDictionaryRef dict = nil;
 			CFDictionaryRef options = (CFDictionaryRef)[self defaultReturnAttributes];
-			if (
-				[self checkStatus:AMDeviceLookupApplications(_device, options, &dict)
-							 from:"AMDeviceLookupApplications"]
-			) {
+			if (_device)
+			if ([self checkStatus:AMDeviceLookupApplications(_device, options, &dict) from:"AMDeviceLookupApplications"]) {
 				NSDictionary *info = [(NSDictionary*)dict objectForKey:id];
 				if (info) {
 					result = [[[AMApplication alloc] initWithDictionary:info] autorelease];

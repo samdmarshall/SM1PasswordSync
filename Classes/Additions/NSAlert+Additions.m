@@ -20,4 +20,24 @@
 	[alert setAlertStyle:NSWarningAlertStyle];
 	return [alert runModal];
 }
+
++ (NSInteger)cannotFindLocalKeychain {
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	[alert addButtonWithTitle:@"OK"];
+	[alert setMessageText:@"Keychain Missing"];
+	[alert setInformativeText:[NSString stringWithFormat:@"Could not locate the local 1Password keychain file."]];
+	[alert setAlertStyle:NSWarningAlertStyle];
+	return [alert runModal];
+}
+
++ (NSInteger)cannotFindKeychainOnDevice:(NSString *)name {
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	[alert addButtonWithTitle:@"OK"];
+	[alert addButtonWithTitle:@"Cancel"];
+	[alert setMessageText:@"Keychain Missing"];
+	[alert setInformativeText:[NSString stringWithFormat:@"Could not locate a 1Password keychain on \"%@\". Do you want to copy the local keychain to this device?",name]];
+	[alert setAlertStyle:NSWarningAlertStyle];
+	return [alert runModal];
+}
+
 @end

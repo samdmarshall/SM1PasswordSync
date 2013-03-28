@@ -57,10 +57,12 @@
 - (void)refreshListWithData:(NSArray *)devices {
 	if (!isUpdating) {
 		isUpdating = TRUE;
-		[deviceList removeAllObjects];
 		NSArray *results = [deviceAccess devicesWithOnePassword4:devices];
-		if (results.count)
-			[deviceList addObjectsFromArray:results];
+		if (results.count) {
+			[deviceList setArray:results];
+		} else {
+			[deviceList removeAllObjects];
+		}
 		[deviceTable reloadData];
 		isUpdating = FALSE;
 	}
@@ -91,9 +93,10 @@
 }
 
 - (void)updateDeviceList {
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		[self refreshListWithData:[deviceAccess getDevices]];
-	});
+	if (!isUpdating)
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+			[self refreshListWithData:[deviceAccess getDevices]];
+		});
 }
 
 - (IBAction)refreshList:(id)sender {
@@ -107,10 +110,19 @@
 #pragma mark -
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-	return [deviceList count];
+	if ([deviceList count] != [[deviceAccess getDevices] count]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:self userInfo:nil];	
+		return [[deviceAccess getDevices] count];
+	} else {
+		return [deviceList count];
+	}
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
+	if ([deviceList count] != [[deviceAccess getDevices] count]) {
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:self userInfo:nil];	
+		return @"";
+	}
 	return [[deviceList objectAtIndex:rowIndex] objectForKey:[aTableColumn identifier]];
 }
 

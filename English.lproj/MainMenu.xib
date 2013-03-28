@@ -12,8 +12,8 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="81"/>
 			<integer value="372"/>
+			<integer value="205"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -188,7 +188,7 @@
 							<string key="NSTitle">File</string>
 							<object class="NSMutableArray" key="NSMenuItems">
 								<bool key="EncodedWithXMLCoder">YES</bool>
-								<object class="NSMenuItem" id="530583853">
+								<object class="NSMenuItem" id="1026433462">
 									<reference key="NSMenu" ref="720053764"/>
 									<string key="NSTitle">Refresh</string>
 									<string key="NSKeyEquiv">r</string>
@@ -560,7 +560,7 @@
 												</object>
 											</object>
 											<double key="NSRowHeight">17</double>
-											<int key="NSTvFlags">113246208</int>
+											<int key="NSTvFlags">46137344</int>
 											<reference key="NSDelegate"/>
 											<reference key="NSDataSource"/>
 											<int key="NSColumnAutoresizingStyle">4</int>
@@ -878,7 +878,7 @@
 					<object class="IBActionConnection" key="connection">
 						<string key="label">refreshList:</string>
 						<reference key="source" ref="528807520"/>
-						<reference key="destination" ref="530583853"/>
+						<reference key="destination" ref="1026433462"/>
 					</object>
 					<int key="connectionID">560</int>
 				</object>
@@ -966,7 +966,7 @@
 						<reference key="object" ref="720053764"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="530583853"/>
+							<reference ref="1026433462"/>
 						</object>
 						<reference key="parent" ref="379814623"/>
 					</object>
@@ -1156,9 +1156,9 @@
 						<reference key="object" ref="439893737"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="779689165"/>
 							<reference ref="276435876"/>
 							<reference ref="540466274"/>
+							<reference ref="779689165"/>
 						</object>
 						<reference key="parent" ref="972006081"/>
 					</object>
@@ -1310,7 +1310,7 @@
 					</object>
 					<object class="IBObjectRecord">
 						<int key="objectID">559</int>
-						<reference key="object" ref="530583853"/>
+						<reference key="object" ref="1026433462"/>
 						<reference key="parent" ref="720053764"/>
 					</object>
 				</object>

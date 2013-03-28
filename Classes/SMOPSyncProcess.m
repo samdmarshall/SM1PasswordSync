@@ -69,8 +69,6 @@
 		[pushToDevice close];
 	}
 	[pushToDevice release];
-	
-	return pushAttempt;
 }
 
 - (BOOL)keychainChecks {
@@ -80,7 +78,7 @@
 		result = [[NSFileManager defaultManager] fileExistsAtPath:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] isDirectory:&directory];
 		if (!result) {
 			// empty local keychain file, prompt.
-			if ([NSAlert emptyKeychainAlertAtPath:localKeychainPath] == NSAlertFirstButtonReturn) {
+			if ([NSAlert cannotFindLocalKeychain] == NSAlertFirstButtonReturn) {
 				return NO;
 			}
 		}
@@ -96,11 +94,10 @@
 		// move to merge
 		BOOL copyToMerge = FALSE;
 		if (!deviceContentsCheck) {
-			if ([NSAlert emptyKeychainAlertAtPath:[device deviceName]] == NSAlertFirstButtonReturn) {
-				return NO;
-			} else {
+			if ([NSAlert cannotFindKeychainOnDevice:[device deviceName]] == NSAlertFirstButtonReturn) {
 				[self pushKeychain];
-				copyToMerge = [self keychainChecks];
+			} else {
+				return NO;
 			}
 		} else {
 			AFCApplicationDirectory *fileMerge = [device newAFCApplicationDirectory:kOnePasswordBundleId];
@@ -155,7 +152,7 @@
 		AFCApplicationDirectory *copyToLocalService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 		if ([copyToLocalService ensureConnectionIsOpen]) {
 			for (NSString *item in copyToLocal) {
-				copyResult = [copyToLocalService copyRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]] toLocalFile:[localKeychainPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]]];
+				copyResult = [copyToLocalService copyRemoteFile:GetDeviceOnePasswordItemWithName(item) toLocalFile:GetLocalOnePasswordItemWithName(item)];
 				if (copyResult) {
 					NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",item];
 					SMOPContentsItem *deviceItem = [[deviceContents filteredSetUsingPredicate:filterPredicate] anyObject];
@@ -170,7 +167,7 @@
 		AFCApplicationDirectory *copyToDeviceService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 		if ([copyToDeviceService ensureConnectionIsOpen]) {
 			for (NSString *item in copyToDevice) {
-				copyResult = [copyToDeviceService copyLocalFile:[localKeychainPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",item]]];
+				copyResult = [copyToDeviceService copyLocalFile:GetLocalOnePasswordItemWithName(item) toRemoteFile:GetDeviceOnePasswordItemWithName(item)];
 				if (copyResult) {
 					NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",item];
 					SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
