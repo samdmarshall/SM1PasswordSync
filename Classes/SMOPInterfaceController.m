@@ -77,10 +77,14 @@
 	}
 }
 
-- (IBAction)refreshList:(id)sender {
+- (void)updateDeviceList {
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		[self refreshListWithData:[deviceAccess getDevices]];
 	});
+}
+
+- (IBAction)refreshList:(id)sender {
+	[self updateDeviceList];
 }
 
 - (AMDevice *)selectedDevice {

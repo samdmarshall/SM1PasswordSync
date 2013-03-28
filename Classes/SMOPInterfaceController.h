@@ -23,6 +23,7 @@
 	BOOL isUpdating;
 }
 
+- (void)updateDeviceList;
 - (void)refreshListWithData:(NSArray *)devices;
 
 - (IBAction)syncData:(id)sender;
