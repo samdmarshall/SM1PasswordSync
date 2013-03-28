@@ -55,14 +55,16 @@
 	if ([pushToDevice ensureConnectionIsOpen]) {
 		afc_connection conn = [pushToDevice getAFC];
 		AFCDirectoryCreate(conn, [kOnePasswordRemotePath UTF8String]);
-		pushAttempt = [pushToDevice copyLocalFile:[localKeychainPath stringByAppendingPathComponent:@"/1Password.html"] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:@"/1Password.html"]];
-		AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/data/"] UTF8String]);
-		AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/data/default"] UTF8String]);
-		NSString *baseLocalPath = [localKeychainPath stringByAppendingPathComponent:@"/data/default/"];
-		NSString *baseDevicePath = [kOnePasswordRemotePath stringByAppendingPathComponent:@"/data/default/"];
-		NSArray *localKeychainContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:baseLocalPath error:nil];
-		for (NSString *path in localKeychainContents) {
-			pushAttempt = [pushToDevice copyLocalFile:[baseLocalPath stringByAppendingPathComponent:path] toRemoteFile:[baseDevicePath stringByAppendingPathComponent:path]];
+		NSArray *keychainContents = [[NSFileManager defaultManager] subpathsAtPath:localKeychainPath];
+		for (NSString *path in keychainContents) {
+			BOOL isDir;
+			if ([[NSFileManager defaultManager] fileExistsAtPath:[localKeychainPath stringByAppendingPathComponent:path] isDirectory:&isDir]) {
+				if (isDir) {
+					AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:path] UTF8String]);
+				} else {
+					pushAttempt = [pushToDevice copyLocalFile:[localKeychainPath stringByAppendingPathComponent:path] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:path]];
+				}
+			}
 		}
 		[pushToDevice close];
 	}
