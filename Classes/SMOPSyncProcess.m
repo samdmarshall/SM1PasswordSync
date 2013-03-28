@@ -49,6 +49,28 @@
 	[deviceParser release];
 }
 
+- (void)pushKeychain {
+	BOOL pushAttempt = FALSE;
+	AFCApplicationDirectory *pushToDevice = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+	if ([pushToDevice ensureConnectionIsOpen]) {
+		afc_connection conn = [pushToDevice getAFC];
+		AFCDirectoryCreate(conn, [kOnePasswordRemotePath UTF8String]);
+		pushAttempt = [pushToDevice copyLocalFile:[localKeychainPath stringByAppendingPathComponent:@"/1Password.html"] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:@"/1Password.html"]];
+		AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/data/"] UTF8String]);
+		AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/data/default"] UTF8String]);
+		NSString *baseLocalPath = [localKeychainPath stringByAppendingPathComponent:@"/data/default/"];
+		NSString *baseDevicePath = [kOnePasswordRemotePath stringByAppendingPathComponent:@"/data/default/"];
+		NSArray *localKeychainContents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:baseLocalPath error:nil];
+		for (NSString *path in localKeychainContents) {
+			pushAttempt = [pushToDevice copyLocalFile:[baseLocalPath stringByAppendingPathComponent:path] toRemoteFile:[baseDevicePath stringByAppendingPathComponent:path]];
+		}
+		[pushToDevice close];
+	}
+	[pushToDevice release];
+	
+	return pushAttempt;
+}
+
 - (BOOL)keychainChecks {
 	BOOL directory;
 	BOOL result = [[NSFileManager defaultManager] fileExistsAtPath:localKeychainPath isDirectory:&directory];
@@ -74,6 +96,9 @@
 		if (!deviceContentsCheck) {
 			if ([NSAlert emptyKeychainAlertAtPath:[device deviceName]] == NSAlertFirstButtonReturn) {
 				return NO;
+			} else {
+				[self pushKeychain];
+				copyToMerge = [self keychainChecks];
 			}
 		} else {
 			AFCApplicationDirectory *fileMerge = [device newAFCApplicationDirectory:kOnePasswordBundleId];
@@ -252,8 +277,6 @@
 		[self loadContentsData];
 		[self mergeLocalAndDeviceContents];
 		[self cleanUpMergeData];
-	} else {
-		NSLog(@"Connection Failed");
 	}
 }
 
