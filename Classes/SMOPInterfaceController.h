@@ -21,10 +21,12 @@
 	SMOPSyncProcess *deviceSync;
 	BOOL hadError;
 	BOOL isUpdating;
+	BOOL isSyncing;
 }
 
 - (void)updateDeviceList;
 - (void)refreshListWithData:(NSArray *)devices;
+- (void)performSyncForDevice:(AMDevice *)device;
 
 - (IBAction)syncData:(id)sender;
 - (IBAction)refreshList:(id)sender;

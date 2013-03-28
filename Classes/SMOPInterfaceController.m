@@ -12,13 +12,21 @@
 
 @implementation SMOPInterfaceController
 
+- (void)deviceConnectionEvent:(NSNotification *)notification {
+	[self updateDeviceList];
+}
+
 - (void)awakeFromNib {
 	hadError = FALSE;
 	isUpdating = FALSE;
+	isSyncing = FALSE;
 	if (!deviceList) {
 		deviceList = [NSMutableArray new];
 	}
 	deviceAccess = [[SMOPDeviceManager alloc] init];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceConnectionEvent:) name:@"kDeviceConnectionEventPosted" object:nil];
+	
 	
 	if ([deviceAccess watchForConnection]) {
 		[self refreshListWithData:[deviceAccess getDevices]];
@@ -32,12 +40,14 @@
 			deviceList = [NSMutableArray new];
 		}
 		isUpdating = FALSE;
+		isSyncing = FALSE;
 		[self refreshListWithData:[deviceAccess getDevices]];
 	}
 	return self;
 }
 
 - (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[deviceSync release];
 	[deviceList release];
 	[deviceAccess release];
@@ -56,23 +66,26 @@
 	}
 }
 
-- (void)performSync {
+- (void)performSyncForDevice:(AMDevice *)device {
 	if (deviceSync)
 		[deviceSync release];
 	deviceSync = [[SMOPSyncProcess alloc] init];
-	[deviceSync setSyncDevice:[self selectedDevice]];
+	[deviceSync setSyncDevice:device];
 	[deviceSync synchronizePasswords];
 }
 
 - (IBAction)syncData:(id)sender {
 	if (!isUpdating) {
+		isSyncing = TRUE;
+		AMDevice *device = [self selectedDevice];
 		[syncButton setEnabled:NO];
 		[refreshButton setEnabled:NO];
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-			[self performSync];
+			[self performSyncForDevice:device];
 			[self refreshListWithData:[deviceAccess getDevices]];
 			[syncButton setEnabled:YES];
 			[refreshButton setEnabled:YES];
+			isSyncing = FALSE;
 		});
 	}
 }
