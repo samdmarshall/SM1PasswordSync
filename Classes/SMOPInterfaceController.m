@@ -23,6 +23,10 @@
 	if (!deviceList) {
 		deviceList = [NSMutableArray new];
 	}
+	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPApplicationSupportPath withIntermediateDirectories:YES attributes:nil error:nil];
+	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPSyncPath withIntermediateDirectories:YES attributes:nil error:nil];
+	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPSyncStatePath withIntermediateDirectories:YES attributes:nil error:nil];
+	
 	deviceAccess = [[SMOPDeviceManager alloc] init];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceConnectionEvent:) name:@"kDeviceConnectionEventPosted" object:nil];

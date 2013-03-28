@@ -18,7 +18,7 @@
 	self = [super init];
 	if (self) {
 		localKeychainPath = [(NSString *)OnePasswordKeychainPath() retain];
-		mergeKeychainPath = [kSMOPApplicationSupportPath retain];
+		mergeKeychainPath = [kSMOPSyncPath retain];
 		deviceContents = [NSMutableSet new];
 		localContents = [NSMutableSet new];
 	}
@@ -269,7 +269,8 @@
 }
 
 - (void)cleanUpMergeData {
-	[[NSFileManager defaultManager] removeItemAtPath:[kSMOPApplicationSupportPath stringByAppendingPathComponent:@"/data/"] error:nil];
+	[[NSFileManager defaultManager] removeItemAtPath:kSMOPSyncPath error:nil];
+	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPSyncPath withIntermediateDirectories:YES attributes:nil error:nil];
 }
 
 - (void)synchronizePasswords {

@@ -14,3 +14,5 @@
 #define kOnePasswordPreferencesPath [@"~/Library/Preferences/ws.agile.1Password.plist" stringByExpandingTildeInPath]
 
 #define kSMOPApplicationSupportPath [@"~/Library/Application Support/SM1PasswordSync/" stringByExpandingTildeInPath]
+#define kSMOPSyncPath [@"~/Library/Application Support/SM1PasswordSync/sync/" stringByExpandingTildeInPath]
+#define kSMOPSyncStatePath [@"~/Library/Application Support/SM1PasswordSync/status/" stringByExpandingTildeInPath]
