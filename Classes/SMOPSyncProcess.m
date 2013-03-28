@@ -150,6 +150,8 @@
 	if ([finalizeSync ensureConnectionIsOpen]) {
 		afc_connection conn = [finalizeSync getAFC];
 		afc_error_t finalError = AFCRemovePath(conn, [@"/Documents/SMOP/" UTF8String]);
+		finalError = AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/SMOPUpdate/"] UTF8String]);		
+		finalError = AFCRemovePath(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/SMOPUpdate/"] UTF8String]);
 		[finalizeSync close];
 	}
 	[finalizeSync release];

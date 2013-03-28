@@ -9,6 +9,7 @@
 #import "SMOPInterfaceController.h"
 #import "SMOPDefines.h"
 #import "SMOPSyncProcess.h"
+#import "NSAlert+Additions.h"
 
 @implementation SMOPInterfaceController
 
