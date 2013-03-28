@@ -147,6 +147,14 @@
 		}];
 		
 		NSMutableSet *newContents = [NSMutableSet new];
+		
+		AFCApplicationDirectory *initiateSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+		if ([initiateSync ensureConnectionIsOpen]) {
+			afc_connection conn = [initiateSync getAFC];
+			afc_error_t initialError = AFCDirectoryCreate(conn, [@"/Documents/SMOP/" UTF8String]);		
+			[initiateSync close];
+		}
+		[initiateSync release];
 
 		NSArray *copyToLocal = [addToLocal allObjects];
 		AFCApplicationDirectory *copyToLocalService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
@@ -252,14 +260,18 @@
 					// throw error
 					[NSAlert connectionErrorWithDevice:[device deviceName]];
 				}
-				afc_error_t updateError = AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"SMOPUpdate"] UTF8String]);		
-				if (updateError == 0) {
-					updateError = AFCRemovePath(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"SMOPUpdate"] UTF8String]);
-				}
 				[contentsToDevice close];
 			}
 			[contentsToDevice release];
 		}
+		
+		AFCApplicationDirectory *finalizeSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+		if ([finalizeSync ensureConnectionIsOpen]) {
+			afc_connection conn = [finalizeSync getAFC];
+			afc_error_t finalError = AFCRemovePath(conn, [@"/Documents/SMOP/" UTF8String]);
+			[finalizeSync close];
+		}
+		[finalizeSync release];
 		
 		[newContents release];
 		[addToLocal release];

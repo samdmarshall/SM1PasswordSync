@@ -58,8 +58,9 @@
 					lastSyncDate = [dateFormatter stringFromDate:[fileInfo objectForKey:@"st_mtime"]];
 					[dateFormatter release];
 				}
+				NSString *syncStatus = ([fileService fileExistsAtPath:@"/Documents/SMOP"] ? @"*" : @"");
 				[fileService close];
-				NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", nil];
+				NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%@%@",syncStatus,[device deviceName]], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", nil];
 				[deviceList addObject:deviceDict];
 			} else {
 				[[NSNotificationCenter defaultCenter] postNotificationName:@"kAFCFailedToConnectError" object:self userInfo:nil];
