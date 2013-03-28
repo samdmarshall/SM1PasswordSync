@@ -25,6 +25,8 @@
 - (void)loadContentsData;
 - (void)synchronizePasswords;
 
+- (BOOL)deviceSyncStateFileExistsLocally;
+
 - (void)initiateSyncingProcess;
 - (void)updateSyncingProcessToFile:(NSString *)name;
 - (void)finishSyncingProcess;

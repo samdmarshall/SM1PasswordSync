@@ -114,6 +114,11 @@
 	return result;
 }
 
+- (BOOL)deviceSyncStateFileExistsLocally {
+	NSString *deviceSyncFile = [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.syncState",[device udid]]];
+	return [[NSFileManager defaultManager] fileExistsAtPath:deviceSyncFile];
+}
+
 - (void)initiateSyncingProcess {
 	AFCApplicationDirectory *initiateSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 	if ([initiateSync ensureConnectionIsOpen]) {
@@ -123,8 +128,7 @@
 	}
 	[initiateSync release];
 	
-	NSString *deviceSyncFile = [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.syncState",[device udid]]];
-	if ([[NSFileManager defaultManager] fileExistsAtPath:deviceSyncFile]) {
+	if ([self deviceSyncStateFileExistsLocally]) {
 		
 	}
 }
@@ -132,8 +136,7 @@
 - (void)updateSyncingProcessToFile:(NSString *)name {
 	// push update to device
 	
-	NSString *deviceSyncFile = [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.syncState",[device udid]]];
-	if ([[NSFileManager defaultManager] fileExistsAtPath:deviceSyncFile]) {
+	if ([self deviceSyncStateFileExistsLocally]) {
 		
 	}
 }
@@ -147,9 +150,8 @@
 	}
 	[finalizeSync release];
 	
-	NSString *deviceSyncFile = [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.syncState",[device udid]]];
-	if ([[NSFileManager defaultManager] fileExistsAtPath:deviceSyncFile]) {
-		[[NSFileManager defaultManager] removeItemAtPath:deviceSyncFile error:nil];
+	if ([self deviceSyncStateFileExistsLocally]) {
+		[[NSFileManager defaultManager] removeItemAtPath:[kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.syncState",[device udid]]] error:nil];
 	}
 }
 
@@ -320,7 +322,20 @@
 	if (deviceSyncError) {
 		okToSync = FALSE;
 		// check for device files and local files
-		[NSAlert previousSyncError];
+		if ([NSAlert previousSyncError] == NSAlertSecondButtonReturn) {
+			if ([self deviceSyncStateFileExistsLocally]) {
+				// if it is a sync that happened here
+				
+				// try to resume from last attempt
+				
+				// ask if they want to roll back then roll forward
+				
+			} else {
+				// if it is a sync that happened on another computer
+				
+				// ask if they want to rollback instead
+			}
+		}
 	}
 	if (okToSync) {
 		BOOL result = [self keychainChecks];
