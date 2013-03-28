@@ -13,6 +13,11 @@
 @implementation SMOPInterfaceController
 
 - (void)deviceConnectionEvent:(NSNotification *)notification {
+	if ([notification object] && isSyncing) {
+		if ([[notification object] isEqual:[deviceSync getSyncDevice]]) {
+			[NSAlert syncInterruptError];
+		}
+	}
 	[self updateDeviceList];
 }
 
@@ -119,14 +124,14 @@
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
 	if ([deviceList count] != [[deviceAccess getDevices] count]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:self userInfo:nil];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:nil userInfo:nil];
 	}
 	return [deviceList count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
 	if ([deviceList count] != [[deviceAccess getDevices] count]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:self userInfo:nil];	
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:nil userInfo:nil];	
 		return @"";
 	}
 	return [[deviceList objectAtIndex:rowIndex] objectForKey:[aTableColumn identifier]];

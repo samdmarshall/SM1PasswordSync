@@ -59,4 +59,13 @@
 	return [alert runModal];
 }
 
++ (NSInteger)syncInterruptError {
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	[alert addButtonWithTitle:@"OK"];
+	[alert setMessageText:@"Sync Interrupted"];
+	[alert setInformativeText:@"Syncing has been interrupted. Please reconnect the device and sync again."];
+	[alert setAlertStyle:NSCriticalAlertStyle];
+	return [alert runModal];
+}
+
 @end

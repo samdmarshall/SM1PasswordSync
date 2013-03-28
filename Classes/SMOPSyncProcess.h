@@ -21,6 +21,8 @@
 	BOOL deviceSyncError;
 }
 
+- (AMDevice *)getSyncDevice;
+
 - (void)setSyncDevice:(AMDevice *)syncDevice withSyncStatus:(BOOL)status;
 - (void)loadContentsData;
 - (void)synchronizePasswords;

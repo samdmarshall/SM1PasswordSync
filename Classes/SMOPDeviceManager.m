@@ -77,12 +77,12 @@
 
 - (void)deviceConnected:(AMDevice *)device {
 	// post notification to refresh
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:self userInfo:nil];	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:device userInfo:nil];	
 }
 
 - (void)deviceDisconnected:(AMDevice *)device {
 	// post notification to refresh and cancel any syncs to this device
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:self userInfo:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:device userInfo:nil];
 }
 
 @end

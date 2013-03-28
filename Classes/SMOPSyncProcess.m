@@ -26,6 +26,10 @@
 	return self;
 }
 
+- (AMDevice *)getSyncDevice {
+	return device;
+}
+
 - (void)setSyncDevice:(AMDevice *)syncDevice withSyncStatus:(BOOL)status {
 	device = [syncDevice retain];
 	deviceSyncError = status;

@@ -15,4 +15,5 @@
 + (NSInteger)cannotFindLocalKeychain;
 + (NSInteger)cannotFindKeychainOnDevice:(NSString *)name;
 + (NSInteger)previousSyncError;
++ (NSInteger)syncInterruptError;
 @end
