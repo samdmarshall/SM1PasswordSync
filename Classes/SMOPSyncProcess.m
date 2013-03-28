@@ -21,12 +21,14 @@
 		mergeKeychainPath = [kSMOPSyncPath retain];
 		deviceContents = [NSMutableSet new];
 		localContents = [NSMutableSet new];
+		deviceSyncError = FALSE;
 	}
 	return self;
 }
 
-- (void)setSyncDevice:(AMDevice *)syncDevice {
+- (void)setSyncDevice:(AMDevice *)syncDevice withSyncStatus:(BOOL)status {
 	device = [syncDevice retain];
+	deviceSyncError = status;
 }
 
 - (void)loadContentsData {
@@ -112,6 +114,45 @@
 	return result;
 }
 
+- (void)initiateSyncingProcess {
+	AFCApplicationDirectory *initiateSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+	if ([initiateSync ensureConnectionIsOpen]) {
+		afc_connection conn = [initiateSync getAFC];
+		afc_error_t initialError = AFCDirectoryCreate(conn, [@"/Documents/SMOP/" UTF8String]);		
+		[initiateSync close];
+	}
+	[initiateSync release];
+	
+	NSString *deviceSyncFile = [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.syncState",[device udid]]];
+	if ([[NSFileManager defaultManager] fileExistsAtPath:deviceSyncFile]) {
+		
+	}
+}
+
+- (void)updateSyncingProcessToFile:(NSString *)name {
+	// push update to device
+	
+	NSString *deviceSyncFile = [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.syncState",[device udid]]];
+	if ([[NSFileManager defaultManager] fileExistsAtPath:deviceSyncFile]) {
+		
+	}
+}
+
+- (void)finishSyncingProcess {
+	AFCApplicationDirectory *finalizeSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+	if ([finalizeSync ensureConnectionIsOpen]) {
+		afc_connection conn = [finalizeSync getAFC];
+		afc_error_t finalError = AFCRemovePath(conn, [@"/Documents/SMOP/" UTF8String]);
+		[finalizeSync close];
+	}
+	[finalizeSync release];
+	
+	NSString *deviceSyncFile = [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.syncState",[device udid]]];
+	if ([[NSFileManager defaultManager] fileExistsAtPath:deviceSyncFile]) {
+		[[NSFileManager defaultManager] removeItemAtPath:deviceSyncFile error:nil];
+	}
+}
+
 - (void)mergeLocalAndDeviceContents {
 	if ([deviceContents count] && [localContents count]) {
 		NSSet *deviceIds = [deviceContents valueForKey:@"uniqueId"];
@@ -148,13 +189,7 @@
 		
 		NSMutableSet *newContents = [NSMutableSet new];
 		
-		AFCApplicationDirectory *initiateSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
-		if ([initiateSync ensureConnectionIsOpen]) {
-			afc_connection conn = [initiateSync getAFC];
-			afc_error_t initialError = AFCDirectoryCreate(conn, [@"/Documents/SMOP/" UTF8String]);		
-			[initiateSync close];
-		}
-		[initiateSync release];
+		[self initiateSyncingProcess];
 
 		NSArray *copyToLocal = [addToLocal allObjects];
 		AFCApplicationDirectory *copyToLocalService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
@@ -265,13 +300,7 @@
 			[contentsToDevice release];
 		}
 		
-		AFCApplicationDirectory *finalizeSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
-		if ([finalizeSync ensureConnectionIsOpen]) {
-			afc_connection conn = [finalizeSync getAFC];
-			afc_error_t finalError = AFCRemovePath(conn, [@"/Documents/SMOP/" UTF8String]);
-			[finalizeSync close];
-		}
-		[finalizeSync release];
+		[self finishSyncingProcess];
 		
 		[newContents release];
 		[addToLocal release];
@@ -287,11 +316,19 @@
 
 - (void)synchronizePasswords {
 	[self cleanUpMergeData];
-	BOOL result = [self keychainChecks];
-	if (result) {
-		[self loadContentsData];
-		[self mergeLocalAndDeviceContents];
-		[self cleanUpMergeData];
+	BOOL okToSync = TRUE;
+	if (deviceSyncError) {
+		okToSync = FALSE;
+		// check for device files and local files
+		[NSAlert previousSyncError];
+	}
+	if (okToSync) {
+		BOOL result = [self keychainChecks];
+		if (result) {
+			[self loadContentsData];
+			[self mergeLocalAndDeviceContents];
+			[self cleanUpMergeData];
+		}	
 	}
 }
 

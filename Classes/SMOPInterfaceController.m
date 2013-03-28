@@ -61,6 +61,8 @@
 - (void)refreshListWithData:(NSArray *)devices {
 	if (!isUpdating) {
 		isUpdating = TRUE;
+		[syncButton setEnabled:NO];
+		[refreshButton setEnabled:NO];
 		NSArray *results = [deviceAccess devicesWithOnePassword4:devices];
 		if (results.count) {
 			[deviceList setArray:results];
@@ -68,6 +70,8 @@
 			[deviceList removeAllObjects];
 		}
 		[deviceTable reloadData];
+		[syncButton setEnabled:YES];
+		[refreshButton setEnabled:YES];
 		isUpdating = FALSE;
 	}
 }
@@ -76,7 +80,7 @@
 	if (deviceSync)
 		[deviceSync release];
 	deviceSync = [[SMOPSyncProcess alloc] init];
-	[deviceSync setSyncDevice:device];
+	[deviceSync setSyncDevice:device withSyncStatus:[[[deviceList objectAtIndex:[deviceTable selectedRow]] valueForKey:@"SyncError"] boolValue]];
 	[deviceSync synchronizePasswords];
 }
 
@@ -115,11 +119,9 @@
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
 	if ([deviceList count] != [[deviceAccess getDevices] count]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:self userInfo:nil];	
-		return [[deviceAccess getDevices] count];
-	} else {
-		return [deviceList count];
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:self userInfo:nil];
 	}
+	return [deviceList count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {

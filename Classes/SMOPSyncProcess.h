@@ -17,10 +17,16 @@
 	
 	NSMutableSet *localContents;
 	NSMutableSet *deviceContents;
+	
+	BOOL deviceSyncError;
 }
 
-- (void)setSyncDevice:(AMDevice *)syncDevice;
+- (void)setSyncDevice:(AMDevice *)syncDevice withSyncStatus:(BOOL)status;
 - (void)loadContentsData;
 - (void)synchronizePasswords;
+
+- (void)initiateSyncingProcess;
+- (void)updateSyncingProcessToFile:(NSString *)name;
+- (void)finishSyncingProcess;
 
 @end

@@ -14,4 +14,5 @@
 + (NSInteger)emptyKeychainAlertAtPath:(NSString *)path;
 + (NSInteger)cannotFindLocalKeychain;
 + (NSInteger)cannotFindKeychainOnDevice:(NSString *)name;
++ (NSInteger)previousSyncError;
 @end

@@ -12,6 +12,7 @@
 		2203C0C116FA1DE600D961E1 /* jsmn.h in Headers */ = {isa = PBXBuildFile; fileRef = 2203C05216FA1B9900D961E1 /* jsmn.h */; };
 		2203C0C416FA1DF400D961E1 /* libjsmn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2203C0BD16FA1DD600D961E1 /* libjsmn.a */; };
 		2203C0F116FA23F100D961E1 /* JSMNParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2203C0F016FA23F100D961E1 /* JSMNParser.m */; };
+		221C23001704DA0C003A44B8 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 221C22FF1704DA0C003A44B8 /* Credits.rtf */; };
 		22412A1C16F7B268000DE1D7 /* MobileDevice.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22412A1B16F7B268000DE1D7 /* MobileDevice.framework */; };
 		22412A2C16F7B2C1000DE1D7 /* MobileDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 22412A2916F7B2C1000DE1D7 /* MobileDevice.h */; };
 		22412A3216F7B2D7000DE1D7 /* libMobileDeviceAccess.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 22412A2616F7B28F000DE1D7 /* libMobileDeviceAccess.a */; };
@@ -54,6 +55,7 @@
 		2203C0BD16FA1DD600D961E1 /* libjsmn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjsmn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2203C0EF16FA23F100D961E1 /* JSMNParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSMNParser.h; sourceTree = "<group>"; };
 		2203C0F016FA23F100D961E1 /* JSMNParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSMNParser.m; sourceTree = "<group>"; };
+		221C22FF1704DA0C003A44B8 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		22412A1B16F7B268000DE1D7 /* MobileDevice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileDevice.framework; path = /System/Library/PrivateFrameworks/MobileDevice.framework; sourceTree = "<absolute>"; };
 		22412A2616F7B28F000DE1D7 /* libMobileDeviceAccess.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libMobileDeviceAccess.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		22412A2916F7B2C1000DE1D7 /* MobileDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MobileDevice.h; sourceTree = "<group>"; };
@@ -214,6 +216,7 @@
 				8D1107310486CEB800E47090 /* SM1Password_Sync-Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
+				221C22FF1704DA0C003A44B8 /* Credits.rtf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 			files = (
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
+				221C23001704DA0C003A44B8 /* Credits.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

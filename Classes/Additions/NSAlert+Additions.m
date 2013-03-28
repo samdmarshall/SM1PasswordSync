@@ -49,4 +49,14 @@
 	return [alert runModal];
 }
 
++ (NSInteger)previousSyncError {
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	[alert addButtonWithTitle:@"Cancel"];
+	[alert addButtonWithTitle:@"Repair"];
+	[alert setMessageText:@"Previous Sync Error"];
+	[alert setInformativeText:@"A previous sync could not be completed. Do you want to attempt a repair?"];
+	[alert setAlertStyle:NSCriticalAlertStyle];
+	return [alert runModal];
+}
+
 @end
