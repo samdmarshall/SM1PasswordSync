@@ -195,6 +195,8 @@
 							copyResult = [copyToDevice copyLocalFile:GetLocalOnePasswordItemWithName(obj) toRemoteFile:GetDeviceOnePasswordItemWithName(obj)];
 						} else {
 							// throw error
+							[NSAlert connectionErrorWithDevice:[device deviceName]];
+							*stop = YES;
 						}
 						[copyToDevice close];
 					}
@@ -248,6 +250,7 @@
 					copyResult = [contentsToDevice copyLocalFile:[OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:kOnePasswordInternalContentsPath]];
 				} else {
 					// throw error
+					[NSAlert connectionErrorWithDevice:[device deviceName]];
 				}
 				afc_error_t updateError = AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"SMOPUpdate"] UTF8String]);		
 				if (updateError == 0) {

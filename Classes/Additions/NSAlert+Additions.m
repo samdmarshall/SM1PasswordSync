@@ -11,6 +11,15 @@
 
 @implementation NSAlert(Additions)
 
++ (NSInteger)connectionErrorWithDevice:(NSString *)name {
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	[alert addButtonWithTitle:@"OK"];
+	[alert setMessageText:@"Connection Error"];
+	[alert setInformativeText:[NSString stringWithFormat:@"Cannot connect with \"%@\", halting sync.",name]];
+	[alert setAlertStyle:NSCriticalAlertStyle];
+	return [alert runModal];
+}
+
 + (NSInteger)emptyKeychainAlertAtPath:(NSString *)path {
 	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
 	[alert addButtonWithTitle:@"Cancel"];
@@ -36,7 +45,7 @@
 	[alert addButtonWithTitle:@"Cancel"];
 	[alert setMessageText:@"Keychain Missing"];
 	[alert setInformativeText:[NSString stringWithFormat:@"Could not locate a 1Password keychain on \"%@\". Do you want to copy the local keychain to this device?",name]];
-	[alert setAlertStyle:NSWarningAlertStyle];
+	[alert setAlertStyle:NSInformationalAlertStyle];
 	return [alert runModal];
 }
 
