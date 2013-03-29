@@ -19,6 +19,7 @@
 			[NSAlert syncInterruptError];
 		}
 	}
+	NSLog(@"%@",[notification object]);
 	[self updateDeviceList];
 }
 
@@ -35,11 +36,11 @@
 	
 	deviceAccess = [[SMOPDeviceManager alloc] init];
 	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceConnectionEvent:) name:@"kDeviceConnectionEventPosted" object:nil];
-	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceConnectionEvent:) name:kDeviceConnectionEventPosted object:nil];
 	
 	if ([deviceAccess watchForConnection]) {
-		[self refreshListWithData:[deviceAccess getDevices]];
+		NSLog(@"+++ %@",[deviceAccess getDevices]);
+		[self updateDeviceList];
 	}
 }
 
@@ -51,7 +52,7 @@
 		}
 		isUpdating = FALSE;
 		isSyncing = FALSE;
-		[self refreshListWithData:[deviceAccess getDevices]];
+		[self updateDeviceList];
 	}
 	return self;
 }
@@ -75,7 +76,8 @@
 		} else {
 			[deviceList removeAllObjects];
 		}
-		[deviceTable reloadData];
+		NSLog(@"-- %@",deviceList);
+		[deviceTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:TRUE];
 		[syncButton setEnabled:YES];
 		[refreshButton setEnabled:YES];
 		isUpdating = FALSE;
@@ -124,15 +126,15 @@
 #pragma mark -
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
+	NSLog(@"where is this calling from?");
 	if ([deviceList count] != [[deviceAccess getDevices] count]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:nil userInfo:nil];
+		return 0;
 	}
 	return [deviceList count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
 	if ([deviceList count] != [[deviceAccess getDevices] count]) {
-		[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:nil userInfo:nil];	
 		return @"";
 	}
 	return [[deviceList objectAtIndex:rowIndex] objectForKey:[aTableColumn identifier]];
