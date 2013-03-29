@@ -10,10 +10,11 @@
 #import "SMOPDeviceManager.h"
 #import "SMOPSyncProcess.h"
 
-@interface SMOPInterfaceController : NSObject <NSTableViewDataSource, NSTableViewDelegate> {
+@interface SMOPInterfaceController : NSObject <NSTableViewDataSource, NSTableViewDelegate, SMOPSyncProcessDelegate> {
 	IBOutlet NSTableView *deviceTable;
 	IBOutlet NSButton *syncButton;
 	IBOutlet NSButton *refreshButton;
+	IBOutlet NSProgressIndicator *syncProgress;
 	
 	NSMutableArray *deviceList;
 	
@@ -37,6 +38,10 @@
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView;
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex;
+
+#pragma mark -
+#pragma mark SMOPSyncProgressDelegate
+-(void)syncItemNumber:(NSUInteger)item ofTotal:(NSUInteger)count;
 
 
 @end

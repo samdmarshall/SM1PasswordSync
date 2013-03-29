@@ -19,8 +19,9 @@
 
 #define kDeviceConnectionEventPosted @"SMOPNotificationPostDeviceConnectedEvent"
 
-
 #define kCopyToLocal @"ItemFromDevice"
 #define kCopyToDevice @"ItemFromLocal"
 #define kMerge @"ItemMerge"
 #define kContents @"UpdatedContents"
+
+#define kSMOPDeviceBackupPath @"/Documents/SMOP/1Password.agilekeychain"

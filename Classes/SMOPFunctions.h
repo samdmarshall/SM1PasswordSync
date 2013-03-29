@@ -10,25 +10,25 @@
 #import "SMOPDefines.h"
 #import "MobileDeviceAccess.h"
 
-inline NSData* SHA1HashOfFileAtPath(NSString *path) {
+static inline NSData* SHA1HashOfFileAtPath(NSString *path) {
 	unsigned char hashBytes[CC_SHA1_DIGEST_LENGTH];
 	NSData *fileData = [NSData dataWithContentsOfFile:path];
     CC_SHA1([fileData bytes], [fileData length], hashBytes);
     return [NSData dataWithBytes:hashBytes length:CC_SHA1_DIGEST_LENGTH];
 }
 
-inline NSString* OnePasswordKeychainPath() {
+static inline NSString* OnePasswordKeychainPath() {
 	NSDictionary *preferenceFile = [NSDictionary dictionaryWithContentsOfFile:kOnePasswordPreferencesPath];
 	return [[preferenceFile objectForKey:@"AgileKeychainLocation"] stringByExpandingTildeInPath];
 }
 
-inline NSInteger GetLocalContentsItemCount() {
+static inline NSInteger GetLocalContentsItemCount() {
 	NSString *localPath = [[(NSString *)OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] stringByDeletingLastPathComponent];
 	NSInteger contentsDirectoryCount = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:localPath error:nil] count];
 	return ((contentsDirectoryCount-5)*9)+1;
 }
 
-inline NSInteger GetRemoteContentsItemCount(AMDevice *device) {
+static inline NSInteger GetRemoteContentsItemCount(AMDevice *device) {
 	NSInteger count = 1;
 	AFCApplicationDirectory *contentsCount = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 	if ([contentsCount ensureConnectionIsOpen]) {
@@ -38,18 +38,18 @@ inline NSInteger GetRemoteContentsItemCount(AMDevice *device) {
 	return count;
 }
 
-inline NSString* GetLocalOnePasswordItemWithName(NSString *name) {
+static inline NSString* GetLocalOnePasswordItemWithName(NSString *name) {
 	return [OnePasswordKeychainPath() stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",name]];
 }
 
-inline NSString* GetMergeOnePasswordItemWithName(NSString *name) {
+static inline NSString* GetMergeOnePasswordItemWithName(NSString *name) {
 	return [kSMOPApplicationSupportPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",name]];
 }
 
-inline NSString* GetDeviceOnePasswordItemWithName(NSString *name) {
+static inline NSString* GetDeviceOnePasswordItemWithName(NSString *name) {
 	return [kOnePasswordRemotePath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",name]];
 }
 
-inline NSString* GetSyncStateFileForDevice(NSString *udid) {
+static inline NSString* GetSyncStateFileForDevice(NSString *udid) {
 	return [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist",udid]];
 }

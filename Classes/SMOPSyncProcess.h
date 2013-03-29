@@ -9,6 +9,10 @@
 #import <Cocoa/Cocoa.h>
 #import "SMOPFunctions.h"
 
+@protocol SMOPSyncProcessDelegate <NSObject>
+-(void)syncItemNumber:(NSUInteger)item ofTotal:(NSUInteger)count;
+@end
+
 @interface SMOPSyncProcess : NSObject {
 	NSString *localKeychainPath;
 	NSString *mergeKeychainPath;
@@ -19,7 +23,10 @@
 	NSMutableSet *deviceContents;
 	
 	BOOL deviceSyncError;
+	
+	id<SMOPSyncProcessDelegate> delegate;
 }
+@property (nonatomic, retain) id<SMOPSyncProcessDelegate> delegate;
 
 - (AMDevice *)getSyncDevice;
 

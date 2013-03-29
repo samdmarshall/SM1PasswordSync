@@ -25,6 +25,7 @@
 	hadError = FALSE;
 	isUpdating = FALSE;
 	isSyncing = FALSE;
+	[syncProgress setHidden:YES];
 	if (!deviceList) {
 		deviceList = [NSMutableArray new];
 	}
@@ -49,6 +50,9 @@
 		}
 		isUpdating = FALSE;
 		isSyncing = FALSE;
+		[syncProgress setIndeterminate:NO];
+		[syncProgress setDoubleValue:0.0];
+		[syncProgress setUsesThreadedAnimation:YES];
 		[self updateDeviceList];
 	}
 	return self;
@@ -84,6 +88,7 @@
 	if (deviceSync)
 		[deviceSync release];
 	deviceSync = [[SMOPSyncProcess alloc] init];
+	deviceSync.delegate = self;
 	[deviceSync setSyncDevice:device withSyncStatus:[[[deviceList objectAtIndex:[deviceTable selectedRow]] valueForKey:@"SyncError"] boolValue]];
 	[deviceSync synchronizePasswords];
 }
@@ -94,11 +99,13 @@
 		AMDevice *device = [self selectedDevice];
 		[syncButton setEnabled:NO];
 		[refreshButton setEnabled:NO];
+		[syncProgress setHidden:NO];
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 			[self performSyncForDevice:device];
 			[self refreshListWithData:deviceAccess.managerDevices];
 			[syncButton setEnabled:YES];
 			[refreshButton setEnabled:YES];
+			[syncProgress setHidden:YES];
 			isSyncing = FALSE;
 		});
 	}
@@ -126,5 +133,12 @@
 	return [[deviceList objectAtIndex:rowIndex] objectForKey:[aTableColumn identifier]];
 }
 
+#pragma mark -
+#pragma mark SMOPSyncProgressDelegate
+-(void)syncItemNumber:(NSUInteger)item ofTotal:(NSUInteger)count {
+	double newValue = ((double)item/(double)count)*100.0;
+	[syncProgress setDoubleValue:newValue];
+	[syncProgress displayIfNeeded];
+}
 
 @end

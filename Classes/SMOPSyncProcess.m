@@ -13,6 +13,8 @@
 
 @implementation SMOPSyncProcess
 
+@synthesize delegate;
+
 - (id)init {
 	self = [super init];
 	if (self) {
@@ -56,11 +58,14 @@
 
 - (void)pushKeychain {
 	BOOL pushAttempt = FALSE;
+	NSUInteger syncItem = 0;
 	AFCApplicationDirectory *pushToDevice = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 	if ([pushToDevice ensureConnectionIsOpen]) {
+		[self initiateSyncingProcess];
 		afc_connection conn = [pushToDevice getAFC];
 		AFCDirectoryCreate(conn, [kOnePasswordRemotePath UTF8String]);
 		NSArray *keychainContents = [[NSFileManager defaultManager] subpathsAtPath:localKeychainPath];
+		NSUInteger syncItemsCount = [keychainContents count];
 		for (NSString *path in keychainContents) {
 			BOOL isDir;
 			if ([[NSFileManager defaultManager] fileExistsAtPath:[localKeychainPath stringByAppendingPathComponent:path] isDirectory:&isDir]) {
@@ -68,9 +73,26 @@
 					AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:path] UTF8String]);
 				} else {
 					pushAttempt = [pushToDevice copyLocalFile:[localKeychainPath stringByAppendingPathComponent:path] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:path]];
+					if (pushAttempt) {
+						syncItem++;
+						NSString *fileName = [path lastPathComponent];
+						if ([fileName isEqualToString:@"contents.js"]) {
+							[self updateSyncingProcessToFile:fileName forSyncState:kContents];
+						} else if ([fileName isEqualToString:@"1password.keys"]) {
+							[self updateSyncingProcessToFile:fileName forSyncState:kCopyToDevice];
+						} else if ([fileName isEqualToString:@"encryptionKeys.js"]) {
+							[self updateSyncingProcessToFile:fileName forSyncState:kCopyToDevice];
+						} else if ([[fileName pathExtension] isEqualToString:@"1password"]) {
+							[self updateSyncingProcessToFile:[fileName stringByDeletingPathExtension] forSyncState:kCopyToDevice];
+						} else {
+							[self updateSyncingProcessToFile:fileName forSyncState:kCopyToDevice];
+						}
+						[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
+					}
 				}
 			}
 		}
+		[self finishSyncingProcess];
 		[pushToDevice close];
 	}
 	[pushToDevice release];
@@ -127,7 +149,7 @@
 		// this is a partial sync
 	} else {
 		// new sync
-		NSMutableDictionary *syncState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], kContents, [NSMutableArray new], kCopyToDevice, [NSMutableArray new], kCopyToLocal, [NSMutableArray new], kMerge, nil];
+		NSMutableDictionary *syncState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], kContents, [NSArray array], kCopyToDevice, [NSArray array], kCopyToLocal, [NSArray array], kMerge, nil];
 		
 		[syncState writeToFile:GetSyncStateFileForDevice([device udid]) atomically:YES];
 		AFCApplicationDirectory *initiateSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
@@ -170,7 +192,6 @@
 		[progressiveSync close];
 	}
 	[progressiveSync release];
-	
 }
 
 - (void)finishSyncingProcess {
@@ -227,23 +248,26 @@
 		NSMutableSet *newContents = [NSMutableSet new];
 		
 		[self initiateSyncingProcess];
-
+		__block NSUInteger syncItem = 0;
+		__block NSUInteger syncItemsCount = [addToLocal count] + [addToDevice count] + [matches count] + 1;
 		NSArray *copyToLocal = [addToLocal allObjects];
 		AFCApplicationDirectory *copyToLocalService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 		if ([copyToLocalService ensureConnectionIsOpen]) {
 			for (NSString *item in copyToLocal) {
-				[self updateSyncingProcessToFile:item forSyncState:kCopyToLocal];
 				copyResult = [copyToLocalService copyRemoteFile:GetDeviceOnePasswordItemWithName(item) toLocalFile:GetLocalOnePasswordItemWithName(item)];
 				if (copyResult) {
+					[self updateSyncingProcessToFile:item forSyncState:kCopyToLocal];
+					syncItem++;
 					NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",item];
 					SMOPContentsItem *deviceItem = [[deviceContents filteredSetUsingPredicate:filterPredicate] anyObject];
 					[newContents addObject:deviceItem];
+					[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
 				}
 			}
 			[copyToLocalService close];
 		}
 		[copyToLocalService release];
-
+		
 		NSArray *copyToDevice = [addToDevice allObjects];
 		AFCApplicationDirectory *copyToDeviceService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 		if ([copyToDeviceService ensureConnectionIsOpen]) {
@@ -254,6 +278,7 @@
 					NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",item];
 					SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
 					[newContents addObject:localItem];
+					[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
 				}
 			}
 			[copyToDeviceService close];
@@ -274,8 +299,10 @@
 						afc_connection conn = [copyToDevice getAFC];
 						afc_error_t _err = AFCRemovePath(conn, [GetDeviceOnePasswordItemWithName(obj) UTF8String]);
 						if (_err == 0) {
-							[self updateSyncingProcessToFile:obj forSyncState:kMerge];
 							copyResult = [copyToDevice copyLocalFile:GetLocalOnePasswordItemWithName(obj) toRemoteFile:GetDeviceOnePasswordItemWithName(obj)];
+							if (copyResult) {
+								syncItem++;
+							}
 						} else {
 							// throw error
 							[NSAlert connectionErrorWithDevice:[device deviceName]];
@@ -285,8 +312,11 @@
 					}
 					[copyToDevice release];
 					
-					if (copyResult)
+					if (copyResult) {
+						[self updateSyncingProcessToFile:obj forSyncState:kMerge];
+						[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
 						[newContents addObject:localItem];
+					}
 					
 					break;
 				};
@@ -295,6 +325,9 @@
 					AFCApplicationDirectory *copyToMergeService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 					if ([copyToMergeService ensureConnectionIsOpen]) {
 						copyResult = [copyToMergeService copyRemoteFile:GetDeviceOnePasswordItemWithName(obj) toLocalFile:GetMergeOnePasswordItemWithName(obj)];
+						if (copyResult) {
+							syncItem++;
+						}
 						[copyToMergeService close];
 					}
 					[copyToMergeService release];
@@ -304,12 +337,17 @@
 						copyResult = [[NSFileManager defaultManager] removeItemAtPath:GetLocalOnePasswordItemWithName(obj) error:nil];
 						if (copyResult)
 							copyResult = [[NSFileManager defaultManager] moveItemAtPath:GetMergeOnePasswordItemWithName(obj) toPath:GetLocalOnePasswordItemWithName(obj) error:nil];
-						if (copyResult)
+						if (copyResult) {
+							[self updateSyncingProcessToFile:obj forSyncState:kMerge];
+							[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
 							[newContents addObject:deviceItem];
+						}
 					}
 					break;
 				};
 				case NSOrderedSame: {
+					syncItem++;
+					[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
 					[newContents addObject:localItem];
 					break;
 				};
@@ -318,6 +356,7 @@
 				};
 			}	
 		}];
+		syncItem+=[matches count];
 		
 		// write updated contents.js
 		NSString *contentsJS = [JSMNParser serializeJSON:[newContents allObjects]];
@@ -333,6 +372,8 @@
 					copyResult = [contentsToDevice copyLocalFile:[OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:kOnePasswordInternalContentsPath]];
 					if (copyResult) {
 						[self updateSyncingProcessToFile:@"contents.js" forSyncState:kContents];
+						syncItem++;
+						[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
 					}
 				} else {
 					// throw error
