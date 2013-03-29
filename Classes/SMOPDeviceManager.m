@@ -63,8 +63,6 @@
 				[fileService close];
 				NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%@%@",syncStatus,[device deviceName]], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", [NSNumber numberWithBool:syncError], @"SyncError", nil];
 				[deviceList addObject:deviceDict];
-			} else {
-				[[NSNotificationCenter defaultCenter] postNotificationName:@"kAFCFailedToConnectError" object:self userInfo:nil];
 			}
 			[fileService release];
 		}
@@ -77,12 +75,12 @@
 
 - (void)deviceConnected:(AMDevice *)device {
 	// post notification to refresh
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:device userInfo:nil];	
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:[manager devices] userInfo:nil];	
 }
 
 - (void)deviceDisconnected:(AMDevice *)device {
 	// post notification to refresh and cancel any syncs to this device
-	[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:device userInfo:nil];
+	[[NSNotificationCenter defaultCenter] postNotificationName:@"kDeviceConnectionEventPosted" object:[manager devices] userInfo:nil];
 }
 
 @end
