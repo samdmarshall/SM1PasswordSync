@@ -127,7 +127,7 @@
 	AFCApplicationDirectory *initiateSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 	if ([initiateSync ensureConnectionIsOpen]) {
 		afc_connection conn = [initiateSync getAFC];
-		afc_error_t initialError = AFCDirectoryCreate(conn, [@"/Documents/SMOP/" UTF8String]);		
+		AFCDirectoryCreate(conn, [@"/Documents/SMOP/" UTF8String]);		
 		[initiateSync close];
 	}
 	[initiateSync release];
@@ -149,9 +149,9 @@
 	AFCApplicationDirectory *finalizeSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 	if ([finalizeSync ensureConnectionIsOpen]) {
 		afc_connection conn = [finalizeSync getAFC];
-		afc_error_t finalError = AFCRemovePath(conn, [@"/Documents/SMOP/" UTF8String]);
-		finalError = AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/SMOPUpdate/"] UTF8String]);		
-		finalError = AFCRemovePath(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/SMOPUpdate/"] UTF8String]);
+		AFCRemovePath(conn, [@"/Documents/SMOP/" UTF8String]);
+		AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/SMOPUpdate/"] UTF8String]);		
+		AFCRemovePath(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/SMOPUpdate/"] UTF8String]);
 		[finalizeSync close];
 	}
 	[finalizeSync release];

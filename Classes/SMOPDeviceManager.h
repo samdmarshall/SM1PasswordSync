@@ -12,8 +12,8 @@
 @interface SMOPDeviceManager : NSObject <MobileDeviceAccessListener> {
 	MobileDeviceAccess *manager;
 }
+@property (nonatomic, readonly) NSArray *managerDevices;
 
-- (NSArray *)getDevices;
 - (BOOL)watchForConnection;
 - (NSArray *)devicesWithOnePassword4:(NSArray *)devices;
 

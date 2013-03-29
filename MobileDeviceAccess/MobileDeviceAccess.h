@@ -1571,7 +1571,7 @@ com.apple.mobile.application_uninstalled
 
 /// Returns an array of AMDevice objects representing the currently
 /// connected devices.
-@property (readonly) NSArray *devices;
+@property (nonatomic, readonly) NSArray *devices;
 
 /// Returns the one true instance of \c MobileDeviceAccess
 + (MobileDeviceAccess*)singleton;

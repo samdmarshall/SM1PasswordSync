@@ -19,7 +19,6 @@
 			[NSAlert syncInterruptError];
 		}
 	}
-	NSLog(@"%@",[notification object]);
 	[self updateDeviceList];
 }
 
@@ -39,7 +38,6 @@
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceConnectionEvent:) name:kDeviceConnectionEventPosted object:nil];
 	
 	if ([deviceAccess watchForConnection]) {
-		NSLog(@"+++ %@",[deviceAccess getDevices]);
 		[self updateDeviceList];
 	}
 }
@@ -76,8 +74,7 @@
 		} else {
 			[deviceList removeAllObjects];
 		}
-		NSLog(@"-- %@",deviceList);
-		[deviceTable performSelectorOnMainThread:@selector(reloadData) withObject:nil waitUntilDone:TRUE];
+		[deviceTable reloadData];
 		[syncButton setEnabled:YES];
 		[refreshButton setEnabled:YES];
 		isUpdating = FALSE;
@@ -100,7 +97,7 @@
 		[refreshButton setEnabled:NO];
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 			[self performSyncForDevice:device];
-			[self refreshListWithData:[deviceAccess getDevices]];
+			[self refreshListWithData:deviceAccess.managerDevices];
 			[syncButton setEnabled:YES];
 			[refreshButton setEnabled:YES];
 			isSyncing = FALSE;
@@ -109,10 +106,7 @@
 }
 
 - (void)updateDeviceList {
-	if (!isUpdating)
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-			[self refreshListWithData:[deviceAccess getDevices]];
-		});
+	[self refreshListWithData:deviceAccess.managerDevices];
 }
 
 - (IBAction)refreshList:(id)sender {
@@ -120,23 +114,22 @@
 }
 
 - (AMDevice *)selectedDevice {
-	return [[deviceAccess getDevices] objectAtIndex:[deviceTable selectedRow]];
+	return [deviceAccess.managerDevices objectAtIndex:[deviceTable selectedRow]];
 }
 
 #pragma mark -
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-	NSLog(@"where is this calling from?");
-	if ([deviceList count] != [[deviceAccess getDevices] count]) {
-		return 0;
-	}
+	//if ([deviceList count] != [deviceAccess.managerDevices count]) {
+	//	return 0;
+	//}
 	return [deviceList count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
-	if ([deviceList count] != [[deviceAccess getDevices] count]) {
-		return @"";
-	}
+	//if ([deviceList count] != [deviceAccess.managerDevices count]) {
+	//	return @"";
+	//}
 	return [[deviceList objectAtIndex:rowIndex] objectForKey:[aTableColumn identifier]];
 }
 
