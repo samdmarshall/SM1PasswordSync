@@ -18,3 +18,9 @@
 #define kSMOPSyncStatePath [@"~/Library/Application Support/SM1PasswordSync/status/" stringByExpandingTildeInPath]
 
 #define kDeviceConnectionEventPosted @"SMOPNotificationPostDeviceConnectedEvent"
+
+
+#define kCopyToLocal @"ItemFromDevice"
+#define kCopyToDevice @"ItemFromLocal"
+#define kMerge @"ItemMerge"
+#define kContents @"UpdatedContents"

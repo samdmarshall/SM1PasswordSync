@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "MobileDeviceAccess.h"
+#import "SMOPFunctions.h"
 
 @interface SMOPSyncProcess : NSObject {
 	NSString *localKeychainPath;
@@ -30,7 +30,7 @@
 - (BOOL)deviceSyncStateFileExistsLocally;
 
 - (void)initiateSyncingProcess;
-- (void)updateSyncingProcessToFile:(NSString *)name;
+- (void)updateSyncingProcessToFile:(NSString *)name forSyncState:(NSString *)state;
 - (void)finishSyncingProcess;
 
 @end

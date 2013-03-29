@@ -7,7 +7,6 @@
 //
 
 #import "SMOPDeviceManager.h"
-#import "SMOPDefines.h"
 
 @implementation SMOPDeviceManager
 
@@ -60,7 +59,7 @@
 					lastSyncDate = [dateFormatter stringFromDate:[fileInfo objectForKey:@"st_mtime"]];
 					[dateFormatter release];
 				}
-				BOOL syncError = [fileService fileExistsAtPath:@"/Documents/SMOP"];
+				BOOL syncError = ([fileService fileExistsAtPath:@"/Documents/SMOP/SyncState.plist"] ? TRUE : ([[NSFileManager defaultManager] fileExistsAtPath:GetSyncStateFileForDevice([device udid])]? TRUE : FALSE));
 				NSString *syncStatus = (syncError ? @"*!* " : @"");
 				[fileService close];
 				NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%@%@",syncStatus,[device deviceName]], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", [NSNumber numberWithBool:syncError], @"SyncError", nil];

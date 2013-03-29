@@ -7,7 +7,6 @@
 //
 
 #import "SMOPSyncProcess.h"
-#import "SMOPFunctions.h"
 #import "NSAlert+Additions.h"
 #import "SMOPContentsItem.h"
 #import "JSMNParser.h"
@@ -119,36 +118,66 @@
 }
 
 - (BOOL)deviceSyncStateFileExistsLocally {
-	NSString *deviceSyncFile = [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.syncState",[device udid]]];
+	NSString *deviceSyncFile = GetSyncStateFileForDevice([device udid]);
 	return [[NSFileManager defaultManager] fileExistsAtPath:deviceSyncFile];
 }
 
 - (void)initiateSyncingProcess {
-	AFCApplicationDirectory *initiateSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
-	if ([initiateSync ensureConnectionIsOpen]) {
-		afc_connection conn = [initiateSync getAFC];
-		AFCDirectoryCreate(conn, [@"/Documents/SMOP/" UTF8String]);		
-		[initiateSync close];
-	}
-	[initiateSync release];
-	
 	if ([self deviceSyncStateFileExistsLocally]) {
+		// this is a partial sync
+	} else {
+		// new sync
+		NSMutableDictionary *syncState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], kContents, [NSMutableArray new], kCopyToDevice, [NSMutableArray new], kCopyToLocal, [NSMutableArray new], kMerge, nil];
 		
+		[syncState writeToFile:GetSyncStateFileForDevice([device udid]) atomically:YES];
+		AFCApplicationDirectory *initiateSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+		if ([initiateSync ensureConnectionIsOpen]) {
+			afc_connection conn = [initiateSync getAFC];
+			AFCDirectoryCreate(conn, [@"/Documents/SMOP/" UTF8String]);
+			[initiateSync copyLocalFile:GetSyncStateFileForDevice([device udid]) toRemoteFile:@"/Documents/SMOP/SyncState.plist"];
+			[initiateSync close];
+		}
+		[initiateSync release];
 	}
 }
 
-- (void)updateSyncingProcessToFile:(NSString *)name {
-	// push update to device
-	
+- (void)updateSyncingProcessToFile:(NSString *)name forSyncState:(NSString *)state {	
 	if ([self deviceSyncStateFileExistsLocally]) {
-		
+		NSMutableDictionary *syncState = [NSDictionary dictionaryWithContentsOfFile:GetSyncStateFileForDevice([device udid])];
+		if ([state isEqualToString:kContents]) {
+			NSNumber *update = [syncState objectForKey:state];
+			if (![update boolValue])
+				[syncState setObject:[NSNumber numberWithBool:YES] forKey:state];
+		} else {
+			NSMutableArray *stage = [NSMutableArray arrayWithArray:[syncState objectForKey:state]];
+			[stage addObject:name];
+			[syncState setObject:stage forKey:state];
+		}
+		[syncState writeToFile:GetSyncStateFileForDevice([device udid]) atomically:YES];
 	}
+	
+	// push update to device
+	AFCApplicationDirectory *progressiveSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+	if ([progressiveSync ensureConnectionIsOpen]) {
+		afc_connection conn = [progressiveSync getAFC];
+		AFCRenamePath(conn, [@"/Documents/SMOP/SyncState.plist" UTF8String], [@"/Documents/SMOP/SyncState.LastState.plist" UTF8String]);
+		BOOL copyResult = [progressiveSync copyLocalFile:GetSyncStateFileForDevice([device udid]) toRemoteFile:@"/Documents/SMOP/SyncState.plist"];
+		if (copyResult) {
+			AFCRemovePath(conn, [@"/Documents/SMOP/SyncState.LastState.plist" UTF8String]);
+		} else {
+			AFCRenamePath(conn, [@"/Documents/SMOP/SyncState.LastState.plist" UTF8String], [@"/Documents/SMOP/SyncState.plist" UTF8String]);
+		}
+		[progressiveSync close];
+	}
+	[progressiveSync release];
+	
 }
 
 - (void)finishSyncingProcess {
 	AFCApplicationDirectory *finalizeSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 	if ([finalizeSync ensureConnectionIsOpen]) {
 		afc_connection conn = [finalizeSync getAFC];
+		AFCRemovePath(conn, [@"/Documents/SMOP/SyncState.plist" UTF8String]);
 		AFCRemovePath(conn, [@"/Documents/SMOP/" UTF8String]);
 		AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/SMOPUpdate/"] UTF8String]);		
 		AFCRemovePath(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/SMOPUpdate/"] UTF8String]);
@@ -157,7 +186,7 @@
 	[finalizeSync release];
 	
 	if ([self deviceSyncStateFileExistsLocally]) {
-		[[NSFileManager defaultManager] removeItemAtPath:[kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.syncState",[device udid]]] error:nil];
+		[[NSFileManager defaultManager] removeItemAtPath:GetSyncStateFileForDevice([device udid]) error:nil];
 	}
 }
 
@@ -203,6 +232,7 @@
 		AFCApplicationDirectory *copyToLocalService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 		if ([copyToLocalService ensureConnectionIsOpen]) {
 			for (NSString *item in copyToLocal) {
+				[self updateSyncingProcessToFile:item forSyncState:kCopyToLocal];
 				copyResult = [copyToLocalService copyRemoteFile:GetDeviceOnePasswordItemWithName(item) toLocalFile:GetLocalOnePasswordItemWithName(item)];
 				if (copyResult) {
 					NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",item];
@@ -220,6 +250,7 @@
 			for (NSString *item in copyToDevice) {
 				copyResult = [copyToDeviceService copyLocalFile:GetLocalOnePasswordItemWithName(item) toRemoteFile:GetDeviceOnePasswordItemWithName(item)];
 				if (copyResult) {
+					[self updateSyncingProcessToFile:item forSyncState:kCopyToDevice];
 					NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",item];
 					SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
 					[newContents addObject:localItem];
@@ -243,6 +274,7 @@
 						afc_connection conn = [copyToDevice getAFC];
 						afc_error_t _err = AFCRemovePath(conn, [GetDeviceOnePasswordItemWithName(obj) UTF8String]);
 						if (_err == 0) {
+							[self updateSyncingProcessToFile:obj forSyncState:kMerge];
 							copyResult = [copyToDevice copyLocalFile:GetLocalOnePasswordItemWithName(obj) toRemoteFile:GetDeviceOnePasswordItemWithName(obj)];
 						} else {
 							// throw error
@@ -299,6 +331,9 @@
 				afc_error_t _err = AFCRemovePath(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] UTF8String]);
 				if (_err == 0) {
 					copyResult = [contentsToDevice copyLocalFile:[OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:kOnePasswordInternalContentsPath]];
+					if (copyResult) {
+						[self updateSyncingProcessToFile:@"contents.js" forSyncState:kContents];
+					}
 				} else {
 					// throw error
 					[NSAlert connectionErrorWithDevice:[device deviceName]];

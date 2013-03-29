@@ -8,7 +8,6 @@
 
 #import "SMOPInterfaceController.h"
 #import "SMOPDefines.h"
-#import "SMOPSyncProcess.h"
 #import "NSAlert+Additions.h"
 
 @implementation SMOPInterfaceController
@@ -120,16 +119,10 @@
 #pragma mark -
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-	//if ([deviceList count] != [deviceAccess.managerDevices count]) {
-	//	return 0;
-	//}
 	return [deviceList count];
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
-	//if ([deviceList count] != [deviceAccess.managerDevices count]) {
-	//	return @"";
-	//}
 	return [[deviceList objectAtIndex:rowIndex] objectForKey:[aTableColumn identifier]];
 }
 

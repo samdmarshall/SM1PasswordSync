@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import "MobileDeviceAccess.h"
+#import "SMOPFunctions.h"
 
 @interface SMOPDeviceManager : NSObject <MobileDeviceAccessListener> {
 	MobileDeviceAccess *manager;
