@@ -275,6 +275,7 @@
 				copyResult = [copyToDeviceService copyLocalFile:GetLocalOnePasswordItemWithName(item) toRemoteFile:GetDeviceOnePasswordItemWithName(item)];
 				if (copyResult) {
 					[self updateSyncingProcessToFile:item forSyncState:kCopyToDevice];
+					syncItem++;
 					NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",item];
 					SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
 					[newContents addObject:localItem];
@@ -290,75 +291,75 @@
 			NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",obj];
 			SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
 			SMOPContentsItem *deviceItem = [[deviceContents filteredSetUsingPredicate:filterPredicate] anyObject];
-			
-			/*AFCApplicationDirectory *copyToMergeService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
-			if ([copyToMergeService ensureConnectionIsOpen]) {
-				copyResult = [copyToMergeService copyRemoteFile:GetDeviceOnePasswordItemWithName(obj) toLocalFile:GetMergeOnePasswordItemWithName(obj)];
-				if (copyResult) {
-					JSMNParser *deviceTest = [[JSMNParser alloc] initWithPath:GetMergeOnePasswordItemWithName(obj) tokenCount:1000];
-					JSMNParser *localTest = [[JSMNParser alloc] initWithPath:GetLocalOnePasswordItemWithName(obj) tokenCount:1000];
-					NSLog(@"%@",[deviceTest deserializeJSON]);
-					NSLog(@"%@",[localTest deserializeJSON]);
-					copyResult = [[NSFileManager defaultManager] removeItemAtPath:GetMergeOnePasswordItemWithName(obj) error:nil];
-					
-				}
-				[copyToMergeService close];
-			}
-			[copyToMergeService release];*/
-			
-			
-			
 			NSComparisonResult conflictCompare = [localItem.modifiedDate compare:deviceItem.modifiedDate];
 			switch (conflictCompare) {
-				case NSOrderedDescending: {
-					// local newer
-					AFCApplicationDirectory *copyToDevice = [device newAFCApplicationDirectory:kOnePasswordBundleId];
-					if ([copyToDevice ensureConnectionIsOpen]) {
-						afc_connection conn = [copyToDevice getAFC];
-						afc_error_t _err = AFCRemovePath(conn, [GetDeviceOnePasswordItemWithName(obj) UTF8String]);
-						if (_err == 0) {
-							copyResult = [copyToDevice copyLocalFile:GetLocalOnePasswordItemWithName(obj) toRemoteFile:GetDeviceOnePasswordItemWithName(obj)];
-							if (copyResult) {
-								syncItem++;
-							}
-						} else {
-							// throw error
-							[NSAlert connectionErrorWithDevice:[device deviceName]];
-							*stop = YES;
-						}
-						[copyToDevice close];
-					}
-					[copyToDevice release];
-					
-					if (copyResult) {
-						[self updateSyncingProcessToFile:obj forSyncState:kMerge];
-						[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
-						[newContents addObject:localItem];
-					}
-					
-					break;
-				};
-				case NSOrderedAscending: {
-					// device newer
+				case NSOrderedDescending: // local newer
+				case NSOrderedAscending: // device newer
+				{
+					NSLog(@"testing merge code?");  
+					// while different cases, both require that we copy the items to local to do data handling.
 					AFCApplicationDirectory *copyToMergeService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 					if ([copyToMergeService ensureConnectionIsOpen]) {
 						copyResult = [copyToMergeService copyRemoteFile:GetDeviceOnePasswordItemWithName(obj) toLocalFile:GetMergeOnePasswordItemWithName(obj)];
-						if (copyResult) {
-							syncItem++;
-						}
 						[copyToMergeService close];
+						// do not try to remove the local file before we close AND RELEASE the service or we end up smashing the stack somehow and causing all sorts of havoc!
 					}
 					[copyToMergeService release];
-					
+
 					if (copyResult) {
-						// remove local file then move from merge
-						copyResult = [[NSFileManager defaultManager] removeItemAtPath:GetLocalOnePasswordItemWithName(obj) error:nil];
-						if (copyResult)
-							copyResult = [[NSFileManager defaultManager] moveItemAtPath:GetMergeOnePasswordItemWithName(obj) toPath:GetLocalOnePasswordItemWithName(obj) error:nil];
-						if (copyResult) {
-							[self updateSyncingProcessToFile:obj forSyncState:kMerge];
-							[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
+						JSMNParser *deviceParse = [[JSMNParser alloc] initWithPath:GetMergeOnePasswordItemWithName(obj) tokenCount:1000]; // probably performance problems here and next line with static token count, but whatever it all works out in the end.
+						JSMNParser *localParse = [[JSMNParser alloc] initWithPath:GetLocalOnePasswordItemWithName(obj) tokenCount:1000];
+
+						NSMutableDictionary *deviceItemDictionary = [NSMutableDictionary new];
+						NSMutableDictionary *localItemDictionary = [NSMutableDictionary new];
+						// creating the mutable dictionaries and filling them out with parsed data.
+						[deviceItemDictionary setDictionary:[deviceParse deserializeJSON]];
+						[localItemDictionary setDictionary:[localParse deserializeJSON]];
+
+						if (conflictCompare == NSOrderedDescending) {
+							// local newer
+							[deviceItemDictionary addEntriesFromDictionary:localItemDictionary];
+							copyResult = [deviceItemDictionary writeToFile:GetMergeOnePasswordItemWithName(obj) atomically:YES];
+							[newContents addObject:localItem];
+						}
+						if (conflictCompare == NSOrderedAscending) {
+							// device newer
+							[localItemDictionary addEntriesFromDictionary:deviceItemDictionary];
+							copyResult = [localItemDictionary writeToFile:GetMergeOnePasswordItemWithName(obj) atomically:YES];
 							[newContents addObject:deviceItem];
+						}
+						
+						[deviceParse release];
+						[localParse release];
+						[deviceItemDictionary release];
+						[localItemDictionary release];
+						
+						if (copyResult) {
+							AFCApplicationDirectory *copyToDevice = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+							if ([copyToDevice ensureConnectionIsOpen]) {
+								afc_connection conn = [copyToDevice getAFC];
+								afc_error_t _err = AFCRemovePath(conn, [GetDeviceOnePasswordItemWithName(obj) UTF8String]);
+								if (_err == 0) {
+									copyResult = [copyToDevice copyLocalFile:GetMergeOnePasswordItemWithName(obj) toRemoteFile:GetDeviceOnePasswordItemWithName(obj)];
+									if (copyResult) {
+										syncItem++;
+									}
+								} else {
+									// throw error
+									[NSAlert connectionErrorWithDevice:[device deviceName]];
+									*stop = YES;
+								}
+								[copyToDevice close];
+							}
+							[copyToDevice release];
+
+							copyResult = [[NSFileManager defaultManager] removeItemAtPath:GetLocalOnePasswordItemWithName(obj) error:nil];
+							if (copyResult)
+								copyResult = [[NSFileManager defaultManager] moveItemAtPath:GetMergeOnePasswordItemWithName(obj) toPath:GetLocalOnePasswordItemWithName(obj) error:nil];
+							if (copyResult) {
+								[self updateSyncingProcessToFile:obj forSyncState:kMerge];
+								[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
+							}
 						}
 					}
 					break;
@@ -372,10 +373,9 @@
 				default: {
 					break;
 				};
-			}	
+			}
 		}];
-		syncItem+=[matches count];
-		
+				
 		// write updated contents.js
 		NSString *contentsJS = [JSMNParser serializeJSON:[newContents allObjects]];
 		copyResult = [[NSFileManager defaultManager] removeItemAtPath:[OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] error:nil];

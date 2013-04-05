@@ -43,7 +43,7 @@ static inline NSString* GetLocalOnePasswordItemWithName(NSString *name) {
 }
 
 static inline NSString* GetMergeOnePasswordItemWithName(NSString *name) {
-	return [kSMOPApplicationSupportPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/data/default/%@.1password",name]];
+	return [kSMOPApplicationSupportPath stringByAppendingPathComponent:[NSString stringWithFormat:@"/sync/data/default/%@.1password",name]];
 }
 
 static inline NSString* GetDeviceOnePasswordItemWithName(NSString *name) {
