@@ -164,6 +164,7 @@
 			children = (
 				2203C05216FA1B9900D961E1 /* jsmn.h */,
 				2203C05316FA1B9900D961E1 /* jsmn.c */,
+				22412A3716F7B302000DE1D7 /* MobileDeviceAccess */,
 			);
 			path = jsmn;
 			sourceTree = "<group>";
@@ -175,7 +176,8 @@
 				22412C2416F8EF4C000DE1D7 /* MobileDeviceAccess.h */,
 				22412C2516F8EF4C000DE1D7 /* MobileDeviceAccess.m */,
 			);
-			path = MobileDeviceAccess;
+			name = MobileDeviceAccess;
+			path = ../MobileDeviceAccess;
 			sourceTree = "<group>";
 		};
 		22412C0316F8E3C9000DE1D7 /* Additions */ = {
@@ -192,7 +194,6 @@
 			children = (
 				080E96DDFE201D6D7F000001 /* Classes */,
 				2203C05116FA1B8300D961E1 /* jsmn */,
-				22412A3716F7B302000DE1D7 /* MobileDeviceAccess */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,

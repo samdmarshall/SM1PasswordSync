@@ -395,7 +395,7 @@
 					}
 				} else {
 					// throw error
-					[NSAlert connectionErrorWithDevice:[device deviceName]];
+					[NSAlert connectionErrorWithDevice:[device deviceName]]; 
 				}
 				[contentsToDevice close];
 			}
