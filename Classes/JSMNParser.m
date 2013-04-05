@@ -16,7 +16,7 @@
 	if (self) {
 		count = total;
 		offset = 0;
-		if (total)
+		if (count)
 			tokens = (jsmntok_t *)malloc(sizeof(jsmntok_t)*total);
 		jsonData = [[NSString alloc] initWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];		
 		jsmn_parser localParser;
