@@ -13,8 +13,8 @@
 static inline NSData* SHA1HashOfFileAtPath(NSString *path) {
 	unsigned char hashBytes[CC_SHA1_DIGEST_LENGTH];
 	NSData *fileData = [NSData dataWithContentsOfFile:path];
-    CC_SHA1([fileData bytes], [fileData length], hashBytes);
-    return [NSData dataWithBytes:hashBytes length:CC_SHA1_DIGEST_LENGTH];
+	CC_SHA1([fileData bytes], [fileData length], hashBytes);
+	return [NSData dataWithBytes:hashBytes length:CC_SHA1_DIGEST_LENGTH];
 }
 
 static inline NSString* OnePasswordKeychainPath() {
@@ -23,7 +23,7 @@ static inline NSString* OnePasswordKeychainPath() {
 }
 
 static inline NSInteger GetLocalContentsItemCount() {
-	NSString *localPath = [[(NSString *)OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] stringByDeletingLastPathComponent];
+	NSString *localPath = [[OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] stringByDeletingLastPathComponent];
 	NSInteger contentsDirectoryCount = [[[NSFileManager defaultManager] contentsOfDirectoryAtPath:localPath error:nil] count];
 	return ((contentsDirectoryCount-5)*9)+1;
 }

@@ -13,11 +13,11 @@
 
 - (id)initWithPath:(NSString *)path tokenCount:(NSInteger)total {
 	self = [super init];
-	if (total)
-		tokens = (jsmntok_t *)malloc(sizeof(jsmntok_t)*total);
 	if (self) {
 		count = total;
 		offset = 0;
+		if (total)
+			tokens = (jsmntok_t *)malloc(sizeof(jsmntok_t)*total);
 		jsonData = [[NSString alloc] initWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];		
 		jsmn_parser localParser;
 		jsmn_init(&localParser);
@@ -38,18 +38,23 @@
 		for (id item in obj) {
 			[arrayItems addObject:[JSMNParser serializeJSON:item]];
 		}
-		[serialize appendString:[NSString stringWithFormat:@"[%@]",[arrayItems componentsJoinedByString:@","]]];
+		[serialize appendFormat:@"[%@]",[arrayItems componentsJoinedByString:@","]];
 		[arrayItems release];
 	}
 	if ([obj isKindOfClass:[NSDictionary class]]) {
-		// not really necessary for the code so far.
-		NSLog(@"Not implemented dictionary serialization yet");
+		NSMutableArray *allEntries = [NSMutableArray new];
+		[obj enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop){
+			NSString *entry = [NSString stringWithFormat:@"\"%@\": %@",key,[JSMNParser serializeJSON:obj]];
+			[allEntries addObject:entry];
+		}];
+		[serialize appendFormat:@"{%@}",[allEntries componentsJoinedByString:@","]];
+		[allEntries release];
 	}
 	if ([obj isKindOfClass:[NSNumber class]]) {
-		[serialize appendString:[NSString stringWithFormat:@"%@",[obj stringValue]]];
+		[serialize appendFormat:@"%@",[obj stringValue]];
 	}
 	if ([obj isKindOfClass:[NSString class]]) {
-		[serialize appendString:[NSString stringWithFormat:@"\"%@\"",obj]];
+		[serialize appendFormat:@"\"%@\"",obj];
 	}
 	
 	return serialize;
