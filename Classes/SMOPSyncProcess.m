@@ -249,7 +249,7 @@
 		
 		[self initiateSyncingProcess];
 		__block NSUInteger syncItem = 0;
-		__block NSUInteger syncItemsCount = [addToLocal count] + [addToDevice count] + [matches count] + 1;
+		NSUInteger syncItemsCount = [addToLocal count] + [addToDevice count] + [matches count] + 1;
 		NSArray *copyToLocal = [addToLocal allObjects];
 		AFCApplicationDirectory *copyToLocalService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 		if ([copyToLocalService ensureConnectionIsOpen]) {
@@ -290,6 +290,24 @@
 			NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",obj];
 			SMOPContentsItem *localItem = [[localContents filteredSetUsingPredicate:filterPredicate] anyObject];
 			SMOPContentsItem *deviceItem = [[deviceContents filteredSetUsingPredicate:filterPredicate] anyObject];
+			
+			/*AFCApplicationDirectory *copyToMergeService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+			if ([copyToMergeService ensureConnectionIsOpen]) {
+				copyResult = [copyToMergeService copyRemoteFile:GetDeviceOnePasswordItemWithName(obj) toLocalFile:GetMergeOnePasswordItemWithName(obj)];
+				if (copyResult) {
+					JSMNParser *deviceTest = [[JSMNParser alloc] initWithPath:GetMergeOnePasswordItemWithName(obj) tokenCount:1000];
+					JSMNParser *localTest = [[JSMNParser alloc] initWithPath:GetLocalOnePasswordItemWithName(obj) tokenCount:1000];
+					NSLog(@"%@",[deviceTest deserializeJSON]);
+					NSLog(@"%@",[localTest deserializeJSON]);
+					copyResult = [[NSFileManager defaultManager] removeItemAtPath:GetMergeOnePasswordItemWithName(obj) error:nil];
+					
+				}
+				[copyToMergeService close];
+			}
+			[copyToMergeService release];*/
+			
+			
+			
 			NSComparisonResult conflictCompare = [localItem.modifiedDate compare:deviceItem.modifiedDate];
 			switch (conflictCompare) {
 				case NSOrderedDescending: {
