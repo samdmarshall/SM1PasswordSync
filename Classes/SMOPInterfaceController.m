@@ -32,14 +32,15 @@
 	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPApplicationSupportPath withIntermediateDirectories:YES attributes:nil error:nil];
 	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPSyncPath withIntermediateDirectories:YES attributes:nil error:nil];
 	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPSyncStatePath withIntermediateDirectories:YES attributes:nil error:nil];
-	
-	deviceAccess = [[SMOPDeviceManager alloc] init];
-	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceConnectionEvent:) name:kDeviceConnectionEventPosted object:nil];
 	
-	if ([deviceAccess watchForConnection]) {
-		[self updateDeviceList];
-	}
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+		deviceAccess = [[SMOPDeviceManager alloc] init];
+		
+		if ([deviceAccess watchForConnection]) {
+			[self updateDeviceList];
+		}
+	});
 }
 
 - (id)init {
@@ -53,6 +54,7 @@
 		[syncProgress setIndeterminate:NO];
 		[syncProgress setDoubleValue:0.0];
 		[syncProgress setUsesThreadedAnimation:YES];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceConnectionEvent:) name:kDeviceConnectionEventPosted object:nil];
 		[self updateDeviceList];
 	}
 	return self;
@@ -95,19 +97,21 @@
 
 - (IBAction)syncData:(id)sender {
 	if (!isUpdating) {
-		isSyncing = TRUE;
 		AMDevice *device = [self selectedDevice];
-		[syncButton setEnabled:NO];
-		[refreshButton setEnabled:NO];
-		[syncProgress setHidden:NO];
-		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-			[self performSyncForDevice:device];
-			[self refreshListWithData:deviceAccess.managerDevices];
-			[syncButton setEnabled:YES];
-			[refreshButton setEnabled:YES];
-			[syncProgress setHidden:YES];
-			isSyncing = FALSE;
-		});
+		if (device != nil) {
+			isSyncing = TRUE;
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+				[syncButton setEnabled:NO];
+				[refreshButton setEnabled:NO];
+				[syncProgress setHidden:NO];
+				[self performSyncForDevice:device];
+				[self refreshListWithData:deviceAccess.managerDevices];
+				[syncButton setEnabled:YES];
+				[refreshButton setEnabled:YES];
+				[syncProgress setHidden:YES];
+				isSyncing = FALSE;
+			});
+		}
 	}
 }
 
@@ -120,7 +124,11 @@
 }
 
 - (AMDevice *)selectedDevice {
-	return [deviceAccess.managerDevices objectAtIndex:[deviceTable selectedRow]];
+	if (deviceAccess.managerDevices.count == 0) {
+		return nil;
+	} else {
+		return [deviceAccess.managerDevices objectAtIndex:[deviceTable selectedRow]];
+	}
 }
 
 #pragma mark -

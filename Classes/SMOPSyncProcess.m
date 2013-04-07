@@ -296,7 +296,7 @@
 				case NSOrderedDescending: // local newer
 				case NSOrderedAscending: // device newer
 				{
-					NSLog(@"testing merge code?");  
+					NSLog(@"testing merge code?");
 					// while different cases, both require that we copy the items to local to do data handling.
 					AFCApplicationDirectory *copyToMergeService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 					if ([copyToMergeService ensureConnectionIsOpen]) {
@@ -395,7 +395,7 @@
 					}
 				} else {
 					// throw error
-					[NSAlert connectionErrorWithDevice:[device deviceName]]; 
+					[NSAlert connectionErrorWithDevice:[device deviceName]];
 				}
 				[contentsToDevice close];
 			}
