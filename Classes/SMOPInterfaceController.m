@@ -34,9 +34,8 @@
 	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPSyncStatePath withIntermediateDirectories:YES attributes:nil error:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceConnectionEvent:) name:kDeviceConnectionEventPosted object:nil];
 	
+	deviceAccess = [[SMOPDeviceManager alloc] init];
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-		deviceAccess = [[SMOPDeviceManager alloc] init];
-		
 		if ([deviceAccess watchForConnection]) {
 			[self updateDeviceList];
 		}

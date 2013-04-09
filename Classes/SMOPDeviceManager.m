@@ -7,6 +7,7 @@
 //
 
 #import "SMOPDeviceManager.h"
+#import "SMOPDeviceDetector.h"
 
 @implementation SMOPDeviceManager
 
@@ -27,6 +28,8 @@
 }
 
 - (NSArray *)managerDevices {
+//	NSMutableArray *allDevices = [NSMutableArray new];
+//	NSArray *detectorResults = [SMOPDeviceDetector devicesSupportingIPhoneOS];
 	return manager.devices;
 }
 
@@ -76,12 +79,16 @@
 
 - (void)deviceConnected:(AMDevice *)device {
 	// post notification to refresh
-	[[NSNotificationCenter defaultCenter] postNotificationName:kDeviceConnectionEventPosted object:manager.devices userInfo:nil];	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[[NSNotificationCenter defaultCenter] postNotificationName:kDeviceConnectionEventPosted object:manager.devices userInfo:nil];
+	});
 }
 
 - (void)deviceDisconnected:(AMDevice *)device {
 	// post notification to refresh and cancel any syncs to this device
-	[[NSNotificationCenter defaultCenter] postNotificationName:kDeviceConnectionEventPosted object:manager.devices userInfo:nil];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[[NSNotificationCenter defaultCenter] postNotificationName:kDeviceConnectionEventPosted object:manager.devices userInfo:nil];
+	});
 }
 
 @end
