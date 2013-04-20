@@ -987,6 +987,9 @@ com.apple.mobile.application_uninstalled
 /// installedApplications method. If nil, we use a "reasonable set".
 @property (retain) NSArray *applicationAttributes;
 
+
++ (NSString *)modelNameFromProduct:(NSString *)platformType;
+
 /// Create a file service connection which can access the media directory.
 /// This uses the service \p "com.apple.afc" which is present on all devices
 /// and only allows access to the \p "/var/mobile/Media" directory structure

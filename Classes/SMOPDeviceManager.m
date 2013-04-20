@@ -28,8 +28,9 @@
 }
 
 - (NSArray *)managerDevices {
-//	NSMutableArray *allDevices = [NSMutableArray new];
-//	NSArray *detectorResults = [SMOPDeviceDetector devicesSupportingIPhoneOS];
+	//NSMutableArray *allDevices = [NSMutableArray new];
+	//[allDevices addObjectsFromArray:manager.devices];
+	//NSArray *detectorResults = [SMOPDeviceDetector devicesSupportingIPhoneOS];
 	return manager.devices;
 }
 

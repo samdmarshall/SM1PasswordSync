@@ -25,8 +25,13 @@
 		while (usbDevice = IOIteratorNext(iterator)) {
 			CFTypeRef supportsIPhoneOS = IORegistryEntrySearchCFProperty(usbDevice, kIOServicePlane, CFSTR("SupportsIPhoneOS"), kCFAllocatorDefault, kIORegistryIterateRecursively);
 			if (supportsIPhoneOS) {
-				CFTypeRef data = IORegistryEntrySearchCFProperty(usbDevice, kIOServicePlane, CFSTR("USB Serial Number"), kCFAllocatorDefault, kIORegistryIterateRecursively);
-				[devices addObject:(NSString *)data];
+				CFTypeRef serialNumber = IORegistryEntrySearchCFProperty(usbDevice, kIOServicePlane, CFSTR("USB Serial Number"), kCFAllocatorDefault, kIORegistryIterateRecursively);
+				CFTypeRef productName = IORegistryEntrySearchCFProperty(usbDevice, kIOServicePlane, CFSTR("USB Product Name"), kCFAllocatorDefault, kIORegistryIterateRecursively);
+				CFTypeRef productId = IORegistryEntrySearchCFProperty(usbDevice, kIOServicePlane, CFSTR("bcdDevice"), kCFAllocatorDefault, kIORegistryIterateRecursively);
+				uint16_t version = [(NSNumber *)productId intValue] >> 8;
+				uint16_t revision = ([(NSNumber *)productId intValue] & 0x00FF) >> 4;				
+				NSString *productType = [NSString stringWithFormat:@"%@%i,%i",(NSString *)productName,version,revision];
+				[devices addObject:[NSDictionary dictionaryWithObjectsAndKeys:(NSString *)serialNumber, @"SerialNumber", (NSString *)productName, @"ProductName", (NSString *)productType, @"productType", nil]];
 			}
 			IOObjectRelease(usbDevice);
 		}

@@ -2540,8 +2540,12 @@ bail:
 }
 
 - (NSString *)modelName {
-	// all models taken from: http://theiphonewiki.com/wiki/Models
 	NSString *platformType = [self productType];
+	return [AMDevice modelNameFromProduct:platformType];
+}
+
++ (NSString *)modelNameFromProduct:(NSString *)platformType {\
+	// all models taken from: http://theiphonewiki.com/wiki/Models
 	if ([platformType isEqualToString:@"iPhone1,1"]) return @"iPhone 1G";
 	if ([platformType isEqualToString:@"iPhone1,2"]) return @"iPhone 3G";
 	if ([platformType isEqualToString:@"iPhone2,1"]) return @"iPhone 3GS";
@@ -2569,7 +2573,7 @@ bail:
 	if ([platformType isEqualToString:@"iPad3,4"]) return @"iPad 4 (WiFi)";
 	if ([platformType isEqualToString:@"iPad3,5"]) return @"iPad 4 (GSM)";
 	if ([platformType isEqualToString:@"iPad3,6"]) return @"iPad 4 (GSM + CDMA)";
-	return [NSString stringWithFormat:@"Unknown %@",[self deviceClass]];
+	return platformType;
 }
 
 - (id)initWithDevice:(am_device)device orBust:(NSString**)msg {

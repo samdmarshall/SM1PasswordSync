@@ -340,6 +340,7 @@
 								afc_connection conn = [copyToDevice getAFC];
 								afc_error_t _err = AFCRemovePath(conn, [GetDeviceOnePasswordItemWithName(obj) UTF8String]);
 								if (_err == 0) {
+									NSLog(@"copying to device!");
 									copyResult = [copyToDevice copyLocalFile:GetMergeOnePasswordItemWithName(obj) toRemoteFile:GetDeviceOnePasswordItemWithName(obj)];
 									if (copyResult) {
 										syncItem++;

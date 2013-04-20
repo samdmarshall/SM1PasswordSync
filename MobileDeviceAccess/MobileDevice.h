@@ -477,6 +477,7 @@ extern "C" {
 		 *   Less-documented semi-private routines
 		 * ------------------------------------------------------------------------- */
 		
+		int USBMuxConnectByPort(muxconn_t muxConn, short netPort, int* sockHandle);
 		usbmux_error_t USBMuxListenerHandleData(void *);
 		
 		/* ----------------------------------------------------------------------------
