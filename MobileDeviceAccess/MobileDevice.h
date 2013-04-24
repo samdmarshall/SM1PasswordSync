@@ -52,7 +52,7 @@ extern "C" {
 #define AMD_IPHONE_PRODUCT_ID   0x1290
 //#define AMD_IPHONE_SERIAL       "3391002d9c804d105e2c8c7d94fc35b6f3d214a3"
 		
-		/* Services, found in /System/Library/Lockdown/Services.plist */
+/* Services, found in /System/Library/Lockdown/Services.plist */
 #define AMSVC_AFC                   CFSTR("com.apple.afc")
 #define AMSVC_AFC2                  CFSTR("com.apple.afc2")
 #define AMSVC_BACKUP                CFSTR("com.apple.mobilebackup")
@@ -65,10 +65,36 @@ extern "C" {
 #define AMSVC_SCREENSHOT            CFSTR("com.apple.screenshotr")
 #define AMSVC_SYSLOG_RELAY          CFSTR("com.apple.syslog_relay")
 #define AMSVC_SYSTEM_PROFILER       CFSTR("com.apple.mobile.system_profiler")
-    /*edits by FilippoBiga*/
 #define AMSVC_SPRINGBOARD_SERVICES  CFSTR("com.apple.springboardservices")
-    /*end*/
 		
+#define NUM_APPLE_USB_INTERFACES 6
+
+		static APPLE_USB_INTERFACE_TYPE APPLE_USB_INTERFACES[NUM_APPLE_USB_INTERFACES] = {
+		    { "Recovery Mode v1",   0x1280 },
+		    { "Recovery Mode v2",   0x1281 },
+		    { "Recovery Mode v3",   0x1282 },
+		    { "Recovery Mode v4",   0x1283 },
+		    { "DFU/WTF v1",         0x1222 },
+		    { "DFU/WTF v2",         0x1227 }
+		};
+
+		#define AMDeviceInterfaceIsRecovery(productID) \
+		    ((productID == APPLE_USB_INTERFACES[0].productID) || \
+		    (productID == APPLE_USB_INTERFACES[1].productID) || \
+		    (productID == APPLE_USB_INTERFACES[2].productID) || \
+		    (productID == APPLE_USB_INTERFACES[3].productID))
+
+		#define AMDeviceInterfaceIsDFU(productID) \
+		    ((productID == APPLE_USB_INTERFACES[4].productID) || \
+		    (productID == APPLE_USB_INTERFACES[5].productID))
+
+		enum {
+		    kAMDeviceNormalMode = 0,
+		    kAMDeviceRestoreMode = 1,
+		    kAMDeviceRecoveryMode = 2,
+		    kAMDeviceDFUMode = 3,
+		    kAMDeviceNoMode = 4
+		};
 		
 		typedef unsigned int afc_error_t;
 		typedef unsigned int usbmux_error_t;
@@ -399,12 +425,78 @@ extern "C" {
 		struct am_restore_device *AMRestoreModeDeviceCreate(unsigned int unknown0, unsigned int connection_id, unsigned int unknown1);
 		
 		unsigned int AMRestoreCreatePathsForBundle(CFStringRef restore_bundle_path, CFStringRef kernel_cache_type, CFStringRef boot_image_type, unsigned int unknown0, CFStringRef *firmware_dir_path, CFStringRef * kernelcache_restore_path, unsigned int unknown1, CFStringRef * ramdisk_path);
+		unsigned int AMRestoreModeDeviceReboot(struct am_restore_device *rdev);
 		
 		unsigned int AMDeviceGetConnectionID(struct am_device *device);
 		mach_error_t AMDeviceEnterRecovery(struct am_device *device);
 		mach_error_t AMDeviceDisconnect(struct am_device *device);
 		mach_error_t AMDeviceRetain(struct am_device *device);
 		mach_error_t AMDeviceRelease(struct am_device *device);
+		
+		/* Reads various device settings. One of domain or cfstring arguments should be NULL.
+	        *
+	        * ActivationPublicKey 
+	        * ActivationState 
+	        * ActivationStateAcknowledged 
+	        * ActivityURL 
+	        * BasebandBootloaderVersion 
+	        * BasebandSerialNumber 
+	        * BasebandStatus 
+	        * BasebandVersion 
+	        * BluetoothAddress 
+	        * BuildVersion 
+	        * CPUArchitecture 
+	        * DeviceCertificate 
+	        * DeviceClass 
+	        * DeviceColor 
+	        * DeviceName 
+	        * DevicePublicKey 
+	        * DieID 
+	        * FirmwareVersion 
+	        * HardwareModel 
+	        * HardwarePlatform 
+	        * HostAttached 
+	        * IMLockdownEverRegisteredKey 
+	        * IntegratedCircuitCardIdentity 
+	        * InternationalMobileEquipmentIdentity 
+	        * InternationalMobileSubscriberIdentity 
+	        * iTunesHasConnected 
+	        * MLBSerialNumber 
+	        * MobileSubscriberCountryCode 
+	        * MobileSubscriberNetworkCode 
+	        * ModelNumber 
+	        * PartitionType 
+	        * PasswordProtected 
+	        * PhoneNumber 
+	        * ProductionSOC 
+	        * ProductType 
+	        * ProductVersion 
+	        * ProtocolVersion 
+	        * ProximitySensorCalibration 
+	        * RegionInfo 
+	        * SBLockdownEverRegisteredKey 
+	        * SerialNumber 
+	        * SIMStatus 
+	        * SoftwareBehavior 
+	        * SoftwareBundleVersion 
+	        * SupportedDeviceFamilies 
+	        * TelephonyCapability 
+	        * TimeIntervalSince1970 
+	        * TimeZone 
+	        * TimeZoneOffsetFromUTC 
+	        * TrustedHostAttached 
+	        * UniqueChipID 
+	        * UniqueDeviceID 
+	        * UseActivityURL 
+	        * UseRaptorCerts 
+	        * Uses24HourClock 
+	        * WeDelivered 
+	        * WiFiAddress 
+	        * // Updated by DiAifU 14.10.2010 for iOS5 and iTunes 5.0
+	        *
+	        * Possible values for domain:
+	        * com.apple.mobile.battery
+		 */
 		CFStringRef AMDeviceCopyValue(struct am_device *device, unsigned int, CFStringRef cfstring);
 		CFStringRef AMDeviceCopyDeviceIdentifier(struct am_device *device);
 		
@@ -415,7 +507,24 @@ extern "C" {
 		mach_error_t AMDListenForNotifications(void *socket, notify_callback cb, void *data);
 		mach_error_t AMDShutdownNotificationProxy(void *socket);
 		
+		uint16_t AMDeviceUSBProductID(struct am_device *device);
+		
 		/*edits by greysyntax*/
+		CFStringRef AMRecoveryModeDeviceCopyEnvironmentVariableFromDevice(struct am_recovery_device *rdev, CFStringRef variable);
+
+		unsigned int AMRecoveryModeDeviceSendCommandToDevice(struct am_recovery_device *rdev, CFStringRef command);
+		unsigned int AMRecoveryModeDeviceSendBlindCommandToDevice(struct am_recovery_device *rdev, CFStringRef command);
+
+		unsigned int AMRecoveryModeDeviceSendFileToDevice(struct am_recovery_device *rdev, CFStringRef filename);
+
+		uint16_t AMRecoveryModeDeviceGetProductID(struct am_recovery_device *rdev);
+		uint32_t AMRecoveryModeDeviceGetProductType(struct am_recovery_device *rdev);
+
+		CFTypeID AMRecoveryModeDeviceGetTypeID(struct am_recovery_device *rdev);
+
+		unsigned int AMRecoveryModeDeviceCopyAuthInstallPreflightOptions(struct am_recovery_device *rdev, CFDictionaryRef inputOptions, CFDictionaryRef *newRestoreOptions);
+		unsigned int AMRestorePerformRecoveryModeRestore(struct am_recovery_device *rdev, CFDictionaryRef restoreOptions, void *callback, void *userInfo);
+		
 		unsigned int AMRecoveryModeDeviceSetAutoBoot(struct am_recovery_device *rdev, CFStringRef state, int unknown1, int unknown2, int unknown3);
 		unsigned int AMRecoveryModeDeviceReboot(struct am_recovery_device *rdev, CFStringRef state, int unknown1, int unknown2, int unknown3);
 		/*end*/
@@ -423,6 +532,7 @@ extern "C" {
 		/*edits by geohot*/
 		mach_error_t AMDeviceDeactivate(struct am_device *device);
 		mach_error_t AMDeviceActivate(struct am_device *device, CFMutableDictionaryRef);
+		mach_error_t AMDeviceRemoveValue(struct am_device *device, unsigned int, const __CFString *cfstring);
 		/*end*/
 		
 		//EDITS BY CHRIS DEVOR
@@ -433,6 +543,11 @@ extern "C" {
 		//06-14-2010
 		//app folder transfer for itunes 4.0
 
+
+		int AMDeviceSecureTransferPath(int unknown0, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
+		int AMDeviceSecureInstallApplication(int unknown0, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
+		int AMDeviceSecureUninstallApplication(int unknown0, struct am_device *device, CFStringRef bundle_id, int unknown1, void *callback, int callback_arg);
+		
 	    // Get a dictionary 
 		mach_error_t AMDeviceLookupApplications(struct am_device* thisDevice, CFDictionaryRef opts, CFDictionaryRef* apps);
 	    mach_error_t AMDeviceLookupApplicationArchives(struct am_device* thisDevice, CFDictionaryRef opts, CFDictionaryRef* apps);
@@ -490,6 +605,40 @@ extern "C" {
 		 * significant access to the phone. */
 		
 		typedef unsigned int (*t_performOperation)(struct am_restore_device *rdev, CFDictionaryRef op); // __attribute__ ((regparm(2)));
+		
+		/*
+			 typedef int (*t_socketForPort)(struct am_restore_device *rdev, unsigned int port)
+			 __attribute__ ((regparm(2)));
+			 t_socketForPort _socketForPort = (t_socketForPort)(void *)0x3c39f36c;
+
+			 typedef void (*t_restored_send_message)(int port, CFDictionaryRef msg);
+			 t_restored_send_message _restored_send_message = (t_restored_send_message)0x3c3a4e40;
+
+			 typedef CFDictionaryRef (*t_restored_receive_message)(int port);
+			 t_restored_receive_message _restored_receive_message = (t_restored_receive_message)0x3c3a4d40;
+
+			 typedef unsigned int (*t_sendControlPacket)(struct am_recovery_device *rdev, unsigned
+			 int msg1, unsigned int msg2, unsigned int unknown0, unsigned int *unknown1,
+			 unsigned char *unknown2) __attribute__ ((regparm(3)));
+			 t_sendControlPacket _sendControlPacket = (t_sendControlPacket)0x3c3a3da3;;
+
+			 typedef unsigned int (*t_sendCommandToDevice)(struct am_recovery_device *rdev,
+			 CFStringRef cmd) __attribute__ ((regparm(2)));
+			 t_sendCommandToDevice _sendCommandToDevice = (t_sendCommandToDevice)0x3c3a3e3b;
+
+			 typedef unsigned int (*t_AMRUSBInterfaceReadPipe)(unsigned int readwrite_pipe, unsigned
+			 int read_pipe, unsigned char *data, unsigned int *len);
+			 t_AMRUSBInterfaceReadPipe _AMRUSBInterfaceReadPipe = (t_AMRUSBInterfaceReadPipe)0x3c3a27e8;
+
+			 typedef unsigned int (*t_AMRUSBInterfaceWritePipe)(unsigned int readwrite_pipe, unsigned
+			 int write_pipe, void *data, unsigned int len);
+			 t_AMRUSBInterfaceWritePipe _AMRUSBInterfaceWritePipe = (t_AMRUSBInterfaceWritePipe)0x3c3a27cb;
+		*/
+
+		int performOperation(struct am_restore_device *rdev, CFMutableDictionaryRef message);
+		int socketForPort(struct am_restore_device *rdev, unsigned int portnum);
+		int sendCommandToDevice(struct am_recovery_device *rdev, CFStringRef cfs, int block);
+		int sendFileToDevice(struct am_recovery_device *rdev, CFStringRef filename);
 		
 #ifdef __cplusplus
 }
