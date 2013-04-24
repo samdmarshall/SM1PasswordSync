@@ -296,7 +296,6 @@
 				case NSOrderedDescending: // local newer
 				case NSOrderedAscending: // device newer
 				{
-					NSLog(@"testing merge code?");
 					// while different cases, both require that we copy the items to local to do data handling.
 					AFCApplicationDirectory *copyToMergeService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 					if ([copyToMergeService ensureConnectionIsOpen]) {
@@ -307,25 +306,32 @@
 					[copyToMergeService release];
 
 					if (copyResult) {
-						JSMNParser *deviceParse = [[JSMNParser alloc] initWithPath:GetMergeOnePasswordItemWithName(obj) tokenCount:1000]; // probably performance problems here and next line with static token count, but whatever it all works out in the end.
-						JSMNParser *localParse = [[JSMNParser alloc] initWithPath:GetLocalOnePasswordItemWithName(obj) tokenCount:1000];
+						JSMNParser *deviceParse = [[JSMNParser alloc] initWithPath:GetMergeOnePasswordItemWithName(obj) tokenCount:2000]; // probably performance problems here and next line with static token count, but whatever it all works out in the end.
+						JSMNParser *localParse = [[JSMNParser alloc] initWithPath:GetLocalOnePasswordItemWithName(obj) tokenCount:2000];
 
 						NSMutableDictionary *deviceItemDictionary = [NSMutableDictionary new];
 						NSMutableDictionary *localItemDictionary = [NSMutableDictionary new];
 						// creating the mutable dictionaries and filling them out with parsed data.
 						[deviceItemDictionary setDictionary:[deviceParse deserializeJSON]];
 						[localItemDictionary setDictionary:[localParse deserializeJSON]];
+						NSNumber *newDate = [NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]];
 
 						if (conflictCompare == NSOrderedDescending) {
 							// local newer
 							[deviceItemDictionary addEntriesFromDictionary:localItemDictionary];
-							copyResult = [deviceItemDictionary writeToFile:GetMergeOnePasswordItemWithName(obj) atomically:YES];
+							[deviceItemDictionary setObject:newDate forKey:@"updatedAt"];
+							localItem.modifiedDate = newDate;
+							NSString *mergedItem = [JSMNParser serializeJSON:deviceItemDictionary];
+							copyResult = [mergedItem writeToFile:GetMergeOnePasswordItemWithName(obj) atomically:YES encoding:NSUTF8StringEncoding error:nil];
 							[newContents addObject:localItem];
 						}
 						if (conflictCompare == NSOrderedAscending) {
 							// device newer
 							[localItemDictionary addEntriesFromDictionary:deviceItemDictionary];
-							copyResult = [localItemDictionary writeToFile:GetMergeOnePasswordItemWithName(obj) atomically:YES];
+							[localItemDictionary setObject:newDate forKey:@"updatedAt"];
+							deviceItem.modifiedDate = newDate;
+							NSString *mergedItem = [JSMNParser serializeJSON:localItemDictionary];
+							copyResult = [mergedItem writeToFile:GetMergeOnePasswordItemWithName(obj) atomically:YES encoding:NSUTF8StringEncoding error:nil];
 							[newContents addObject:deviceItem];
 						}
 						
@@ -340,7 +346,6 @@
 								afc_connection conn = [copyToDevice getAFC];
 								afc_error_t _err = AFCRemovePath(conn, [GetDeviceOnePasswordItemWithName(obj) UTF8String]);
 								if (_err == 0) {
-									NSLog(@"copying to device!");
 									copyResult = [copyToDevice copyLocalFile:GetMergeOnePasswordItemWithName(obj) toRemoteFile:GetDeviceOnePasswordItemWithName(obj)];
 									if (copyResult) {
 										syncItem++;

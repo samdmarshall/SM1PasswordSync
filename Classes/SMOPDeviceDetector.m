@@ -14,7 +14,7 @@
 @implementation SMOPDeviceDetector
 
 + (NSArray *)devicesSupportingIPhoneOS {
-	NSMutableArray *devices = [NSMutableArray new];
+	NSMutableArray *devices = [[NSMutableArray new] autorelease];
 	io_iterator_t iterator;
 	mach_port_t masterPort;
 	kern_return_t kr = IOMasterPort(MACH_PORT_NULL, &masterPort);

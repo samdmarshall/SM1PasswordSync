@@ -1,12 +1,3 @@
-/* ----------------------------------------------------------------------------
-*   MobileDevice.h - interface to MobileDevice.framework 
-*   $LastChangedDate: 2007-07-09 18:59:29 -0700 (Mon, 09 Jul 2007) $
-*
-* Copied from http://iphonesvn.halifrag.com/svn/iPhone/
-* With modifications from Allen Porter and Scott Turner
-*
-* ------------------------------------------------------------------------- */
-
 #ifndef MOBILEDEVICE_H
 #define MOBILEDEVICE_H
 
@@ -50,7 +41,6 @@ extern "C" {
 #define ADNCI_MSG_UNKNOWN       3
 
 #define AMD_IPHONE_PRODUCT_ID   0x1290
-//#define AMD_IPHONE_SERIAL       "3391002d9c804d105e2c8c7d94fc35b6f3d214a3"
 
 /* Services, found in /System/Library/Lockdown/Services.plist */
 #define AMSVC_AFC                   CFSTR("com.apple.afc")
