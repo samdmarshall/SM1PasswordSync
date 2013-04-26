@@ -102,6 +102,8 @@
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 				[syncButton setEnabled:NO];
 				[refreshButton setEnabled:NO];
+				[syncProgress setDoubleValue:0.0];
+				[syncProgress displayIfNeeded];
 				[syncProgress setHidden:NO];
 				[self performSyncForDevice:device];
 				[self refreshListWithData:deviceAccess.managerDevices];

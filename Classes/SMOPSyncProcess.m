@@ -156,7 +156,7 @@
 		if ([initiateSync ensureConnectionIsOpen]) {
 			afc_connection conn = [initiateSync getAFC];
 			AFCDirectoryCreate(conn, [@"/Documents/SMOP/" UTF8String]);
-			[initiateSync copyLocalFile:GetSyncStateFileForDevice([device udid]) toRemoteFile:@"/Documents/SMOP/SyncState.plist"];
+			[initiateSync copyLocalFile:GetSyncStateFileForDevice([device udid]) toRemoteFile:kSMOPDeviceSyncStatePath];
 			[initiateSync close];
 		}
 		[initiateSync release];
@@ -182,12 +182,12 @@
 	AFCApplicationDirectory *progressiveSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 	if ([progressiveSync ensureConnectionIsOpen]) {
 		afc_connection conn = [progressiveSync getAFC];
-		AFCRenamePath(conn, [@"/Documents/SMOP/SyncState.plist" UTF8String], [@"/Documents/SMOP/SyncState.LastState.plist" UTF8String]);
-		BOOL copyResult = [progressiveSync copyLocalFile:GetSyncStateFileForDevice([device udid]) toRemoteFile:@"/Documents/SMOP/SyncState.plist"];
+		AFCRenamePath(conn, [kSMOPDeviceSyncStatePath UTF8String], kSMOPDeviceLastSyncStatePath UTF8String]);
+		BOOL copyResult = [progressiveSync copyLocalFile:GetSyncStateFileForDevice([device udid]) toRemoteFile:kSMOPDeviceSyncStatePath];
 		if (copyResult) {
-			AFCRemovePath(conn, [@"/Documents/SMOP/SyncState.LastState.plist" UTF8String]);
+			AFCRemovePath(conn, [kSMOPDeviceLastSyncStatePath UTF8String]);
 		} else {
-			AFCRenamePath(conn, [@"/Documents/SMOP/SyncState.LastState.plist" UTF8String], [@"/Documents/SMOP/SyncState.plist" UTF8String]);
+			AFCRenamePath(conn, [kSMOPDeviceLastSyncStatePath UTF8String], [kSMOPDeviceSyncStatePath UTF8String]);
 		}
 		[progressiveSync close];
 	}
@@ -198,7 +198,7 @@
 	AFCApplicationDirectory *finalizeSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 	if ([finalizeSync ensureConnectionIsOpen]) {
 		afc_connection conn = [finalizeSync getAFC];
-		AFCRemovePath(conn, [@"/Documents/SMOP/SyncState.plist" UTF8String]);
+		AFCRemovePath(conn, [kSMOPDeviceSyncStatePath UTF8String]);
 		AFCRemovePath(conn, [@"/Documents/SMOP/" UTF8String]);
 		AFCDirectoryCreate(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/SMOPUpdate/"] UTF8String]);		
 		AFCRemovePath(conn, [[kOnePasswordRemotePath stringByAppendingPathComponent:@"/SMOPUpdate/"] UTF8String]);

@@ -141,6 +141,7 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				221C29BC1714983C003A44B8 /* IOKit.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				22412A1B16F7B268000DE1D7 /* MobileDevice.framework */,
 			);
@@ -205,7 +206,6 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				221C29BC1714983C003A44B8 /* IOKit.framework */,
 			);
 			name = "SM1Password Sync";
 			sourceTree = "<group>";

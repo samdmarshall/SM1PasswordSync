@@ -25,3 +25,5 @@
 #define kContents @"UpdatedContents"
 
 #define kSMOPDeviceBackupPath @"/Documents/SMOP/1Password.agilekeychain"
+#define kSMOPDeviceSyncStatePath @"/Documents/SMOP/SyncState.plist"
+#define kSMOPDeviceLastSyncStatePath @"/Documents/SMOP/SyncState.LastState.plist"
