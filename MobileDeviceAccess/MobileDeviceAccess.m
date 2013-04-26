@@ -2381,6 +2381,7 @@ plist_t build_contact_hello_msg(iphone_env *env)
 @synthesize deviceName=_deviceName;
 @synthesize lasterror=_lasterror;
 @synthesize applicationAttributes = _applAttributes;
+@synthesize device = _device;
 
 - (void)clearLastError
 {

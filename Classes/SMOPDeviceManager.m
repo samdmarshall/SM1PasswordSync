@@ -28,10 +28,17 @@
 }
 
 - (NSArray *)managerDevices {
-	//NSMutableArray *allDevices = [NSMutableArray new];
-	//[allDevices addObjectsFromArray:manager.devices];
-	//NSArray *detectorResults = [SMOPDeviceDetector devicesSupportingIPhoneOS];
-	return manager.devices;
+	NSMutableArray *allDevices = [[NSMutableArray new] autorelease];
+	[allDevices addObjectsFromArray:manager.devices];
+	NSArray *detectorResults = [SMOPDeviceDetector devicesSupportingIPhoneOS];
+	for (NSDictionary *device in detectorResults) {
+		NSPredicate *findUDID = [NSPredicate predicateWithFormat:@"udid == %@",[device objectForKey:@"UniqueDeviceID"]];
+		NSArray *results = [manager.devices filteredArrayUsingPredicate:findUDID];
+		if (results.count == 0) {
+			[allDevices addObject:device];
+		}
+	}
+	return allDevices;
 }
 
 - (BOOL)watchForConnection {
@@ -41,35 +48,40 @@
 - (NSArray *)devicesWithOnePassword4:(NSArray *)devices {
 	NSMutableArray *deviceList = [[[NSMutableArray alloc] init] autorelease];
 	NSArray *devicesCopy = [NSArray arrayWithArray:devices];
-	for (AMDevice *device in devicesCopy) {
+	for (id device in devicesCopy) {
 		if (![devices isEqualToArray:devicesCopy]) {
 			break;
 		}
-		NSPredicate *findOnePassword = [NSPredicate predicateWithFormat:@"bundleid == %@",kOnePasswordBundleId];
-		NSArray *results = [device.installedApplications filteredArrayUsingPredicate:findOnePassword];
-		if (results.count) {
-			NSString *lastSyncDate = @"Never";
-			AFCApplicationDirectory *fileService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
-			if (fileService) {
-				BOOL hasPasswordDatabase = [fileService fileExistsAtPath:kOnePasswordRemotePath];
-				if (hasPasswordDatabase) {
-					NSDictionary *fileInfo = [fileService getFileInfo:kOnePasswordRemotePath];
-					NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-					[dateFormatter setDateFormat:@"MMM dd, yyyy HH:mm"];
-					[dateFormatter setDateStyle:NSDateFormatterMediumStyle];
-					[dateFormatter setTimeStyle:NSDateFormatterShortStyle];
-					[dateFormatter setLocale:[NSLocale currentLocale]];
-					[dateFormatter setDoesRelativeDateFormatting:YES];
-					lastSyncDate = [dateFormatter stringFromDate:[fileInfo objectForKey:@"st_mtime"]];
-					[dateFormatter release];
+		if ([device isKindOfClass:[AMDevice class]]) {
+			NSPredicate *findOnePassword = [NSPredicate predicateWithFormat:@"bundleid == %@",kOnePasswordBundleId];
+			NSArray *results = [((AMDevice *)device).installedApplications filteredArrayUsingPredicate:findOnePassword];
+			if (results.count) {
+				NSString *lastSyncDate = @"Never";
+				AFCApplicationDirectory *fileService = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+				if (fileService) {
+					BOOL hasPasswordDatabase = [fileService fileExistsAtPath:kOnePasswordRemotePath];
+					if (hasPasswordDatabase) {
+						NSDictionary *fileInfo = [fileService getFileInfo:kOnePasswordRemotePath];
+						NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+						[dateFormatter setDateFormat:@"MMM dd, yyyy HH:mm"];
+						[dateFormatter setDateStyle:NSDateFormatterMediumStyle];
+						[dateFormatter setTimeStyle:NSDateFormatterShortStyle];
+						[dateFormatter setLocale:[NSLocale currentLocale]];
+						[dateFormatter setDoesRelativeDateFormatting:YES];
+						lastSyncDate = [dateFormatter stringFromDate:[fileInfo objectForKey:@"st_mtime"]];
+						[dateFormatter release];
+					}
+					BOOL syncError = ([fileService fileExistsAtPath:@"/Documents/SMOP/SyncState.plist"] ? TRUE : ([[NSFileManager defaultManager] fileExistsAtPath:GetSyncStateFileForDevice([device udid])]? TRUE : FALSE));
+					NSString *syncStatus = (syncError ? @"*!* " : @"");
+					[fileService close];
+					NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%@%@",syncStatus,[device deviceName]], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", [NSNumber numberWithBool:syncError], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", nil];
+					[deviceList addObject:deviceDict];
 				}
-				BOOL syncError = ([fileService fileExistsAtPath:@"/Documents/SMOP/SyncState.plist"] ? TRUE : ([[NSFileManager defaultManager] fileExistsAtPath:GetSyncStateFileForDevice([device udid])]? TRUE : FALSE));
-				NSString *syncStatus = (syncError ? @"*!* " : @"");
-				[fileService close];
-				NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%@%@",syncStatus,[device deviceName]], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", [NSNumber numberWithBool:syncError], @"SyncError", nil];
-				[deviceList addObject:deviceDict];
+				[fileService release];
 			}
-			[fileService release];
+		} else if ([device isKindOfClass:[NSDictionary class]]) {
+			NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device objectForKey:@"ProductName"], @"DeviceName", [device objectForKey:@"productType"], @"DeviceClass", @"Unknown", @"SyncDate", [NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:FALSE], @"ConnectState", nil];
+			[deviceList addObject:deviceDict];
 		}
 	}
 	return [NSArray arrayWithArray:deviceList];

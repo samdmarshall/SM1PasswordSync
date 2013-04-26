@@ -11,6 +11,15 @@
 
 @implementation NSAlert(Additions)
 
++ (NSInteger)communciationErrorWithDevice:(NSString *)name {
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	[alert addButtonWithTitle:@"OK"];
+	[alert setMessageText:@"Connection Error"];
+	[alert setInformativeText:[NSString stringWithFormat:@"Cannot connect with selected \"%@\", please try disconnecting and reconnecting this device. If problem persists, try quiting iTunes if it is running.",name]];
+	[alert setAlertStyle:NSCriticalAlertStyle];
+	return [alert runModal];
+}
+
 + (NSInteger)connectionErrorWithDevice:(NSString *)name {
 	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
 	[alert addButtonWithTitle:@"OK"];

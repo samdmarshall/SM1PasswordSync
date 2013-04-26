@@ -1,17 +1,8 @@
 #ifndef MOBILEDEVICE_H
 #define MOBILEDEVICE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-#if defined(WIN32)
-#include <CoreFoundation.h>
-	typedef unsigned int mach_error_t;
-#elif defined(__APPLE__)
 #include <CoreFoundation/CoreFoundation.h>
 #include <mach/error.h>
-#endif	
 
 		/* Error codes */
 #define MDERR_APPLE_MOBILE  (err_system(0x3a))
@@ -623,9 +614,5 @@ int performOperation(struct am_restore_device *rdev, CFMutableDictionaryRef mess
 int socketForPort(struct am_restore_device *rdev, unsigned int portnum);
 int sendCommandToDevice(struct am_recovery_device *rdev, CFStringRef cfs, int block);
 int sendFileToDevice(struct am_recovery_device *rdev, CFStringRef filename);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

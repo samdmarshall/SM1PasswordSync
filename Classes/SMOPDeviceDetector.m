@@ -31,7 +31,7 @@
 				uint16_t version = [(NSNumber *)productId intValue] >> 8;
 				uint16_t revision = ([(NSNumber *)productId intValue] & 0x00FF) >> 4;				
 				NSString *productType = [NSString stringWithFormat:@"%@%i,%i",(NSString *)productName,version,revision];
-				[devices addObject:[NSDictionary dictionaryWithObjectsAndKeys:(NSString *)serialNumber, @"SerialNumber", (NSString *)productName, @"ProductName", (NSString *)productType, @"productType", nil]];
+				[devices addObject:[NSDictionary dictionaryWithObjectsAndKeys:(NSString *)serialNumber, @"UniqueDeviceID", (NSString *)productName, @"ProductName", (NSString *)productType, @"productType", nil]];
 			}
 			IOObjectRelease(usbDevice);
 		}

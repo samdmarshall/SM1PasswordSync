@@ -126,7 +126,13 @@
 	if (deviceAccess.managerDevices.count == 0) {
 		return nil;
 	} else {
-		return [deviceAccess.managerDevices objectAtIndex:[deviceTable selectedRow]];
+		BOOL canSyncWithDevice = [[[deviceList objectAtIndex:[deviceTable selectedRow]] objectForKey:@"ConnectState"] boolValue];
+		if (!canSyncWithDevice) {
+			[NSAlert communciationErrorWithDevice:[[deviceList objectAtIndex:[deviceTable selectedRow]] objectForKey:@"DeviceName"]];
+			return nil;
+		} else {
+			return [deviceAccess.managerDevices objectAtIndex:[deviceTable selectedRow]];
+		}
 	}
 }
 

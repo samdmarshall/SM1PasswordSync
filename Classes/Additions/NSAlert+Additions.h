@@ -10,6 +10,7 @@
 
 
 @interface NSAlert(Additions)
++ (NSInteger)communciationErrorWithDevice:(NSString *)name;
 + (NSInteger)connectionErrorWithDevice:(NSString *)name;
 + (NSInteger)emptyKeychainAlertAtPath:(NSString *)path;
 + (NSInteger)cannotFindLocalKeychain;

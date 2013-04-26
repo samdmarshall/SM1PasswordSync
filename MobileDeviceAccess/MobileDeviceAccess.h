@@ -944,6 +944,8 @@ com.apple.mobile.application_uninstalled
 	bool _connected, _insession;
 }
 
+@property (readonly) am_device device;
+
 /// The last error that occurred on this device
 ///
 /// The object remembers the last error that occurred, which allows most other api's
