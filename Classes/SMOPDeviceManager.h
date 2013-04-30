@@ -16,6 +16,7 @@
 
 - (BOOL)watchForConnection;
 - (NSArray *)devicesWithOnePassword4:(NSArray *)devices;
+- (AMDevice *)getDeviceWithIdentifier:(NSString *)identifier;
 
 #pragma mark -
 #pragma mark MobileDeviceAccessListener

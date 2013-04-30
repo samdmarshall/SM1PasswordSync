@@ -135,10 +135,10 @@
 	} else {
 		BOOL canSyncWithDevice = [[[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"] objectForKey:@"ConnectState"] boolValue];
 		if (!canSyncWithDevice) {
-			[NSAlert communciationErrorWithDevice:[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceName"]];
+			[NSAlert communciationErrorWithDevice:[[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceInfo"] objectForKey:@"DeviceName"]];
 			return nil;
 		} else {
-			return [deviceAccess.managerDevices objectAtIndex:[deviceTable selectedRow]];
+			return [deviceAccess getDeviceWithIdentifier:[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceIdentifier"]];
 		}
 	}
 }
@@ -155,7 +155,7 @@
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
 	if ([[aTableColumn identifier] isEqualToString:@"DeviceState"]) {
-		return [NSImage imageNamed:@"sync"];
+		return nil;
 	} else {
 		return [[[deviceList objectAtIndex:rowIndex] objectForKey:@"DeviceInfo"] objectForKey:[aTableColumn identifier]];
 	}

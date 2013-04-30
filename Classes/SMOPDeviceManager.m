@@ -41,6 +41,16 @@
 	return allDevices;
 }
 
+- (AMDevice *)getDeviceWithIdentifier:(NSString *)identifier {
+	NSPredicate *findUDID = [NSPredicate predicateWithFormat:@"udid == %@",identifier];
+	NSArray *results = [manager.devices filteredArrayUsingPredicate:findUDID];
+	if (results.count) {
+		return [results objectAtIndex:0];
+	} else {
+		return nil;
+	}
+}
+
 - (BOOL)watchForConnection {
 	return [manager waitForConnection];
 }
@@ -72,7 +82,7 @@
 						lastSyncDate = [dateFormatter stringFromDate:[fileInfo objectForKey:@"st_mtime"]];
 						[dateFormatter release];
 					}
-					BOOL syncError = ([fileService fileExistsAtPath:@"/Documents/SMOP/SyncState.plist"] ? TRUE : ([[NSFileManager defaultManager] fileExistsAtPath:GetSyncStateFileForDevice([device udid])]? TRUE : FALSE));
+					BOOL syncError = ([fileService fileExistsAtPath:kSMOPDeviceSyncStatePath] ? TRUE : ([[NSFileManager defaultManager] fileExistsAtPath:GetSyncStateFileForDevice([device udid])]? TRUE : FALSE));
 					[fileService close];
 					deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:syncError], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil];
 				}
@@ -87,7 +97,7 @@
 			deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:FALSE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil];
 		}
 		if (deviceInfo != nil && deviceState != nil) {
-			NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys: deviceInfo, @"DeviceInfo", deviceState , @"DeviceState", nil];
+			NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys: deviceInfo, @"DeviceInfo", deviceState , @"DeviceState", ([device isKindOfClass:[AMDevice class]] ? [device udid] : [device objectForKey:@"UniqueDeviceID"]), @"DeviceIdentifier", nil];
 			[deviceList addObject:deviceDict];
 		}
 	}
