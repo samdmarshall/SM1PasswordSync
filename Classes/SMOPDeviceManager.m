@@ -44,11 +44,7 @@
 - (AMDevice *)getDeviceWithIdentifier:(NSString *)identifier {
 	NSPredicate *findUDID = [NSPredicate predicateWithFormat:@"udid == %@",identifier];
 	NSArray *results = [manager.devices filteredArrayUsingPredicate:findUDID];
-	if (results.count) {
-		return [results objectAtIndex:0];
-	} else {
-		return nil;
-	}
+	return ((results.count) ? [results objectAtIndex:0] : nil);
 }
 
 - (BOOL)watchForConnection {

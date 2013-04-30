@@ -123,6 +123,7 @@
 
 - (IBAction)installAndSync:(id)sender {
 	NSLog(@"calling installation method!");
+	
 }
 
 - (void)updateDeviceList {
@@ -162,18 +163,23 @@
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification {
-	BOOL needsApp = [[[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"] objectForKey:@"NeedsAppInstall"] boolValue];
-	if (needsApp) {
-		if ([syncButton.title isEqualToString:@"Sync"]) {
+	NSDictionary *state = [[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"];
+	BOOL canConnect = [[state objectForKey:@"ConnectState"] boolValue];
+	if (canConnect) {
+		[syncButton setEnabled:YES];		
+		BOOL needsApp = [[state objectForKey:@"NeedsAppInstall"] boolValue];
+		if (needsApp) {
 			[syncButton setTitle:@"Install"];
 			[syncButton setAction:@selector(installAndSync:)];
-		}
-	} else {
-		if (![syncButton.title isEqualToString:@"Sync"]) {
+		} else {
 			[syncButton setTitle:@"Sync"];
 			[syncButton setAction:@selector(syncData:)];
 		}
-	}
+	} else {
+		[syncButton setTitle:@"Install"];
+		[syncButton setAction:@selector(installAndSync:)];
+		[syncButton setEnabled:NO];		
+	}	
 }
 
 #pragma mark -
