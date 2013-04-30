@@ -191,7 +191,8 @@
 		encryptionKeys = [localEncryptionKeys isEqualToDictionary:remoteEncryptionKeys];
 	}
 	
-	[[NSFileManager defaultManager] removeItemAtPath:mergeKeychainPath error:nil];
+	[[NSFileManager defaultManager] removeItemAtPath:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalKeysPath] error:nil];
+	[[NSFileManager defaultManager] removeItemAtPath:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalEncryptionKeysPath] error:nil];
 	
 	return (keysDict && encryptionKeys);
 }
@@ -475,7 +476,7 @@
 }
 
 - (void)synchronizePasswords {
-	BOOL okToSync = [self checkForSyncPossible];
+	BOOL okToSync = TRUE;
 	if (deviceSyncError) {
 		okToSync = FALSE;
 		// check for device files and local files
@@ -497,12 +498,15 @@
 	if (okToSync) {
 		BOOL result = [self keychainChecks];
 		if (result) {
-			[self loadContentsData];
-			[self mergeLocalAndDeviceContents];
-			[self cleanUpMergeData];
+			result = [self checkForSyncPossible];
+			if (result) {
+				[self loadContentsData];
+				[self mergeLocalAndDeviceContents];
+				[self cleanUpMergeData];
+			} else {
+				[NSAlert keychainMismatchError];
+			}
 		}	
-	} else {
-		[NSAlert keychainMismatchError];
 	}	
 }
 

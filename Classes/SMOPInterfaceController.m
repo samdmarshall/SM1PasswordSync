@@ -182,7 +182,11 @@
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
-	[syncButton setEnabled:[[[[deviceList objectAtIndex:rowIndex] objectForKey:@"DeviceState"] objectForKey:@"ConnectState"] boolValue]];
+	if (isUpdating || isSyncing) {
+		[syncButton setEnabled:NO];
+	} else {
+		[syncButton setEnabled:[[[[deviceList objectAtIndex:rowIndex] objectForKey:@"DeviceState"] objectForKey:@"ConnectState"] boolValue]];
+	}
 	if ([[aTableColumn identifier] isEqualToString:@"StateIcon"]) {
 		return [NSImage imageNamed:[[[deviceList objectAtIndex:rowIndex] objectForKey:@"DeviceState"] objectForKey:[aTableColumn identifier]]];
 	} else {
@@ -191,23 +195,28 @@
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification {
-	NSDictionary *state = [[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"];
-	BOOL canConnect = [[state objectForKey:@"ConnectState"] boolValue];
-	if (canConnect) {
-		[syncButton setEnabled:YES];		
-		BOOL needsApp = [[state objectForKey:@"NeedsAppInstall"] boolValue];
-		if (needsApp) {
+	if (isUpdating || isSyncing) {
+		[syncButton setEnabled:NO];
+		[refreshButton setEnabled:NO];
+	} else {
+		NSDictionary *state = [[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"];
+		BOOL canConnect = [[state objectForKey:@"ConnectState"] boolValue];
+		if (canConnect) {
+			[syncButton setEnabled:YES];		
+			BOOL needsApp = [[state objectForKey:@"NeedsAppInstall"] boolValue];
+			if (needsApp) {
+				[syncButton setTitle:@"Install"];
+				[syncButton setAction:@selector(installAndSync:)];
+			} else {
+				[syncButton setTitle:@"Sync"];
+				[syncButton setAction:@selector(syncData:)];
+			}
+		} else {
 			[syncButton setTitle:@"Install"];
 			[syncButton setAction:@selector(installAndSync:)];
-		} else {
-			[syncButton setTitle:@"Sync"];
-			[syncButton setAction:@selector(syncData:)];
-		}
-	} else {
-		[syncButton setTitle:@"Install"];
-		[syncButton setAction:@selector(installAndSync:)];
-		[syncButton setEnabled:NO];
-	}	
+			[syncButton setEnabled:NO];
+		}	
+	}
 }
 
 #pragma mark -
