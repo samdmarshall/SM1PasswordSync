@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="536"/>
+			<integer value="564"/>
 			<integer value="205"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -470,7 +470,7 @@
 															<int key="NSfFlags">1044</int>
 														</object>
 														<int key="NSAlign">0</int>
-														<int key="NSScale">3</int>
+														<int key="NSScale">0</int>
 														<int key="NSStyle">0</int>
 														<bool key="NSAnimates">NO</bool>
 													</object>

@@ -100,6 +100,8 @@
 		AMDevice *device = [self selectedDevice];
 		if (device != nil) {
 			isSyncing = TRUE;
+			[(NSMutableDictionary *)[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"] setObject:@"sync" forKey:@"StateIcon"];
+			[deviceTable reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:[deviceTable selectedRow]] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 				[syncButton setEnabled:NO];
 				[refreshButton setEnabled:NO];
@@ -126,6 +128,8 @@
 		AMDevice *device = [self selectedDevice];
 		if (device != nil) {
 			isSyncing = TRUE;
+			[(NSMutableDictionary *)[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"] setObject:@"installing" forKey:@"StateIcon"];
+			[deviceTable reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:[deviceTable selectedRow]] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
 				[syncButton setEnabled:NO];
 				[refreshButton setEnabled:NO];
@@ -133,6 +137,7 @@
 				[syncProgress displayIfNeeded];
 				[syncProgress setHidden:NO];
 				NSLog(@"calling installation method! %@",device);
+				[self refreshListWithData:deviceAccess.managerDevices];
 				[syncButton setEnabled:YES];
 				[refreshButton setEnabled:YES];
 				[syncProgress setHidden:YES];
@@ -155,8 +160,6 @@
 			[NSAlert communciationErrorWithDevice:[[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceInfo"] objectForKey:@"DeviceName"]];
 			return nil;
 		} else {
-			[(NSMutableDictionary *)[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"] setObject:@"sync" forKey:@"StateIcon"];
-			[deviceTable reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:[deviceTable selectedRow]] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 			return [deviceAccess getDeviceWithIdentifier:[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceIdentifier"]];
 		}
 	}

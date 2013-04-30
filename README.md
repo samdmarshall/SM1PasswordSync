@@ -22,6 +22,10 @@ Code Libraries
 	* Included is a header file that has been floating around the internet called MobileDevice.h. The copy included in this project is a consolidated version of this header file, and it is used for accessing Apple's private MobileDevice.framework.
 	* There was no license posted with MobileDeviceAccess, and this project uses very modified version of that code. 
 
+Icons
+-----
+* [Iconic](http://somerandomdude.com/work/iconic/)
+
 Disclaimer
 ----------
 It is mentioned with the code license below, however I am in no way responsible for any fault in this code and/or damage it may cause to the 1Password keychain files. USE AT YOUR OWN RISK. If you find a bug, please report an issue or submit a pull request and I will get to it as soon as possible. 
