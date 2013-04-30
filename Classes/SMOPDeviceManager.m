@@ -52,6 +52,7 @@
 		if (![devices isEqualToArray:devicesCopy]) {
 			break;
 		}
+		NSDictionary *deviceInfo, *deviceState;
 		if ([device isKindOfClass:[AMDevice class]]) {
 			NSPredicate *findOnePassword = [NSPredicate predicateWithFormat:@"bundleid == %@",kOnePasswordBundleId];
 			NSArray *results = [((AMDevice *)device).installedApplications filteredArrayUsingPredicate:findOnePassword];
@@ -74,32 +75,27 @@
 					BOOL syncError = ([fileService fileExistsAtPath:@"/Documents/SMOP/SyncState.plist"] ? TRUE : ([[NSFileManager defaultManager] fileExistsAtPath:GetSyncStateFileForDevice([device udid])]? TRUE : FALSE));
 					[fileService close];
 
-					NSDictionary *deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:syncError], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil];
+					deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:syncError], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil];
 					
-					NSDictionary *deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", nil];
-
-					NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys: deviceInfo, @"DeviceInfo", deviceState , @"DeviceState", nil];
-					[deviceList addObject:deviceDict];
+					deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", nil];
 				}
 				[fileService release];
 			} else {
 				// not installed
-				NSDictionary *deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:TRUE], @"NeedsAppInstall", nil];
+				deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:TRUE], @"NeedsAppInstall", nil];
 				
-				NSDictionary *deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", @"Never", @"SyncDate", nil];
-				
-				NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:deviceInfo, @"DeviceInfo", deviceState, @"DeviceState", nil];
-				[deviceList addObject:deviceDict];
+				deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", @"Never", @"SyncDate", nil];
 			}
 		} else if ([device isKindOfClass:[NSDictionary class]]) {
 			
-			NSDictionary *deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device objectForKey:@"ProductName"], @"DeviceName", [device objectForKey:@"productType"], @"DeviceClass", @"Unknown", @"SyncDate", nil];
+			deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device objectForKey:@"ProductName"], @"DeviceName", [device objectForKey:@"productType"], @"DeviceClass", @"Unknown", @"SyncDate", nil];
 			
-			NSDictionary *deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:FALSE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil];
-			
-			NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys: deviceInfo, @"DeviceInfo", deviceState, @"DeviceState", nil];
-			[deviceList addObject:deviceDict];
+			deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:FALSE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil];
 		}
+		if (deviceInfo != nil && deviceState != nil) {
+			NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys: deviceInfo, @"DeviceInfo", deviceState , @"DeviceState", nil];
+			[deviceList addObject:deviceDict];
+		}		
 	}
 	return [NSArray arrayWithArray:deviceList];
 }
