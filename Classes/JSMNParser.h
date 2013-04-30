@@ -19,11 +19,14 @@ enum JSMNParserType {
 	uint32_t count;
 	NSString *jsonData;
 	uint32_t offset;
+	BOOL contentsParse;
 }
++ (NSUInteger)tokenCountForObject:(id)obj;
 + (NSString *)serializeJSON:(id)obj;
 
 - (id)initWithPath:(NSString *)path tokenCount:(NSInteger)total;
 - (id)deserializeJSON;
+- (id)deserializeContents;
 - (id)parseFromIndex:(NSInteger)index;
 
 @end

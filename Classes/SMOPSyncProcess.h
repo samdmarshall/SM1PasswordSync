@@ -36,6 +36,8 @@
 
 - (BOOL)deviceSyncStateFileExistsLocally;
 
+- (BOOL)checkForSyncPossible;
+
 - (void)initiateSyncingProcess;
 - (void)updateSyncingProcessToFile:(NSString *)name forSyncState:(NSString *)state;
 - (void)finishSyncingProcess;

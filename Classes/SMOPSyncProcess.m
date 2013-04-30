@@ -11,6 +11,10 @@
 #import "SMOPContentsItem.h"
 #import "JSMNParser.h"
 
+@interface SMOPSyncProcess()
+- (BOOL)validateKeysFileAtPath:(NSString *)path;
+@end
+
 @implementation SMOPSyncProcess
 
 @synthesize delegate;
@@ -18,8 +22,6 @@
 - (id)init {
 	self = [super init];
 	if (self) {
-		localKeychainPath = [(NSString *)OnePasswordKeychainPath() retain];
-		mergeKeychainPath = [kSMOPSyncPath retain];
 		deviceContents = [NSMutableSet new];
 		localContents = [NSMutableSet new];
 		deviceSyncError = FALSE;
@@ -34,11 +36,13 @@
 - (void)setSyncDevice:(AMDevice *)syncDevice withSyncStatus:(BOOL)status {
 	device = [syncDevice retain];
 	deviceSyncError = status;
+	mergeKeychainPath = [kSMOPSyncPath stringByAppendingPathComponent:device.udid];
+	localKeychainPath = (NSString *)OnePasswordKeychainPath();	
 }
 
 - (void)loadContentsData {
-	JSMNParser *localParser = [[JSMNParser alloc] initWithPath:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetLocalContentsItemCount()];
-	NSArray *localData = [localParser deserializeJSON];	
+	JSMNParser *localParser = [[JSMNParser alloc] initWithPath:[OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetLocalContentsItemCount()];
+	NSArray *localData = [localParser deserializeContents];	
 	[localData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
 		SMOPContentsItem *newLocalItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[localContents addObject:newLocalItem];
@@ -47,7 +51,7 @@
 	[localParser release];
 	
 	JSMNParser *deviceParser = [[JSMNParser alloc] initWithPath:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetRemoteContentsItemCount(device)];	
-	NSArray *remoteData = [deviceParser deserializeJSON];
+	NSArray *remoteData = [deviceParser deserializeContents];
 	[remoteData enumerateObjectsUsingBlock:^(id obj, NSUInteger index, BOOL *stop) {
 		SMOPContentsItem *newDeviceItem = [[SMOPContentsItem alloc] initWithArray:obj];
 		[deviceContents addObject:newDeviceItem];
@@ -144,11 +148,60 @@
 	return [[NSFileManager defaultManager] fileExistsAtPath:deviceSyncFile];
 }
 
+- (BOOL)validateKeysFileAtPath:(NSString *)path {		
+	BOOL directory;
+	BOOL checkLocalEncryption = [[NSFileManager defaultManager] fileExistsAtPath:[localKeychainPath stringByAppendingPathComponent:path] isDirectory:&directory];
+	BOOL checkDeviceEncryption = FALSE;
+	AFCApplicationDirectory *encryptionAccess = [device newAFCApplicationDirectory:kOnePasswordBundleId];
+	if ([encryptionAccess ensureConnectionIsOpen]) {
+		checkDeviceEncryption = [encryptionAccess fileExistsAtPath:[kOnePasswordRemotePath stringByAppendingPathComponent:path]];
+		if (checkDeviceEncryption) {
+			checkDeviceEncryption = [encryptionAccess copyRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:path] toLocalFile:[mergeKeychainPath stringByAppendingPathComponent:path]];
+		}
+		[encryptionAccess close];
+	}
+	[encryptionAccess release];
+	return (checkLocalEncryption && checkDeviceEncryption);
+}
+
+- (BOOL)checkForSyncPossible {
+	NSDictionary *localKeys, *remoteKeys, *localEncryptionKeys, *remoteEncryptionKeys;
+	uint32_t tokenCount = 0;
+	// check for valid keychain
+	BOOL keysDict = [self validateKeysFileAtPath:kOnePasswordInternalKeysPath];
+	if (keysDict) {
+		localKeys = [NSDictionary dictionaryWithContentsOfFile:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalKeysPath]];
+		remoteKeys = [NSDictionary dictionaryWithContentsOfFile:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalKeysPath]];
+		keysDict = [localKeys isEqualToDictionary:remoteKeys];
+		if (keysDict) {
+			tokenCount = [JSMNParser tokenCountForObject:localKeys] - 1;
+		}
+	}
+		
+	BOOL encryptionKeys = [self validateKeysFileAtPath:kOnePasswordInternalEncryptionKeysPath];
+	if (encryptionKeys && keysDict) {
+		JSMNParser *localEncryptionParser = [[JSMNParser alloc] initWithPath:[localKeychainPath stringByAppendingPathComponent:kOnePasswordInternalEncryptionKeysPath] tokenCount:tokenCount];
+		localEncryptionKeys = [localEncryptionParser deserializeJSON];	
+		[localEncryptionParser release];
+		
+		JSMNParser *remoteEncryptionParser = [[JSMNParser alloc] initWithPath:[mergeKeychainPath stringByAppendingPathComponent:kOnePasswordInternalEncryptionKeysPath] tokenCount:tokenCount];
+		remoteEncryptionKeys = [remoteEncryptionParser deserializeJSON];	
+		[remoteEncryptionParser release];
+
+		encryptionKeys = [localEncryptionKeys isEqualToDictionary:remoteEncryptionKeys];
+	}
+	
+	[[NSFileManager defaultManager] removeItemAtPath:mergeKeychainPath error:nil];
+	
+	return (keysDict && encryptionKeys);
+}
+
 - (void)initiateSyncingProcess {
 	if ([self deviceSyncStateFileExistsLocally]) {
 		// this is a partial sync
 	} else {
 		// new sync
+		
 		NSMutableDictionary *syncState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], kContents, [NSArray array], kCopyToDevice, [NSArray array], kCopyToLocal, [NSArray array], kMerge, nil];
 		
 		[syncState writeToFile:GetSyncStateFileForDevice([device udid]) atomically:YES];
@@ -418,13 +471,11 @@
 }
 
 - (void)cleanUpMergeData {
-	[[NSFileManager defaultManager] removeItemAtPath:kSMOPSyncPath error:nil];
-	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPSyncPath withIntermediateDirectories:YES attributes:nil error:nil];
+	[[NSFileManager defaultManager] removeItemAtPath:mergeKeychainPath error:nil];
 }
 
 - (void)synchronizePasswords {
-	[self cleanUpMergeData];
-	BOOL okToSync = TRUE;
+	BOOL okToSync = [self checkForSyncPossible];
 	if (deviceSyncError) {
 		okToSync = FALSE;
 		// check for device files and local files
@@ -450,12 +501,12 @@
 			[self mergeLocalAndDeviceContents];
 			[self cleanUpMergeData];
 		}	
-	}
+	} else {
+		NSLog(@"failed to match encryption keys!");
+	}	
 }
 
 - (void)dealloc {
-	[localKeychainPath release];
-	[mergeKeychainPath release];
 	[localContents release];
 	[deviceContents release];
 	[device release];

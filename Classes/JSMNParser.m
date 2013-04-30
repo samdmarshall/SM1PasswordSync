@@ -22,8 +22,44 @@
 		jsmn_parser localParser;
 		jsmn_init(&localParser);
 		jsmn_parse(&localParser, [jsonData cStringUsingEncoding:NSUnicodeStringEncoding], tokens, total);
+		for (uint32_t i = 0; i < total; i++) {
+			if (tokens[i].start == 0 && tokens[i].end == 0) {
+				count = i - 1;
+				break;
+			}
+		}
 	}
 	return self;
+}
+
++ (NSUInteger)tokenCountForObject:(id)obj {
+	NSUInteger count = 0;
+	
+	if ([obj isKindOfClass:[SMOPContentsItem class]]) {
+		obj = [obj returnAsArray];
+	}
+	
+	if ([obj isKindOfClass:[NSArray class]]) {
+		count = count + [obj count];
+		for (id item in obj) {
+			count = count + [JSMNParser tokenCountForObject:item];
+		}
+	}
+	if ([obj isKindOfClass:[NSDictionary class]]) {
+		count = count + 1;
+		NSEnumerator *enumerator = [obj objectEnumerator];
+		id value;
+		while ((value = [enumerator nextObject])) {
+			count = count + 1 + [JSMNParser tokenCountForObject:value];
+		}
+	}
+	if ([obj isKindOfClass:[NSNumber class]]) {
+		count++;
+	}
+	if ([obj isKindOfClass:[NSString class]]) {
+		count++;
+	}
+	return count;
 }
 
 + (NSString *)serializeJSON:(id)obj {
@@ -61,7 +97,17 @@
 }
 
 - (id)deserializeJSON {	
-	return [self parseFromIndex:0];
+	contentsParse = FALSE;
+	id result = [self parseFromIndex:0];
+	offset = 0;
+	return result;
+}
+
+- (id)deserializeContents {
+	contentsParse = TRUE;
+	id result = [self parseFromIndex:0];
+	offset = 0;
+	return result;
 }
 
 - (id)parseFromIndex:(NSInteger)index {
@@ -75,6 +121,8 @@
 					parsed = valueString;
 					break;
 				}
+			} else if (length == 0) {
+				valueString = @"";
 			}
 			NSNumberFormatter *stringFormatter = [[NSNumberFormatter alloc] init];
 			[stringFormatter setNumberStyle:NSNumberFormatterDecimalStyle];
@@ -83,28 +131,35 @@
 			break;
 		};
 		case JSMN_OBJECT: {
-			if (tokens[index].size%2 == 0) {
-				parsed = [NSMutableDictionary dictionaryWithCapacity:tokens[index].size/2];
-				for (uint32_t i = 0; i < tokens[index].size; i+=2) {
-					NSString *keyName = [self parseFromIndex:offset+index+1+i];
-					[parsed setObject:[self parseFromIndex:offset+index+2+i] forKey:keyName];
-				}
+			parsed = [NSMutableDictionary dictionaryWithCapacity:tokens[index].size/2];
+			for (uint32_t i = 0; i < tokens[index].size; i+=2) {
+				NSUInteger keyIndex = offset+index+1+i;
+				NSUInteger objectIndex = offset+index+2+i;
+				NSString *keyName = [self parseFromIndex:(keyIndex >= count ? index+1+i : keyIndex)];
+				[parsed setObject:[self parseFromIndex:(objectIndex >= count ? index+2+i : objectIndex)] forKey:keyName];
 			}
 			if (tokens[index].start)
 				offset = offset + tokens[index].size;
 			break;
 		};
 		case JSMN_ARRAY: {
-			parsed = [[NSMutableArray new] autorelease];
+			parsed = [NSMutableArray arrayWithCapacity:tokens[index].size];
 			for (uint32_t i = 0; i < tokens[index].size; i++) {
-				offset++;
-				[parsed addObject:[self parseFromIndex:offset]];
-				offset = offset + tokens[offset].size;
+				if (index == 0) {
+					offset++;
+					[parsed addObject:[self parseFromIndex:offset]];
+					offset = offset + tokens[offset].size;
+				} else {
+					NSUInteger keyIndex = offset+index+1+i;
+					[parsed addObject:[self parseFromIndex:(keyIndex >= count ? index+1+i : keyIndex)]];
+				}
 			}
+			if (tokens[index].start && index != 0 && !contentsParse)
+				offset = offset + tokens[index].size;
 			break;
 		};
 		case JSMN_STRING: {
-			if (tokens[index].end-tokens[index].start) {
+			if (tokens[index].end-tokens[index].start > 0) {
 				parsed = [jsonData substringWithRange:NSMakeRange(tokens[index].start,tokens[index].end-tokens[index].start)];
 			} else {
 				parsed = @"";

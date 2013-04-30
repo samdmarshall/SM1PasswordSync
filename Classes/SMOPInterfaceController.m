@@ -122,8 +122,24 @@
 }
 
 - (IBAction)installAndSync:(id)sender {
-	NSLog(@"calling installation method!");
-	
+	if (!isUpdating) {
+		AMDevice *device = [self selectedDevice];
+		if (device != nil) {
+			isSyncing = TRUE;
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+				[syncButton setEnabled:NO];
+				[refreshButton setEnabled:NO];
+				[syncProgress setDoubleValue:0.0];
+				[syncProgress displayIfNeeded];
+				[syncProgress setHidden:NO];
+				NSLog(@"calling installation method! %@",device);
+				[syncButton setEnabled:YES];
+				[refreshButton setEnabled:YES];
+				[syncProgress setHidden:YES];
+				isSyncing = FALSE;
+			});
+		}
+	}
 }
 
 - (void)updateDeviceList {
