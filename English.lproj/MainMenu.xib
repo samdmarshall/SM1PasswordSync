@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="536"/>
+			<integer value="533"/>
 			<integer value="205"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -474,9 +474,8 @@
 														<int key="NSStyle">0</int>
 														<bool key="NSAnimates">NO</bool>
 													</object>
-													<int key="NSResizingMask">3</int>
+													<int key="NSResizingMask">1</int>
 													<bool key="NSIsResizeable">YES</bool>
-													<bool key="NSIsEditable">YES</bool>
 													<reference key="NSTableView" ref="1057812110"/>
 												</object>
 												<object class="NSTableColumn" id="598382973">
@@ -587,7 +586,7 @@
 												</object>
 											</object>
 											<double key="NSRowHeight">17</double>
-											<int key="NSTvFlags">-2101346304</int>
+											<int key="NSTvFlags">46137344</int>
 											<reference key="NSDelegate"/>
 											<reference key="NSDataSource"/>
 											<int key="NSColumnAutoresizingStyle">4</int>
@@ -618,7 +617,6 @@
 									<int key="NSvFlags">-2147483392</int>
 									<string key="NSFrame">{{1, 211}, {691, 15}}</string>
 									<reference key="NSSuperview" ref="540466274"/>
-									<bool key="NSEnabled">YES</bool>
 									<int key="NSsFlags">1</int>
 									<reference key="NSTarget" ref="540466274"/>
 									<string key="NSAction">_doScroller:</string>
@@ -643,7 +641,7 @@
 							<string key="NSFrame">{{20, 60}, {693, 227}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<reference key="NSNextKeyView" ref="597261622"/>
-							<int key="NSsFlags">690</int>
+							<int key="NSsFlags">562</int>
 							<reference key="NSVScroller" ref="688845454"/>
 							<reference key="NSHScroller" ref="969125195"/>
 							<reference key="NSContentView" ref="597261622"/>

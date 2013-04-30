@@ -73,17 +73,31 @@
 					}
 					BOOL syncError = ([fileService fileExistsAtPath:@"/Documents/SMOP/SyncState.plist"] ? TRUE : ([[NSFileManager defaultManager] fileExistsAtPath:GetSyncStateFileForDevice([device udid])]? TRUE : FALSE));
 					[fileService close];
-					NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:syncError], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil], @"DeviceState", nil];
+
+					NSDictionary *deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:syncError], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil];
+					
+					NSDictionary *deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", nil];
+
+					NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys: deviceInfo, @"DeviceInfo", deviceState , @"DeviceState", nil];
 					[deviceList addObject:deviceDict];
 				}
 				[fileService release];
 			} else {
 				// not installed
-				NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", @"Never", @"SyncDate", [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:TRUE], @"NeedsAppInstall", nil], @"DeviceState", nil];
+				NSDictionary *deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:TRUE], @"NeedsAppInstall", nil];
+				
+				NSDictionary *deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", @"Never", @"SyncDate", nil];
+				
+				NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:deviceInfo, @"DeviceInfo", deviceState, @"DeviceState", nil];
 				[deviceList addObject:deviceDict];
 			}
 		} else if ([device isKindOfClass:[NSDictionary class]]) {
-			NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device objectForKey:@"ProductName"], @"DeviceName", [device objectForKey:@"productType"], @"DeviceClass", @"Unknown", @"SyncDate", [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:FALSE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil], @"DeviceState", nil];
+			
+			NSDictionary *deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device objectForKey:@"ProductName"], @"DeviceName", [device objectForKey:@"productType"], @"DeviceClass", @"Unknown", @"SyncDate", nil];
+			
+			NSDictionary *deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:FALSE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil];
+			
+			NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys: deviceInfo, @"DeviceInfo", deviceState, @"DeviceState", nil];
 			[deviceList addObject:deviceDict];
 		}
 	}

@@ -35,6 +35,8 @@
 
 - (AMDevice *)selectedDevice;
 
+- (NSDictionary *)deviceInfoAtSelectedRow;
+
 #pragma mark -
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView;
