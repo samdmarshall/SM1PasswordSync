@@ -12,6 +12,7 @@
 		2203C0C116FA1DE600D961E1 /* jsmn.h in Headers */ = {isa = PBXBuildFile; fileRef = 2203C05216FA1B9900D961E1 /* jsmn.h */; };
 		2203C0C416FA1DF400D961E1 /* libjsmn.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2203C0BD16FA1DD600D961E1 /* libjsmn.a */; };
 		2203C0F116FA23F100D961E1 /* JSMNParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 2203C0F016FA23F100D961E1 /* JSMNParser.m */; };
+		2209892E172FF59100F291CC /* sync.png in Resources */ = {isa = PBXBuildFile; fileRef = 2209892D172FF59100F291CC /* sync.png */; };
 		221C23001704DA0C003A44B8 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 221C22FF1704DA0C003A44B8 /* Credits.rtf */; };
 		221C29A31714961D003A44B8 /* SMOPDeviceDetector.m in Sources */ = {isa = PBXBuildFile; fileRef = 221C29A21714961D003A44B8 /* SMOPDeviceDetector.m */; };
 		221C29BD1714983C003A44B8 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 221C29BC1714983C003A44B8 /* IOKit.framework */; };
@@ -57,6 +58,7 @@
 		2203C0BD16FA1DD600D961E1 /* libjsmn.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libjsmn.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2203C0EF16FA23F100D961E1 /* JSMNParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSMNParser.h; sourceTree = "<group>"; };
 		2203C0F016FA23F100D961E1 /* JSMNParser.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSMNParser.m; sourceTree = "<group>"; };
+		2209892D172FF59100F291CC /* sync.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sync.png; sourceTree = "<group>"; };
 		221C22FF1704DA0C003A44B8 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		221C29A11714961D003A44B8 /* SMOPDeviceDetector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPDeviceDetector.h; sourceTree = "<group>"; };
 		221C29A21714961D003A44B8 /* SMOPDeviceDetector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOPDeviceDetector.m; sourceTree = "<group>"; };
@@ -177,6 +179,14 @@
 			path = jsmn;
 			sourceTree = "<group>";
 		};
+		2209892C172FF59100F291CC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				2209892D172FF59100F291CC /* sync.png */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		22412A3716F7B302000DE1D7 /* MobileDeviceAccess */ = {
 			isa = PBXGroup;
 			children = (
@@ -199,6 +209,7 @@
 		29B97314FDCFA39411CA2CEA /* SM1Password Sync */ = {
 			isa = PBXGroup;
 			children = (
+				2209892C172FF59100F291CC /* Resources */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				2203C05116FA1B8300D961E1 /* jsmn */,
 				22412A3716F7B302000DE1D7 /* MobileDeviceAccess */,
@@ -350,6 +361,7 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				221C23001704DA0C003A44B8 /* Credits.rtf in Resources */,
+				2209892E172FF59100F291CC /* sync.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

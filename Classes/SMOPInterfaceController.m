@@ -48,6 +48,7 @@
 		if (!deviceList) {
 			deviceList = [NSMutableArray new];
 		}
+		deviceTable.delegate = self;
 		isUpdating = FALSE;
 		isSyncing = FALSE;
 		[syncProgress setIndeterminate:NO];
@@ -90,7 +91,7 @@
 		[deviceSync release];
 	deviceSync = [[SMOPSyncProcess alloc] init];
 	deviceSync.delegate = self;
-	[deviceSync setSyncDevice:device withSyncStatus:[[[deviceList objectAtIndex:[deviceTable selectedRow]] valueForKey:@"SyncError"] boolValue]];
+	[deviceSync setSyncDevice:device withSyncStatus:[[[[deviceList objectAtIndex:[deviceTable selectedRow]] objectForKey:@"DeviceState"] valueForKey:@"SyncError"] boolValue]];
 	[deviceSync synchronizePasswords];
 }
 
@@ -116,19 +117,23 @@
 	}
 }
 
-- (void)updateDeviceList {
-	[self refreshListWithData:deviceAccess.managerDevices];
-}
-
 - (IBAction)refreshList:(id)sender {
 	[self updateDeviceList];
+}
+
+- (IBAction)installAndSync:(id)sender {
+	NSLog(@"calling installation method!");
+}
+
+- (void)updateDeviceList {
+	[self refreshListWithData:deviceAccess.managerDevices];
 }
 
 - (AMDevice *)selectedDevice {
 	if (deviceAccess.managerDevices.count == 0) {
 		return nil;
 	} else {
-		BOOL canSyncWithDevice = [[[deviceList objectAtIndex:[deviceTable selectedRow]] objectForKey:@"ConnectState"] boolValue];
+		BOOL canSyncWithDevice = [[[[deviceList objectAtIndex:[deviceTable selectedRow]] objectForKey:@"DeviceState"] objectForKey:@"ConnectState"] boolValue];
 		if (!canSyncWithDevice) {
 			[NSAlert communciationErrorWithDevice:[[deviceList objectAtIndex:[deviceTable selectedRow]] objectForKey:@"DeviceName"]];
 			return nil;
@@ -145,7 +150,26 @@
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
-	return [[deviceList objectAtIndex:rowIndex] objectForKey:[aTableColumn identifier]];
+	if ([[aTableColumn identifier] isEqualToString:@"DeviceState"]) {
+		return [NSImage imageNamed:@"sync"];
+	} else {
+		return [[deviceList objectAtIndex:rowIndex] objectForKey:[aTableColumn identifier]];
+	}
+}
+
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification {
+	BOOL needsApp = [[[[deviceList objectAtIndex:[deviceTable selectedRow]] objectForKey:@"DeviceState"] objectForKey:@"NeedsAppInstall"] boolValue];
+	if (needsApp) {
+		if ([syncButton.title isEqualToString:@"Sync"]) {
+			[syncButton setTitle:@"Install"];
+			[syncButton setAction:@selector(installAndSync:)];
+		}
+	} else {
+		if (![syncButton.title isEqualToString:@"Sync"]) {
+			[syncButton setTitle:@"Sync"];
+			[syncButton setAction:@selector(syncData:)];
+		}
+	}
 }
 
 #pragma mark -

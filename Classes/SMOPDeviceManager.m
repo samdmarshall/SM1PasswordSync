@@ -72,15 +72,18 @@
 						[dateFormatter release];
 					}
 					BOOL syncError = ([fileService fileExistsAtPath:@"/Documents/SMOP/SyncState.plist"] ? TRUE : ([[NSFileManager defaultManager] fileExistsAtPath:GetSyncStateFileForDevice([device udid])]? TRUE : FALSE));
-					NSString *syncStatus = (syncError ? @"*!* " : @"");
 					[fileService close];
-					NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSString stringWithFormat:@"%@%@",syncStatus,[device deviceName]], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", [NSNumber numberWithBool:syncError], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", nil];
+					NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:syncError], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil], @"DeviceState", nil];
 					[deviceList addObject:deviceDict];
 				}
 				[fileService release];
+			} else {
+				// not installed
+				NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", @"Never", @"SyncDate", [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:TRUE], @"NeedsAppInstall", nil], @"DeviceState", nil];
+				[deviceList addObject:deviceDict];
 			}
 		} else if ([device isKindOfClass:[NSDictionary class]]) {
-			NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device objectForKey:@"ProductName"], @"DeviceName", [device objectForKey:@"productType"], @"DeviceClass", @"Unknown", @"SyncDate", [NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:FALSE], @"ConnectState", nil];
+			NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys:[device objectForKey:@"ProductName"], @"DeviceName", [device objectForKey:@"productType"], @"DeviceClass", @"Unknown", @"SyncDate", [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:FALSE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil], @"DeviceState", nil];
 			[deviceList addObject:deviceDict];
 		}
 	}

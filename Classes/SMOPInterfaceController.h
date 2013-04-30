@@ -30,6 +30,7 @@
 - (void)performSyncForDevice:(AMDevice *)device;
 
 - (IBAction)syncData:(id)sender;
+- (IBAction)installAndSync:(id)sender;
 - (IBAction)refreshList:(id)sender;
 
 - (AMDevice *)selectedDevice;
@@ -38,6 +39,7 @@
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView;
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex;
+- (void)tableViewSelectionDidChange:(NSNotification *)aNotification;
 
 #pragma mark -
 #pragma mark SMOPSyncProgressDelegate

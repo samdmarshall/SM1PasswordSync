@@ -182,7 +182,7 @@
 	AFCApplicationDirectory *progressiveSync = [device newAFCApplicationDirectory:kOnePasswordBundleId];
 	if ([progressiveSync ensureConnectionIsOpen]) {
 		afc_connection conn = [progressiveSync getAFC];
-		AFCRenamePath(conn, [kSMOPDeviceSyncStatePath UTF8String], kSMOPDeviceLastSyncStatePath UTF8String]);
+		AFCRenamePath(conn, [kSMOPDeviceSyncStatePath UTF8String], [kSMOPDeviceLastSyncStatePath UTF8String]);
 		BOOL copyResult = [progressiveSync copyLocalFile:GetSyncStateFileForDevice([device udid]) toRemoteFile:kSMOPDeviceSyncStatePath];
 		if (copyResult) {
 			AFCRemovePath(conn, [kSMOPDeviceLastSyncStatePath UTF8String]);
