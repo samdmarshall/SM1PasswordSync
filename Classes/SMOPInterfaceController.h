@@ -35,7 +35,7 @@
 
 - (AMDevice *)selectedDevice;
 
-- (NSDictionary *)deviceInfoAtSelectedRow;
+- (NSMutableDictionary *)deviceInfoAtSelectedRow;
 
 #pragma mark -
 #pragma mark NSTableView

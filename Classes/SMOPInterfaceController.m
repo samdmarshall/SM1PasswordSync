@@ -155,6 +155,8 @@
 			[NSAlert communciationErrorWithDevice:[[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceInfo"] objectForKey:@"DeviceName"]];
 			return nil;
 		} else {
+			[(NSMutableDictionary *)[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"] setObject:@"sync" forKey:@"StateIcon"];
+			[deviceTable reloadDataForRowIndexes:[NSIndexSet indexSetWithIndex:[deviceTable selectedRow]] columnIndexes:[NSIndexSet indexSetWithIndex:0]];
 			return [deviceAccess getDeviceWithIdentifier:[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceIdentifier"]];
 		}
 	}
@@ -171,8 +173,8 @@
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
-	if ([[aTableColumn identifier] isEqualToString:@"DeviceState"]) {
-		return nil;
+	if ([[aTableColumn identifier] isEqualToString:@"StateIcon"]) {
+		return [NSImage imageNamed:[[[deviceList objectAtIndex:rowIndex] objectForKey:@"DeviceState"] objectForKey:[aTableColumn identifier]]];
 	} else {
 		return [[[deviceList objectAtIndex:rowIndex] objectForKey:@"DeviceInfo"] objectForKey:[aTableColumn identifier]];
 	}

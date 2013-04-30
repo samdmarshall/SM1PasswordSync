@@ -58,7 +58,7 @@
 		if (![devices isEqualToArray:devicesCopy]) {
 			break;
 		}
-		NSDictionary *deviceInfo = nil, *deviceState = nil;
+		NSMutableDictionary *deviceInfo = nil, *deviceState = nil;
 		if ([device isKindOfClass:[AMDevice class]]) {
 			NSPredicate *findOnePassword = [NSPredicate predicateWithFormat:@"bundleid == %@",kOnePasswordBundleId];
 			NSArray *results = [((AMDevice *)device).installedApplications filteredArrayUsingPredicate:findOnePassword];
@@ -80,20 +80,20 @@
 					}
 					BOOL syncError = ([fileService fileExistsAtPath:kSMOPDeviceSyncStatePath] ? TRUE : ([[NSFileManager defaultManager] fileExistsAtPath:GetSyncStateFileForDevice([device udid])]? TRUE : FALSE));
 					[fileService close];
-					deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:syncError], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil];
+					deviceState = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:syncError], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", @"", @"StateIcon", nil];
 				}
 				[fileService release];
 			} else {
 				// not installed
-				deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:TRUE], @"NeedsAppInstall", nil];
+				deviceState = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:TRUE], @"ConnectState", [NSNumber numberWithBool:TRUE], @"NeedsAppInstall", @"", @"StateIcon", nil];
 			}
 			deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device deviceName], @"DeviceName", [device modelName], @"DeviceClass", lastSyncDate, @"SyncDate", nil];
 		} else if ([device isKindOfClass:[NSDictionary class]]) {
-			deviceInfo = [NSDictionary dictionaryWithObjectsAndKeys:[device objectForKey:@"ProductName"], @"DeviceName", [device objectForKey:@"productType"], @"DeviceClass", @"Unknown", @"SyncDate", nil];
-			deviceState = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:FALSE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", nil];
+			deviceInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:[device objectForKey:@"ProductName"], @"DeviceName", [device objectForKey:@"productType"], @"DeviceClass", @"Unknown", @"SyncDate", nil];
+			deviceState = [NSMutableDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithBool:FALSE], @"SyncError", [NSNumber numberWithBool:FALSE], @"ConnectState", [NSNumber numberWithBool:FALSE], @"NeedsAppInstall", @"", @"StateIcon", nil];
 		}
 		if (deviceInfo != nil && deviceState != nil) {
-			NSDictionary *deviceDict = [NSDictionary dictionaryWithObjectsAndKeys: deviceInfo, @"DeviceInfo", deviceState , @"DeviceState", ([device isKindOfClass:[AMDevice class]] ? [device udid] : [device objectForKey:@"UniqueDeviceID"]), @"DeviceIdentifier", nil];
+			NSMutableDictionary *deviceDict = [NSMutableDictionary dictionaryWithObjectsAndKeys: deviceInfo, @"DeviceInfo", deviceState , @"DeviceState", ([device isKindOfClass:[AMDevice class]] ? [device udid] : [device objectForKey:@"UniqueDeviceID"]), @"DeviceIdentifier", nil];
 			[deviceList addObject:deviceDict];
 		}
 	}
