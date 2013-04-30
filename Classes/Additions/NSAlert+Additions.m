@@ -77,4 +77,13 @@
 	return [alert runModal];
 }
 
++ (NSInteger)keychainMismatchError {
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	[alert addButtonWithTitle:@"OK"];
+	[alert setMessageText:@"Keychain Mismatch"];
+	[alert setInformativeText:@"Syncing has been aborted. The encryption keys do not match, please ensure you are syncing the correct 1Password keychain."];
+	[alert setAlertStyle:NSCriticalAlertStyle];
+	return [alert runModal];
+}
+
 @end

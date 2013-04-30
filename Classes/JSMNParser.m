@@ -145,7 +145,7 @@
 		case JSMN_ARRAY: {
 			parsed = [NSMutableArray arrayWithCapacity:tokens[index].size];
 			for (uint32_t i = 0; i < tokens[index].size; i++) {
-				if (index == 0) {
+				if (index == 0 || contentsParse) {
 					offset++;
 					[parsed addObject:[self parseFromIndex:offset]];
 					offset = offset + tokens[offset].size;

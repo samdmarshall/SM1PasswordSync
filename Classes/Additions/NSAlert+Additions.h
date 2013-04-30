@@ -17,4 +17,5 @@
 + (NSInteger)cannotFindKeychainOnDevice:(NSString *)name;
 + (NSInteger)previousSyncError;
 + (NSInteger)syncInterruptError;
++ (NSInteger)keychainMismatchError;
 @end

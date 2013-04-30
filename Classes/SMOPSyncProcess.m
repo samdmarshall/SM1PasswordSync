@@ -502,7 +502,7 @@
 			[self cleanUpMergeData];
 		}	
 	} else {
-		NSLog(@"failed to match encryption keys!");
+		[NSAlert keychainMismatchError];
 	}	
 }
 
