@@ -80,6 +80,11 @@
 			[deviceList removeAllObjects];
 		}
 		[deviceTable reloadData];
+		NSInteger selection = [deviceTable selectedRow];
+		if (selection >= 0) {
+			[deviceTable deselectRow:selection];
+			[deviceTable selectRowIndexes:[NSIndexSet indexSetWithIndex:selection] byExtendingSelection:NO];
+		}
 		[syncButton setEnabled:YES];
 		[refreshButton setEnabled:YES];
 		isUpdating = FALSE;
@@ -166,7 +171,8 @@
 }
 
 - (NSDictionary *)deviceInfoAtSelectedRow {
-	return [deviceList objectAtIndex:[deviceTable selectedRow]];
+	NSInteger selection = [deviceTable selectedRow];
+	return (selection >= 0 && selection < deviceList.count ? [deviceList objectAtIndex:[deviceTable selectedRow]] : nil);
 }
 
 #pragma mark -
