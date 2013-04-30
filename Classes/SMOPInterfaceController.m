@@ -182,6 +182,7 @@
 }
 
 - (id)tableView:(NSTableView *)aTableView objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex {
+	[syncButton setEnabled:[[[[deviceList objectAtIndex:rowIndex] objectForKey:@"DeviceState"] objectForKey:@"ConnectState"] boolValue]];
 	if ([[aTableColumn identifier] isEqualToString:@"StateIcon"]) {
 		return [NSImage imageNamed:[[[deviceList objectAtIndex:rowIndex] objectForKey:@"DeviceState"] objectForKey:[aTableColumn identifier]]];
 	} else {
@@ -205,7 +206,7 @@
 	} else {
 		[syncButton setTitle:@"Install"];
 		[syncButton setAction:@selector(installAndSync:)];
-		[syncButton setEnabled:NO];		
+		[syncButton setEnabled:NO];
 	}	
 }
 
