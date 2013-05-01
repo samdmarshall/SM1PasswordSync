@@ -544,14 +544,14 @@ void install_callback(CFDictionaryRef dict, int arg) {
 	    CFDictionaryRef options = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 	    
 		AMDeviceConnect(device);
-		assert(AMDeviceIsPaired(device));
-		assert(AMDeviceValidatePairing(device) == 0);
-		assert(AMDeviceStartSession(device) == 0);
+		AMDeviceIsPaired(device);
+		AMDeviceValidatePairing(device);
+		AMDeviceStartSession(device);
 		
 		int install;
-		assert(AMDeviceStartService(device, AMSVC_INSTALLATION_PROXY, &install, NULL));
-		assert(AMDeviceSecureTransferPath(install, device, path, options, NULL, 0));
-		assert(AMDeviceSecureInstallApplication(install, device, path, options, install_callback, NULL));
+		AMDeviceStartService(device, AMSVC_INSTALLATION_PROXY, &install, NULL);
+		AMDeviceSecureTransferPath(install, device, path, options, NULL, 0);
+		AMDeviceSecureInstallApplication(install, device, path, options, install_callback, NULL);
 		close(install);
 		CFRelease(path);
 		CFRelease(options);
