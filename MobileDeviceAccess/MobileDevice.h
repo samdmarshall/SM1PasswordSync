@@ -47,6 +47,12 @@
 #define AMSVC_SYSLOG_RELAY          CFSTR("com.apple.syslog_relay")
 #define AMSVC_SYSTEM_PROFILER       CFSTR("com.apple.mobile.system_profiler")
 #define AMSVC_SPRINGBOARD_SERVICES  CFSTR("com.apple.springboardservices")
+#define AMSVC_INSTALLATION_PROXY	CFSTR("com.apple.mobile.installation_proxy")
+
+typedef struct {
+	const char *name;
+	uint16_t productID;
+} APPLE_USB_INTERFACE_TYPE;
 
 #define NUM_APPLE_USB_INTERFACES 6
 
@@ -70,12 +76,10 @@ enum {
 	kAMDeviceDFUMode = 3,
 	kAMDeviceNoMode = 4
 };
-
-typedef unsigned int afc_error_t;
+typedef uint32_t afc_error_t;
+typedef uint64_t afc_file_ref;
 typedef unsigned int usbmux_error_t;
 typedef unsigned int service_conn_t;
-
-struct am_recovery_device;
 
 typedef struct am_device_notification_callback_info {
 	struct am_device *dev;  /* 0    device */ 
@@ -84,7 +88,7 @@ typedef struct am_device_notification_callback_info {
 
 /* The type of the device restore notification callback functions.
  TODO: change to correct type. */
-void (*am_restore_device_notification_callback)(struct am_recovery_device *);
+typedef void (*am_restore_device_notification_callback)(struct am_recovery_device *);
 
 /* This is a CoreFoundation object of class AMRecoveryModeDevice. */
 typedef struct am_recovery_device {
@@ -113,7 +117,7 @@ typedef void(*am_device_notification_callback)(struct am_device_notification_cal
 * TODO: change to correct type. */
 typedef void *amd_device_attached_callback;
 
-
+#if 0
 typedef struct am_device {
 	unsigned char unknown0[16]; /* 0 - zero */
 	unsigned int device_id;     /* 16 */
@@ -124,6 +128,8 @@ typedef struct am_device {
 	unsigned int lockdown_conn; /* 36 */
 	unsigned char unknown3[8];  /* 40 */
 } __attribute__ ((packed)) am_device;
+#endif
+typedef struct _am_device				*am_device;
 
 typedef struct am_device_notification {
 	unsigned int unknown0;                      /* 0 */
@@ -133,6 +139,7 @@ typedef struct am_device_notification {
 	unsigned int unknown3;                      /* 16 */
 } __attribute__ ((packed)) am_device_notification;
 
+#if 0
 typedef struct afc_connection {
 	unsigned int handle;            /* 0 */
 	unsigned int unknown0;          /* 4 */
@@ -147,16 +154,22 @@ typedef struct afc_connection {
 	void *afc_lock;                 /* 36 */
 	unsigned int context;           /* 40 */
 } __attribute__ ((packed)) afc_connection;
+#endif
+typedef struct _afc_connection			*afc_connection;
 
+#if 0
 typedef struct afc_directory {
 	unsigned char unknown[0];   /* size unknown */
 } __attribute__ ((packed)) afc_directory;
+#endif
+typedef struct _afc_directory			*afc_directory;
 
+#if 0
 typedef struct afc_dictionary {
 	unsigned char unknown[0];   /* size unknown */
 } __attribute__ ((packed)) afc_dictionary;
-
-typedef unsigned long long afc_file_ref;
+#endif
+typedef struct _afc_dictionary *afc_dictionary;
 
 typedef struct usbmux_listener_1 {                  /* offset   value in iTunes */
 	unsigned int unknown0;                  /* 0        1 */
@@ -177,6 +190,10 @@ typedef struct am_bootloader_control_packet {
 	unsigned char magic[2];     /* 2: 0x34, 0x12 */
 	unsigned char payload[0];   /* 4 */
 } __attribute__ ((packed)) am_bootloader_control_packet;
+
+typedef int muxconn_t;
+typedef int am_service;
+typedef struct _afc_operation *afc_operation;
 
 /* ----------------------------------------------------------------------------
 *   Public routines
@@ -507,7 +524,7 @@ unsigned int AMRecoveryModeDeviceReboot(struct am_recovery_device *rdev, CFStrin
 /*edits by geohot*/
 mach_error_t AMDeviceDeactivate(struct am_device *device);
 mach_error_t AMDeviceActivate(struct am_device *device, CFMutableDictionaryRef);
-mach_error_t AMDeviceRemoveValue(struct am_device *device, unsigned int, const __CFString *cfstring);
+mach_error_t AMDeviceRemoveValue(struct am_device *device, unsigned int, CFStringRef *cfstring);
 /*end*/
 
 //EDITS BY CHRIS DEVOR
@@ -520,7 +537,7 @@ mach_error_t AFCFileRefUnlock(struct afc_connection *conn, afc_file_ref ref);
 
 
 int AMDeviceSecureTransferPath(int unknown0, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
-int AMDeviceSecureInstallApplication(int unknown0, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
+int AMDeviceSecureInstallApplication(bool dontStartInstallationProxyService, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int cbarg);
 int AMDeviceSecureUninstallApplication(int unknown0, struct am_device *device, CFStringRef bundle_id, int unknown1, void *callback, int callback_arg);
 
 // Get a dictionary 

@@ -559,6 +559,8 @@
 				INFOPLIST_FILE = "SM1Password_Sync-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = "SM1Password Sync";
+				SEPARATE_STRIP = YES;
+				STRIP_STYLE = debugging;
 			};
 			name = Debug;
 		};

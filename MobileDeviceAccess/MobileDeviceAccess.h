@@ -50,6 +50,22 @@
 extern "C" {
 #endif
 
+#define AMSVC_AFC                   CFSTR("com.apple.afc")
+#define AMSVC_AFC2                  CFSTR("com.apple.afc2")
+#define AMSVC_BACKUP                CFSTR("com.apple.mobilebackup")
+#define AMSVC_CRASH_REPORT_COPY     CFSTR("com.apple.crashreportcopy")
+#define AMSVC_DEBUG_IMAGE_MOUNT     CFSTR("com.apple.mobile.debug_image_mount")
+#define AMSVC_NOTIFICATION_PROXY    CFSTR("com.apple.mobile.notification_proxy")
+#define AMSVC_PURPLE_TEST           CFSTR("com.apple.purpletestr")
+#define AMSVC_SOFTWARE_UPDATE       CFSTR("com.apple.mobile.software_update")
+#define AMSVC_SYNC                  CFSTR("com.apple.mobilesync")
+#define AMSVC_SCREENSHOT            CFSTR("com.apple.screenshotr")
+#define AMSVC_SYSLOG_RELAY          CFSTR("com.apple.syslog_relay")
+#define AMSVC_SYSTEM_PROFILER       CFSTR("com.apple.mobile.system_profiler")
+#define AMSVC_SPRINGBOARD_SERVICES  CFSTR("com.apple.springboardservices")
+#define AMSVC_INSTALLATION_PROXY	CFSTR("com.apple.mobile.installation_proxy")
+
+
 // Apple's opaque types
 typedef uint32_t afc_error_t;
 typedef uint64_t afc_file_ref;
@@ -116,6 +132,9 @@ typedef struct am_bootloader_control_packet {
 		unsigned char magic[2];     /* 2: 0x34, 0x12 */
 		unsigned char payload[0];   /* 4 */
 } __attribute__ ((packed)) am_bootloader_control_packet;
+
+int AMDeviceSecureTransferPath(int unknown0, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
+int AMDeviceSecureInstallApplication(bool dontStartInstallationProxyService, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int cbarg);
 
 
 /// This class represents a service running on the mobile device.  To create

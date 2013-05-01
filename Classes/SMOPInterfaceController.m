@@ -100,6 +100,15 @@
 	[deviceSync synchronizePasswords];
 }
 
+- (void)performInstallOnDevice:(AMDevice *)device {
+	if (deviceSync)
+		[deviceSync release];
+	deviceSync = [[SMOPSyncProcess alloc] init];
+	deviceSync.delegate = self;
+	[deviceSync setSyncDevice:device withSyncStatus:[[[[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"] valueForKey:@"SyncError"] boolValue]];
+	[deviceSync installOnePassword];
+}
+
 - (IBAction)syncData:(id)sender {
 	if (!isUpdating) {
 		AMDevice *device = [self selectedDevice];
@@ -142,6 +151,7 @@
 				[syncProgress displayIfNeeded];
 				[syncProgress setHidden:NO];
 				NSLog(@"calling installation method! %@",device);
+				[self performInstallOnDevice:device];
 				[self refreshListWithData:deviceAccess.managerDevices];
 				[syncButton setEnabled:YES];
 				[refreshButton setEnabled:YES];

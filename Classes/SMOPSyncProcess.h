@@ -28,9 +28,13 @@
 }
 @property (nonatomic, retain) id<SMOPSyncProcessDelegate> delegate;
 
+- (void)setSyncDevice:(AMDevice *)syncDevice withSyncStatus:(BOOL)status;
+
+#pragma mark -
+#pragma mark 1Password Sync
+
 - (AMDevice *)getSyncDevice;
 
-- (void)setSyncDevice:(AMDevice *)syncDevice withSyncStatus:(BOOL)status;
 - (void)loadContentsData;
 - (void)synchronizePasswords;
 
@@ -41,5 +45,10 @@
 - (void)initiateSyncingProcess;
 - (void)updateSyncingProcessToFile:(NSString *)name forSyncState:(NSString *)state;
 - (void)finishSyncingProcess;
+
+#pragma mark -
+#pragma mark Application Install
+
+- (void)installOnePassword;
 
 @end

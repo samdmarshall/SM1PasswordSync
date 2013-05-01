@@ -11,6 +11,14 @@
 #import "SMOPContentsItem.h"
 #import "JSMNParser.h"
 
+void install_callback(CFDictionaryRef dict, int arg) {
+    int percent;
+    CFStringRef status = CFDictionaryGetValue(dict, CFSTR("Status"));
+    CFNumberGetValue(CFDictionaryGetValue(dict, CFSTR("PercentComplete")), kCFNumberSInt32Type, &percent);
+
+    printf("[%3d%%] %s\n", (percent / 2) + 50, CFStringGetCStringPtr(status, kCFStringEncodingMacRoman));
+}
+
 @interface SMOPSyncProcess()
 - (BOOL)validateKeysFileAtPath:(NSString *)path;
 @end
@@ -29,6 +37,13 @@
 	return self;
 }
 
+- (void)dealloc {
+	[localContents release];
+	[deviceContents release];
+	[device release];
+	[super dealloc];
+}
+
 - (AMDevice *)getSyncDevice {
 	return device;
 }
@@ -39,6 +54,9 @@
 	mergeKeychainPath = [kSMOPSyncPath stringByAppendingPathComponent:device.udid];
 	localKeychainPath = (NSString *)OnePasswordKeychainPath();	
 }
+
+#pragma mark -
+#pragma mark 1Password Sync
 
 - (void)loadContentsData {
 	JSMNParser *localParser = [[JSMNParser alloc] initWithPath:[OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] tokenCount:GetLocalContentsItemCount()];
@@ -510,11 +528,35 @@
 	}	
 }
 
-- (void)dealloc {
-	[localContents release];
-	[deviceContents release];
-	[device release];
-	[super dealloc];
+#pragma mark -
+#pragma mark Application Install
+
+- (void)installOnePassword {
+	BOOL okToInstall = TRUE;
+	if (okToInstall) {
+		CFStringRef path = CFStringCreateWithCString(NULL, [@"~/Desktop/1Password.app" stringByExpandingTildeInPath], kCFStringEncodingASCII);
+		CFURLRef relative_url = CFURLCreateWithFileSystemPath(NULL, path, kCFURLPOSIXPathStyle, false);
+		CFURLRef url = CFURLCopyAbsoluteURL(relative_url);
+		CFRelease(relative_url);
+		
+		CFStringRef keys[] = { CFSTR("PackageType") };
+	    CFStringRef values[] = { CFSTR("Developer") };
+	    CFDictionaryRef options = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+	    
+		AMDeviceConnect(device);
+		assert(AMDeviceIsPaired(device));
+		assert(AMDeviceValidatePairing(device) == 0);
+		assert(AMDeviceStartSession(device) == 0);
+		
+		int install;
+		assert(AMDeviceStartService(device, AMSVC_INSTALLATION_PROXY, &install, NULL));
+		assert(AMDeviceSecureTransferPath(install, device, path, options, NULL, 0));
+		assert(AMDeviceSecureInstallApplication(install, device, path, options, install_callback, NULL));
+		close(install);
+		CFRelease(path);
+		CFRelease(options);
+	}
+	
 }
 
 @end
