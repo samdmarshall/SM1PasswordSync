@@ -29,13 +29,15 @@
 - (void)refreshListWithData:(NSArray *)devices;
 - (void)performSyncForDevice:(AMDevice *)device;
 
-- (IBAction)syncData:(id)sender;
+- (IBAction)syncDevice:(id)sender;
 - (IBAction)installAndSync:(id)sender;
+
 - (IBAction)refreshList:(id)sender;
 
 - (AMDevice *)selectedDevice;
 
 - (NSMutableDictionary *)deviceInfoAtSelectedRow;
+- (void)updateTableSelection;
 
 #pragma mark -
 #pragma mark NSTableView

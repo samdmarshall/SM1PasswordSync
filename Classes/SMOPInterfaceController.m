@@ -80,14 +80,10 @@
 			[deviceList removeAllObjects];
 		}
 		[deviceTable reloadData];
-		NSInteger selection = [deviceTable selectedRow];
-		if (selection >= 0) {
-			[deviceTable deselectRow:selection];
-			[deviceTable selectRowIndexes:[NSIndexSet indexSetWithIndex:selection] byExtendingSelection:NO];
-		}
+		isUpdating = FALSE;
+		[self updateTableSelection:[deviceTable selectedRow]];
 		[syncButton setEnabled:YES];
 		[refreshButton setEnabled:YES];
-		isUpdating = FALSE;
 	}
 }
 
@@ -109,7 +105,7 @@
 	[deviceSync installOnePassword];
 }
 
-- (IBAction)syncData:(id)sender {
+- (IBAction)syncDevice:(id)sender {
 	if (!isUpdating) {
 		AMDevice *device = [self selectedDevice];
 		if (device != nil) {
@@ -185,6 +181,32 @@
 	return (selection >= 0 && selection < deviceList.count ? [deviceList objectAtIndex:[deviceTable selectedRow]] : nil);
 }
 
+- (void)updateTableSelection:(NSInteger)index {
+	if (isUpdating || isSyncing) {
+		[syncButton setEnabled:NO];
+		[refreshButton setEnabled:NO];
+	} else {
+		NSDictionary *state;
+		if (index != -1 && index < deviceList.count) {
+			state = [[deviceList objectAtIndex:index] objectForKey:@"DeviceState"];
+		} else {
+			state = [[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"];
+		}
+		BOOL canConnect = [[state objectForKey:@"ConnectState"] boolValue];
+		if (canConnect) {
+			[syncButton setEnabled:YES];
+			BOOL needsApp = [[state objectForKey:@"NeedsAppInstall"] boolValue];
+			[syncButton setTitle:(needsApp ? @"Install" : @"Sync")];
+			[syncButton setAction:(needsApp ? @selector(installAndSync:) : @selector(syncDevice:))];
+		} else {
+			[syncButton setTitle:@"Install"];
+			[syncButton setAction:@selector(installAndSync:)];
+			[syncButton setEnabled:NO];
+		}
+	}
+	[syncButton setNeedsDisplay:YES];
+}
+
 #pragma mark -
 #pragma mark NSTableView
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
@@ -205,28 +227,17 @@
 }
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification {
-	if (isUpdating || isSyncing) {
-		[syncButton setEnabled:NO];
-		[refreshButton setEnabled:NO];
-	} else {
-		NSDictionary *state = [[self deviceInfoAtSelectedRow] objectForKey:@"DeviceState"];
-		BOOL canConnect = [[state objectForKey:@"ConnectState"] boolValue];
-		if (canConnect) {
-			[syncButton setEnabled:YES];		
-			BOOL needsApp = [[state objectForKey:@"NeedsAppInstall"] boolValue];
-			if (needsApp) {
-				[syncButton setTitle:@"Install"];
-				[syncButton setAction:@selector(installAndSync:)];
-			} else {
-				[syncButton setTitle:@"Sync"];
-				[syncButton setAction:@selector(syncData:)];
-			}
-		} else {
-			[syncButton setTitle:@"Install"];
-			[syncButton setAction:@selector(installAndSync:)];
-			[syncButton setEnabled:NO];
-		}	
-	}
+	[self updateTableSelection:-1];
+}
+
+- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex {
+	[self updateTableSelection:rowIndex];
+	return YES;
+}
+
+- (BOOL)tableView:(NSTableView *)tableView shouldTrackCell:(NSCell *)cell forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+	[self updateTableSelection:row];
+	return YES;
 }
 
 #pragma mark -

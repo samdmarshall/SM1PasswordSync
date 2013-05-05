@@ -535,6 +535,8 @@ mach_error_t AFCFileRefUnlock(struct afc_connection *conn, afc_file_ref ref);
 //06-14-2010
 //app folder transfer for itunes 4.0
 
+int AMDeviceTransferPath(int unknown0, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
+int AMDeviceInstallApplication(bool dontStartInstallationProxyService, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int cbarg);
 
 int AMDeviceSecureTransferPath(int unknown0, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
 int AMDeviceSecureInstallApplication(bool dontStartInstallationProxyService, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int cbarg);

@@ -133,8 +133,8 @@ typedef struct am_bootloader_control_packet {
 		unsigned char payload[0];   /* 4 */
 } __attribute__ ((packed)) am_bootloader_control_packet;
 
-int AMDeviceSecureTransferPath(int unknown0, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
-int AMDeviceSecureInstallApplication(bool dontStartInstallationProxyService, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int cbarg);
+extern int AMDeviceSecureTransferPath(int unknown0, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
+extern int AMDeviceSecureInstallApplication(bool dontStartInstallationProxyService, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int cbarg);
 
 
 /// This class represents a service running on the mobile device.  To create

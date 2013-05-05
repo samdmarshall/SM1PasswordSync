@@ -12,8 +12,8 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="564"/>
 			<integer value="205"/>
+			<integer value="372"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -886,14 +886,6 @@
 					<int key="connectionID">554</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">syncData:</string>
-						<reference key="source" ref="528807520"/>
-						<reference key="destination" ref="779689165"/>
-					</object>
-					<int key="connectionID">555</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">dataSource</string>
 						<reference key="source" ref="1057812110"/>
@@ -924,6 +916,14 @@
 						<reference key="destination" ref="837950980"/>
 					</object>
 					<int key="connectionID">563</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">syncDevice:</string>
+						<reference key="source" ref="528807520"/>
+						<reference key="destination" ref="779689165"/>
+					</object>
+					<int key="connectionID">567</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1642,7 +1642,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">566</int>
+			<int key="maxID">568</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -1656,7 +1656,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>installAndSync:</string>
 							<string>refreshList:</string>
-							<string>syncData:</string>
+							<string>syncDevice:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1671,7 +1671,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>installAndSync:</string>
 							<string>refreshList:</string>
-							<string>syncData:</string>
+							<string>syncDevice:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1684,7 +1684,7 @@
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
-								<string key="name">syncData:</string>
+								<string key="name">syncDevice:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>

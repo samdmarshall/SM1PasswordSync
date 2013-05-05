@@ -534,7 +534,7 @@ void install_callback(CFDictionaryRef dict, int arg) {
 - (void)installOnePassword {
 	BOOL okToInstall = TRUE;
 	if (okToInstall) {
-		CFStringRef path = CFStringCreateWithCString(NULL, [@"~/Desktop/1Password.app" stringByExpandingTildeInPath], kCFStringEncodingASCII);
+		CFStringRef path = CFStringCreateWithCString(NULL, [[@"~/Desktop/1Password.app" stringByExpandingTildeInPath] UTF8String], kCFStringEncodingUTF8);
 		CFURLRef relative_url = CFURLCreateWithFileSystemPath(NULL, path, kCFURLPOSIXPathStyle, false);
 		CFURLRef url = CFURLCopyAbsoluteURL(relative_url);
 		CFRelease(relative_url);
@@ -550,8 +550,8 @@ void install_callback(CFDictionaryRef dict, int arg) {
 		
 		int install;
 		AMDeviceStartService(device, AMSVC_INSTALLATION_PROXY, &install, NULL);
-		AMDeviceSecureTransferPath(install, device, path, options, NULL, 0);
-		AMDeviceSecureInstallApplication(install, device, path, options, install_callback, NULL);
+		AMDeviceTransferApplication(0, device, url, options, NULL, 0);
+		AMDeviceInstallApplication(install, device, url, options, install_callback, NULL);
 		close(install);
 		CFRelease(path);
 		CFRelease(options);

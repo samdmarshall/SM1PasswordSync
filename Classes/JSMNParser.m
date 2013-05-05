@@ -121,7 +121,7 @@
 					parsed = valueString;
 					break;
 				}
-			} else if (length == 0) {
+			} else if (length <= 0) {
 				valueString = @"";
 			}
 			NSNumberFormatter *stringFormatter = [[NSNumberFormatter alloc] init];
