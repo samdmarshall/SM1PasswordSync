@@ -86,4 +86,13 @@
 	return [alert runModal];
 }
 
++ (NSInteger)appInstallationFailure {
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	[alert addButtonWithTitle:@"OK"];
+	[alert setMessageText:@"Install Failed"];
+	[alert setInformativeText:@"Installing the 1Password app has failed. Please check if the selected device supports installation of this app."];
+	[alert setAlertStyle:NSCriticalAlertStyle];
+	return [alert runModal];
+}
+
 @end

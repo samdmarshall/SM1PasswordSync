@@ -595,11 +595,11 @@ void install_callback(CFDictionaryRef dict, int arg) {
 	    assert(AMDeviceDisconnect(device.device) == 0);
 
 	    mach_error_t result = AMDeviceInstallApplication(installFd, path, options, install_callback, NULL);
-	    if (result != 0)
-	    {
-	       printf("AMDeviceInstallApplication failed: %d\n", result);
-	        exit(1);
-	    }
+	    if (result != 0) {
+			[NSAlert appInstallationFailure];
+	    } else {
+			[self.delegate syncItemNumber:100 ofTotal:100];
+		}
 
 	    close(installFd);
 		CFRelease(path);

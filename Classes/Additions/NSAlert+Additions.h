@@ -18,4 +18,5 @@
 + (NSInteger)previousSyncError;
 + (NSInteger)syncInterruptError;
 + (NSInteger)keychainMismatchError;
++ (NSInteger)appInstallationFailure;
 @end

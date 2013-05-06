@@ -54,6 +54,8 @@
 		[syncProgress setIndeterminate:NO];
 		[syncProgress setDoubleValue:0.0];
 		[syncProgress setUsesThreadedAnimation:YES];
+		[syncProgress setDisplayedWhenStopped:YES];
+		[syncProgress displayIfNeeded];
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceConnectionEvent:) name:kDeviceConnectionEventPosted object:nil];
 		[self updateDeviceList];
 	}
@@ -119,11 +121,11 @@
 				[syncProgress displayIfNeeded];
 				[syncProgress setHidden:NO];
 				[self performSyncForDevice:device];
+				isSyncing = FALSE;
 				[self refreshListWithData:deviceAccess.managerDevices];
 				[syncButton setEnabled:YES];
 				[refreshButton setEnabled:YES];
 				[syncProgress setHidden:YES];
-				isSyncing = FALSE;
 			});
 		}
 	}
@@ -146,13 +148,10 @@
 				[syncProgress setDoubleValue:0.0];
 				[syncProgress displayIfNeeded];
 				[syncProgress setHidden:NO];
-				NSLog(@"calling installation method! %@",device);
 				[self performInstallOnDevice:device];
-				[self refreshListWithData:deviceAccess.managerDevices];
-				[syncButton setEnabled:YES];
-				[refreshButton setEnabled:YES];
-				[syncProgress setHidden:YES];
 				isSyncing = FALSE;
+				[self refreshListWithData:deviceAccess.managerDevices];
+				[self syncDevice:nil];
 			});
 		}
 	}
@@ -243,9 +242,11 @@
 #pragma mark -
 #pragma mark SMOPSyncProgressDelegate
 -(void)syncItemNumber:(NSUInteger)item ofTotal:(NSUInteger)count {
-	double newValue = ((double)item/(double)count)*100.0;
-	[syncProgress setDoubleValue:newValue];
-	[syncProgress displayIfNeeded];
+	dispatch_sync(dispatch_get_main_queue(), ^{
+		double newValue = ((double)item/(double)count)*100.0;
+		[syncProgress setDoubleValue:newValue];
+		[syncProgress displayIfNeeded];
+	});
 }
 
 @end
