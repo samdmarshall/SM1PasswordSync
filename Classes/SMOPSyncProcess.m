@@ -11,12 +11,33 @@
 #import "SMOPContentsItem.h"
 #import "JSMNParser.h"
 
-void install_callback(CFDictionaryRef dict, int arg) {
+void* callbackSelf;
+CFStringRef last_path = NULL;
+
+void transfer_callback(CFDictionaryRef dict, int arg) {
     int percent;
     CFStringRef status = CFDictionaryGetValue(dict, CFSTR("Status"));
     CFNumberGetValue(CFDictionaryGetValue(dict, CFSTR("PercentComplete")), kCFNumberSInt32Type, &percent);
+    if (CFEqual(status, CFSTR("CopyingFile"))) {
+        CFStringRef path = CFDictionaryGetValue(dict, CFSTR("Path"));
+        if ((last_path == NULL || !CFEqual(path, last_path)) && !CFStringHasSuffix(path, CFSTR(".ipa"))) {
+            //printf("[%3d%%] Copying %s to device\n", percent / 2, CFStringGetCStringPtr(path, kCFStringEncodingMacRoman));
+			[[callbackSelf delegate] syncItemNumber:(percent / 2) ofTotal:100];
+        }
+        if (last_path != NULL) {
+            CFRelease(last_path);
+        }
+        last_path = CFStringCreateCopy(NULL, path);
+    }
+}
 
-    printf("[%3d%%] %s\n", (percent / 2) + 50, CFStringGetCStringPtr(status, kCFStringEncodingMacRoman));
+
+void install_callback(CFDictionaryRef dict, int arg) {
+    int percent;
+    //CFStringRef status = CFDictionaryGetValue(dict, CFSTR("Status"));
+    CFNumberGetValue(CFDictionaryGetValue(dict, CFSTR("PercentComplete")), kCFNumberSInt32Type, &percent);
+    //printf("[%3d%%] %s\n", (percent / 2) + 50, CFStringGetCStringPtr(status, kCFStringEncodingMacRoman));
+	[[callbackSelf delegate] syncItemNumber:((percent / 2) + 50) ofTotal:100];
 }
 
 @interface SMOPSyncProcess()
@@ -30,6 +51,7 @@ void install_callback(CFDictionaryRef dict, int arg) {
 - (id)init {
 	self = [super init];
 	if (self) {
+		callbackSelf = self;
 		deviceContents = [NSMutableSet new];
 		localContents = [NSMutableSet new];
 		deviceSyncError = FALSE;
@@ -532,27 +554,54 @@ void install_callback(CFDictionaryRef dict, int arg) {
 #pragma mark Application Install
 
 - (void)installOnePassword {
-	BOOL okToInstall = TRUE;
+	BOOL directory;
+	BOOL okToInstall = [[NSFileManager defaultManager] fileExistsAtPath:[@"~/Desktop/1Password.app" stringByExpandingTildeInPath] isDirectory:&directory];;
 	if (okToInstall) {
-		CFStringRef path = CFStringCreateWithCString(NULL, [[@"~/Desktop/1Password.app" stringByExpandingTildeInPath] UTF8String], kCFStringEncodingUTF8);
-		CFURLRef relative_url = CFURLCreateWithFileSystemPath(NULL, path, kCFURLPOSIXPathStyle, false);
-		CFURLRef url = CFURLCopyAbsoluteURL(relative_url);
-		CFRelease(relative_url);
 		
-		CFStringRef keys[] = { CFSTR("PackageType") };
+		//CFStringRef path = CFStringCreateWithCString(NULL, [[@"~/Desktop/1Password.app" stringByExpandingTildeInPath] UTF8String], kCFStringEncodingUTF8);
+		
+		AMDeviceConnect(device.device);
+	    assert(AMDeviceIsPaired(device.device));
+	    assert(AMDeviceValidatePairing(device.device) == 0);
+	    assert(AMDeviceStartSession(device.device) == 0);
+
+	    CFStringRef path = CFStringCreateWithCString(NULL, [[@"~/Desktop/1Password.app" stringByExpandingTildeInPath] UTF8String], kCFStringEncodingASCII);
+	    CFURLRef relative_url = CFURLCreateWithFileSystemPath(NULL, path, kCFURLPOSIXPathStyle, false);
+	    CFURLRef url = CFURLCopyAbsoluteURL(relative_url);
+
+	    CFRelease(relative_url);
+
+	    int afcFd;
+	    assert(AMDeviceStartService(device.device, CFSTR("com.apple.afc"), &afcFd, NULL) == 0);
+	    assert(AMDeviceStopSession(device.device) == 0);
+	    assert(AMDeviceDisconnect(device.device) == 0);
+	    assert(AMDeviceTransferApplication(afcFd, path, NULL, transfer_callback, NULL) == 0);
+
+	    close(afcFd);
+
+	    CFStringRef keys[] = { CFSTR("PackageType") };
 	    CFStringRef values[] = { CFSTR("Developer") };
 	    CFDictionaryRef options = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-	    
-		AMDeviceConnect(device);
-		AMDeviceIsPaired(device);
-		AMDeviceValidatePairing(device);
-		AMDeviceStartSession(device);
-		
-		int install;
-		AMDeviceStartService(device, AMSVC_INSTALLATION_PROXY, &install, NULL);
-		AMDeviceTransferApplication(0, device, url, options, NULL, 0);
-		AMDeviceInstallApplication(install, device, url, options, install_callback, NULL);
-		close(install);
+
+	    AMDeviceConnect(device.device);
+	    assert(AMDeviceIsPaired(device.device));
+	    assert(AMDeviceValidatePairing(device.device) == 0);
+	    assert(AMDeviceStartSession(device.device) == 0);
+
+	    int installFd;
+	    assert(AMDeviceStartService(device.device, CFSTR("com.apple.mobile.installation_proxy"), &installFd, NULL) == 0);
+
+	    assert(AMDeviceStopSession(device.device) == 0);
+	    assert(AMDeviceDisconnect(device.device) == 0);
+
+	    mach_error_t result = AMDeviceInstallApplication(installFd, path, options, install_callback, NULL);
+	    if (result != 0)
+	    {
+	       printf("AMDeviceInstallApplication failed: %d\n", result);
+	        exit(1);
+	    }
+
+	    close(installFd);
 		CFRelease(path);
 		CFRelease(options);
 	}
