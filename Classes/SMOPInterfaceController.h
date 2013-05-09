@@ -37,7 +37,7 @@
 - (AMDevice *)selectedDevice;
 
 - (NSMutableDictionary *)deviceInfoAtSelectedRow;
-- (void)updateTableSelection;
+- (void)updateTableSelection:(NSInteger)index;
 
 #pragma mark -
 #pragma mark NSTableView
@@ -48,6 +48,5 @@
 #pragma mark -
 #pragma mark SMOPSyncProgressDelegate
 -(void)syncItemNumber:(NSUInteger)item ofTotal:(NSUInteger)count;
-
 
 @end

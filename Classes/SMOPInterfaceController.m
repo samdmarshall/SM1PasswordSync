@@ -154,7 +154,6 @@
 				[syncButton setEnabled:YES];
 				[refreshButton setEnabled:YES];
 				[syncProgress setHidden:YES];
-				[self syncDevice:nil];
 			});
 		}
 	}

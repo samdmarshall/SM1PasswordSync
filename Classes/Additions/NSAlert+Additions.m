@@ -82,7 +82,7 @@
 	[alert addButtonWithTitle:@"OK"];
 	[alert setMessageText:@"Keychain Mismatch"];
 	[alert setInformativeText:@"Syncing has been aborted. The encryption keys do not match, please ensure you are syncing the correct 1Password keychain."];
-	[alert setAlertStyle:NSCriticalAlertStyle];
+	[alert setAlertStyle:NSWarningAlertStyle];
 	return [alert runModal];
 }
 
@@ -91,8 +91,28 @@
 	[alert addButtonWithTitle:@"OK"];
 	[alert setMessageText:@"Install Failed"];
 	[alert setInformativeText:@"Installing the 1Password app has failed. Please check if the selected device supports installation of this app."];
-	[alert setAlertStyle:NSCriticalAlertStyle];
+	[alert setAlertStyle:NSWarningAlertStyle];
 	return [alert runModal];
 }
+
++ (NSInteger)ipaNotFound {
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	[alert addButtonWithTitle:@"OK"];
+	[alert setMessageText:@"Cannot find 1Password 4 iOS App "];
+	[alert setInformativeText:@"Please make sure it is properly downloaded from the store."];
+	[alert setAlertStyle:NSInformationalAlertStyle];
+	return [alert runModal];
+}
+
++ (NSInteger)mobileApplicationsNotFound {
+	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
+	[alert addButtonWithTitle:@"Locate..."];
+	[alert addButtonWithTitle:@"Cancel"];
+	[alert setMessageText:@"Cannot Find Mobile Applications Folder"];
+	[alert setInformativeText:@"Cannot locate the \"Mobile Applications\" folder from your iTunes Library. Please specify where your iTunes Library is stored."];
+	[alert setAlertStyle:NSInformationalAlertStyle];
+	return [alert runModal];
+}
+
 
 @end

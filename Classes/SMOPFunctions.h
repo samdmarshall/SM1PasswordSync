@@ -10,6 +10,17 @@
 #import "SMOPDefines.h"
 #import "MobileDeviceAccess.h"
 
+static inline NSString* MobileApplicationsDirectory() {
+	BOOL dir;
+	NSString *iTunesDatabasePath = [[[NSString alloc] initWithString:[@"~/Music/iTunes/iTunes Music Library.xml" stringByExpandingTildeInPath]] autorelease];
+	if ([[NSFileManager defaultManager] fileExistsAtPath:iTunesDatabasePath isDirectory:&dir]) {
+		NSDictionary *iTunesDatabase = [[[NSDictionary alloc] initWithContentsOfFile:iTunesDatabasePath] autorelease];
+		return [[[NSURL URLWithString:[iTunesDatabase objectForKey:@"Music Folder"]] path] stringByAppendingPathComponent:@"Mobile Applications"];
+	} else {
+		return nil;
+	}
+}
+
 static inline NSData* SHA1HashOfFileAtPath(NSString *path) {
 	unsigned char hashBytes[CC_SHA1_DIGEST_LENGTH];
 	NSData *fileData = [NSData dataWithContentsOfFile:path];

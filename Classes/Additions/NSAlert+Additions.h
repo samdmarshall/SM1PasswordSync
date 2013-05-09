@@ -19,4 +19,6 @@
 + (NSInteger)syncInterruptError;
 + (NSInteger)keychainMismatchError;
 + (NSInteger)appInstallationFailure;
++ (NSInteger)ipaNotFound;
++ (NSInteger)mobileApplicationsNotFound;
 @end

@@ -22,7 +22,7 @@ void transfer_callback(CFDictionaryRef dict, int arg) {
         CFStringRef path = CFDictionaryGetValue(dict, CFSTR("Path"));
         if ((last_path == NULL || !CFEqual(path, last_path)) && !CFStringHasSuffix(path, CFSTR(".ipa"))) {
             //printf("[%3d%%] Copying %s to device\n", percent / 2, CFStringGetCStringPtr(path, kCFStringEncodingMacRoman));
-			[[callbackSelf delegate] syncItemNumber:(percent / 2) ofTotal:100];
+			[[(SMOPSyncProcess *)callbackSelf delegate] syncItemNumber:(percent / 2) ofTotal:100];
         }
         if (last_path != NULL) {
             CFRelease(last_path);
@@ -31,13 +31,12 @@ void transfer_callback(CFDictionaryRef dict, int arg) {
     }
 }
 
-
 void install_callback(CFDictionaryRef dict, int arg) {
     int percent;
     //CFStringRef status = CFDictionaryGetValue(dict, CFSTR("Status"));
     CFNumberGetValue(CFDictionaryGetValue(dict, CFSTR("PercentComplete")), kCFNumberSInt32Type, &percent);
     //printf("[%3d%%] %s\n", (percent / 2) + 50, CFStringGetCStringPtr(status, kCFStringEncodingMacRoman));
-	[[callbackSelf delegate] syncItemNumber:((percent / 2) + 50) ofTotal:100];
+	[[(SMOPSyncProcess *)callbackSelf delegate] syncItemNumber:((percent / 2) + 50) ofTotal:100];
 }
 
 @interface SMOPSyncProcess()
@@ -555,55 +554,71 @@ void install_callback(CFDictionaryRef dict, int arg) {
 
 - (void)installOnePassword {
 	BOOL directory;
-	BOOL okToInstall = [[NSFileManager defaultManager] fileExistsAtPath:[@"~/Desktop/1Password.app" stringByExpandingTildeInPath] isDirectory:&directory];;
+	NSString *appsDir = MobileApplicationsDirectory();
+	BOOL okToInstall = (appsDir != nil ? TRUE : FALSE);
 	if (okToInstall) {
-		
-		//CFStringRef path = CFStringCreateWithCString(NULL, [[@"~/Desktop/1Password.app" stringByExpandingTildeInPath] UTF8String], kCFStringEncodingUTF8);
-		
-		AMDeviceConnect(device.device);
-	    assert(AMDeviceIsPaired(device.device));
-	    assert(AMDeviceValidatePairing(device.device) == 0);
-	    assert(AMDeviceStartSession(device.device) == 0);
+		okToInstall = [[NSFileManager defaultManager] fileExistsAtPath:appsDir isDirectory:&directory];
+		if (okToInstall && directory) {
+			NSArray *allApplications = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:appsDir error:nil];
+			NSPredicate *onePasswordAppPredicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS %@",@"1Password 4"];
+			NSArray *results = [allApplications filteredArrayUsingPredicate:onePasswordAppPredicate];
+			okToInstall = (results.count ? TRUE : FALSE);
 
-	    CFStringRef path = CFStringCreateWithCString(NULL, [[@"~/Desktop/1Password.app" stringByExpandingTildeInPath] UTF8String], kCFStringEncodingASCII);
-	    CFURLRef relative_url = CFURLCreateWithFileSystemPath(NULL, path, kCFURLPOSIXPathStyle, false);
-	    CFURLRef url = CFURLCopyAbsoluteURL(relative_url);
+			if (okToInstall) {
+				NSString *ipaPath = [appsDir stringByAppendingPathComponent:[results objectAtIndex:0]];
+				
+				/*AMDeviceConnect(device.device);
+			    assert(AMDeviceIsPaired(device.device));
+			    assert(AMDeviceValidatePairing(device.device) == 0);
+			    assert(AMDeviceStartSession(device.device) == 0);
 
-	    CFRelease(relative_url);
+			    CFStringRef path = CFStringCreateWithCString(NULL, [[@"~/Desktop/1Password.app" stringByExpandingTildeInPath] UTF8String], kCFStringEncodingASCII);
 
-	    int afcFd;
-	    assert(AMDeviceStartService(device.device, CFSTR("com.apple.afc"), &afcFd, NULL) == 0);
-	    assert(AMDeviceStopSession(device.device) == 0);
-	    assert(AMDeviceDisconnect(device.device) == 0);
-	    assert(AMDeviceTransferApplication(afcFd, path, NULL, transfer_callback, NULL) == 0);
+			    int afcFd;
+			    assert(AMDeviceStartService(device.device, AMSVC_AFC, &afcFd, NULL) == 0);
+			    assert(AMDeviceStopSession(device.device) == 0);
+			    assert(AMDeviceDisconnect(device.device) == 0);
+			    assert(AMDeviceTransferApplication(afcFd, path, NULL, transfer_callback, NULL) == 0);
 
-	    close(afcFd);
+			    close(afcFd);
 
-	    CFStringRef keys[] = { CFSTR("PackageType") };
-	    CFStringRef values[] = { CFSTR("Developer") };
-	    CFDictionaryRef options = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+			    CFStringRef keys[] = { CFSTR("PackageType") };
+			    CFStringRef values[] = { CFSTR("Developer") };
+			    CFDictionaryRef options = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
 
-	    AMDeviceConnect(device.device);
-	    assert(AMDeviceIsPaired(device.device));
-	    assert(AMDeviceValidatePairing(device.device) == 0);
-	    assert(AMDeviceStartSession(device.device) == 0);
+			    AMDeviceConnect(device.device);
+			    assert(AMDeviceIsPaired(device.device));
+			    assert(AMDeviceValidatePairing(device.device) == 0);
+			    assert(AMDeviceStartSession(device.device) == 0);
 
-	    int installFd;
-	    assert(AMDeviceStartService(device.device, CFSTR("com.apple.mobile.installation_proxy"), &installFd, NULL) == 0);
+			    int installFd;
+			    assert(AMDeviceStartService(device.device, AMSVC_INSTALLATION_PROXY, &installFd, NULL) == 0);
 
-	    assert(AMDeviceStopSession(device.device) == 0);
-	    assert(AMDeviceDisconnect(device.device) == 0);
+			    assert(AMDeviceStopSession(device.device) == 0);
+			    assert(AMDeviceDisconnect(device.device) == 0);
 
-	    mach_error_t result = AMDeviceInstallApplication(installFd, path, options, install_callback, NULL);
-	    if (result != 0) {
-			[NSAlert appInstallationFailure];
-	    } else {
-			[self.delegate syncItemNumber:100 ofTotal:100];
+			    mach_error_t result = AMDeviceInstallApplication(installFd, path, options, install_callback, NULL);
+			    if (result != 0) {
+					[NSAlert appInstallationFailure];
+			    } else {
+					[self.delegate syncItemNumber:100 ofTotal:100];
+				}
+
+			    close(installFd);
+				CFRelease(path);
+				CFRelease(options);
+
+				[self loadContentsData];
+				[self mergeLocalAndDeviceContents];
+				[self cleanUpMergeData];*/
+				
+			} else {
+				// couldn't find 1Password 4.ipa
+				[NSAlert ipaNotFound];
+			}
 		}
-
-	    close(installFd);
-		CFRelease(path);
-		CFRelease(options);
+	} else {
+		[NSAlert mobileApplicationsNotFound];
 	}
 	
 }
