@@ -10,6 +10,50 @@
 #import "SMOPDefines.h"
 #import "MobileDeviceAccess.h"
 
+static inline BOOL InstallAppToDevice(CFStringRef path, struct am_device *device, void *transfer_callback, void *install_callback) {
+	int afcFd;
+	CFStringRef keys[] = { CFSTR("PackageType") };
+	CFStringRef values[] = { CFSTR("Developer") };
+	CFDictionaryRef options = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    int installFd;
+	BOOL copyResult = FALSE, installResult = FALSE;
+	copyResult = (AMDeviceConnect(device) == MDERR_OK ?
+		(AMDeviceIsPaired(device) ?
+			(AMDeviceValidatePairing(device) == MDERR_OK ?
+				(AMDeviceStartSession(device) == MDERR_OK ?
+					(AMDeviceStartService(device, AMSVC_AFC, &afcFd, NULL) == MDERR_OK ?
+						(AMDeviceStopSession(device) == MDERR_OK ?
+							(AMDeviceDisconnect(device) == MDERR_OK ?
+								(AMDeviceTransferApplication(afcFd, path, NULL, transfer_callback, NULL) == MDERR_OK ? TRUE : FALSE)
+							: FALSE)
+						: FALSE)
+					: FALSE)
+				: FALSE)
+			: FALSE)
+		: FALSE)
+	: FALSE);
+	close(afcFd);
+	if (copyResult)
+		installResult = (AMDeviceConnect(device) == MDERR_OK ?
+			(AMDeviceIsPaired(device) ?
+				(AMDeviceValidatePairing(device) == MDERR_OK ?
+					(AMDeviceStartSession(device) == MDERR_OK ?
+						(AMDeviceStartService(device, AMSVC_INSTALLATION_PROXY, &installFd, NULL) == MDERR_OK ?
+							(AMDeviceStopSession(device) == MDERR_OK ?
+								(AMDeviceDisconnect(device) == MDERR_OK ?
+									(AMDeviceInstallApplication(installFd, path, options, install_callback, NULL) == MDERR_OK ? TRUE : FALSE)
+								: FALSE)
+							: FALSE)
+						: FALSE)
+					: FALSE)
+				: FALSE)
+			: FALSE)
+		: FALSE);
+	close(installFd);
+	CFRelease(options);
+	return (copyResult && installResult);
+}
+
 static inline NSString* MobileApplicationsDirectory() {
 	BOOL dir;
 	NSString *iTunesDatabasePath = [[[NSString alloc] initWithString:[@"~/Music/iTunes/iTunes Music Library.xml" stringByExpandingTildeInPath]] autorelease];

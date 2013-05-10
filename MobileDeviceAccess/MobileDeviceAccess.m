@@ -30,11 +30,11 @@ typedef struct _afc_operation			*afc_operation;
 
 // Messages passed to device notification callbacks: passed as part of
 // am_device_notification_callback_info.
-typedef enum {
+/*typedef enum {
 	ADNCI_MSG_CONNECTED = 1,
 	ADNCI_MSG_DISCONNECTED = 2,
 	ADNCI_MSG_UNSUBSCRIBED = 3,
-} adnci_msg;
+} adnci_msg;*/
 
 struct am_device_notification_callback_info {
 	am_device	dev;				// 0    device
@@ -2890,7 +2890,7 @@ bail:
 		NSLog(@"Ignoring unknown message: %d",info->msg);
 		return;
 
-	case ADNCI_MSG_UNSUBSCRIBED:
+	case ADNCI_MSG_UNKNOWN:
 		return;
 
 	case ADNCI_MSG_CONNECTED:

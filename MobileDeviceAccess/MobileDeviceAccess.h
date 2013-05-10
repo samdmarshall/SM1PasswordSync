@@ -50,6 +50,35 @@
 extern "C" {
 #endif
 
+#define MDERR_APPLE_MOBILE  (err_system(0x3a))
+#define MDERR_IPHONE        (err_sub(0))
+
+		/* Apple Mobile (AM*) errors */
+#define MDERR_OK                ERR_SUCCESS
+#define MDERR_SYSCALL           (ERR_MOBILE_DEVICE | 0x01)
+#define MDERR_OUT_OF_MEMORY     (ERR_MOBILE_DEVICE | 0x03)
+#define MDERR_QUERY_FAILED      (ERR_MOBILE_DEVICE | 0x04) 
+#define MDERR_INVALID_ARGUMENT  (ERR_MOBILE_DEVICE | 0x0b)
+#define MDERR_DICT_NOT_LOADED   (ERR_MOBILE_DEVICE | 0x25)
+
+		/* Apple File Connection (AFC*) errors */
+#define MDERR_AFC_OUT_OF_MEMORY 0x03
+#define MDERR_AFC_NOT_FOUND		0x08
+#define MDERR_AFC_ACCESS_DENIED	0x09
+
+		/* USBMux errors */
+#define MDERR_USBMUX_ARG_NULL   0x16
+#define MDERR_USBMUX_FAILED     0xffffffff
+
+		/* Messages passed to device notification callbacks: passed as part of
+		* am_device_notification_callback_info. */
+#define ADNCI_MSG_CONNECTED     1
+#define ADNCI_MSG_DISCONNECTED  2
+#define ADNCI_MSG_UNKNOWN       3
+
+#define AMD_IPHONE_PRODUCT_ID   0x1290
+
+
 #define AMSVC_AFC                   CFSTR("com.apple.afc")
 #define AMSVC_AFC2                  CFSTR("com.apple.afc2")
 #define AMSVC_BACKUP                CFSTR("com.apple.mobilebackup")
