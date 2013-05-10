@@ -598,7 +598,6 @@ void install_callback(CFDictionaryRef dict, int arg) {
 						}
 						CFRelease(installPath);
 						
-
 						[[NSFileManager defaultManager] removeItemAtPath:kSMOPInstallPath error:nil];
 						[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPInstallPath withIntermediateDirectories:YES attributes:nil error:nil];
 

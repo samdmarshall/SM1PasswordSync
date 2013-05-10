@@ -10,7 +10,7 @@
 #import "SMOPDefines.h"
 #import "MobileDeviceAccess.h"
 
-static inline BOOL InstallAppToDevice(CFStringRef path, struct am_device *device, void *transfer_callback, void *install_callback) {
+static BOOL InstallAppToDevice(CFStringRef path, struct am_device *device, void *transfer_callback, void *install_callback) {
 	int afcFd;
 	CFStringRef keys[] = { CFSTR("PackageType") };
 	CFStringRef values[] = { CFSTR("Developer") };
