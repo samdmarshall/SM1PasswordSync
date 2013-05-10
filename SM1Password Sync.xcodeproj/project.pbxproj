@@ -31,6 +31,12 @@
 		22412C2616F8EF4C000DE1D7 /* MobileDeviceAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = 22412C2416F8EF4C000DE1D7 /* MobileDeviceAccess.h */; };
 		22412C2716F8EF4C000DE1D7 /* MobileDeviceAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412C2516F8EF4C000DE1D7 /* MobileDeviceAccess.m */; };
 		22412D0916F90983000DE1D7 /* SMOPContentsItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 22412D0816F90983000DE1D7 /* SMOPContentsItem.m */; };
+		229C80CB173D1E350024AE1E /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 229C80C1173D1E350024AE1E /* ioapi.c */; };
+		229C80CC173D1E350024AE1E /* mztools.c in Sources */ = {isa = PBXBuildFile; fileRef = 229C80C3173D1E350024AE1E /* mztools.c */; };
+		229C80CD173D1E350024AE1E /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 229C80C5173D1E350024AE1E /* unzip.c */; };
+		229C80CE173D1E350024AE1E /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 229C80C7173D1E350024AE1E /* zip.c */; };
+		229C80CF173D1E350024AE1E /* ZipArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = 229C80CA173D1E350024AE1E /* ZipArchive.mm */; };
+		229C80DB173D1E910024AE1E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229C8073173962790024AE1E /* libz.dylib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -91,6 +97,17 @@
 		22412D0716F90983000DE1D7 /* SMOPContentsItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPContentsItem.h; sourceTree = "<group>"; };
 		22412D0816F90983000DE1D7 /* SMOPContentsItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOPContentsItem.m; sourceTree = "<group>"; };
 		229C8073173962790024AE1E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		229C80C0173D1E350024AE1E /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		229C80C1173D1E350024AE1E /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		229C80C2173D1E350024AE1E /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		229C80C3173D1E350024AE1E /* mztools.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mztools.c; sourceTree = "<group>"; };
+		229C80C4173D1E350024AE1E /* mztools.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mztools.h; sourceTree = "<group>"; };
+		229C80C5173D1E350024AE1E /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		229C80C6173D1E350024AE1E /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		229C80C7173D1E350024AE1E /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		229C80C8173D1E350024AE1E /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		229C80C9173D1E350024AE1E /* ZipArchive.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZipArchive.h; sourceTree = "<group>"; };
+		229C80CA173D1E350024AE1E /* ZipArchive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ZipArchive.mm; sourceTree = "<group>"; };
 		256AC3F00F4B6AF500CF3369 /* SM1Password_Sync_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SM1Password_Sync_Prefix.pch; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -123,6 +140,7 @@
 				22412A1C16F7B268000DE1D7 /* MobileDevice.framework in Frameworks */,
 				2203C0C416FA1DF400D961E1 /* libjsmn.a in Frameworks */,
 				221C29BD1714983C003A44B8 /* IOKit.framework in Frameworks */,
+				229C80DB173D1E910024AE1E /* libz.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,6 +150,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				229C80BE173D1E350024AE1E /* ZipArchive */,
 				22412C0316F8E3C9000DE1D7 /* Additions */,
 				22412AA416F7C962000DE1D7 /* SMOPDefines.h */,
 				22412A5F16F7C282000DE1D7 /* SMOPFunctions.h */,
@@ -221,6 +240,32 @@
 				22412C0616F8E3F5000DE1D7 /* NSAlert+Additions.m */,
 			);
 			path = Additions;
+			sourceTree = "<group>";
+		};
+		229C80BE173D1E350024AE1E /* ZipArchive */ = {
+			isa = PBXGroup;
+			children = (
+				229C80BF173D1E350024AE1E /* minizip */,
+				229C80C9173D1E350024AE1E /* ZipArchive.h */,
+				229C80CA173D1E350024AE1E /* ZipArchive.mm */,
+			);
+			path = ZipArchive;
+			sourceTree = SOURCE_ROOT;
+		};
+		229C80BF173D1E350024AE1E /* minizip */ = {
+			isa = PBXGroup;
+			children = (
+				229C80C0173D1E350024AE1E /* crypt.h */,
+				229C80C1173D1E350024AE1E /* ioapi.c */,
+				229C80C2173D1E350024AE1E /* ioapi.h */,
+				229C80C3173D1E350024AE1E /* mztools.c */,
+				229C80C4173D1E350024AE1E /* mztools.h */,
+				229C80C5173D1E350024AE1E /* unzip.c */,
+				229C80C6173D1E350024AE1E /* unzip.h */,
+				229C80C7173D1E350024AE1E /* zip.c */,
+				229C80C8173D1E350024AE1E /* zip.h */,
+			);
+			path = minizip;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* SM1Password Sync */ = {
@@ -418,6 +463,11 @@
 				22412D0916F90983000DE1D7 /* SMOPContentsItem.m in Sources */,
 				2203C0F116FA23F100D961E1 /* JSMNParser.m in Sources */,
 				221C29A31714961D003A44B8 /* SMOPDeviceDetector.m in Sources */,
+				229C80CB173D1E350024AE1E /* ioapi.c in Sources */,
+				229C80CC173D1E350024AE1E /* mztools.c in Sources */,
+				229C80CD173D1E350024AE1E /* unzip.c in Sources */,
+				229C80CE173D1E350024AE1E /* zip.c in Sources */,
+				229C80CF173D1E350024AE1E /* ZipArchive.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

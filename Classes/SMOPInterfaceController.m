@@ -32,6 +32,7 @@
 	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPApplicationSupportPath withIntermediateDirectories:YES attributes:nil error:nil];
 	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPSyncPath withIntermediateDirectories:YES attributes:nil error:nil];
 	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPSyncStatePath withIntermediateDirectories:YES attributes:nil error:nil];
+	[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPInstallPath withIntermediateDirectories:YES attributes:nil error:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceConnectionEvent:) name:kDeviceConnectionEventPosted object:nil];
 	
 	deviceAccess = [[SMOPDeviceManager alloc] init];

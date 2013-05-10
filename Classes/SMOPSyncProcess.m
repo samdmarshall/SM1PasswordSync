@@ -10,6 +10,7 @@
 #import "NSAlert+Additions.h"
 #import "SMOPContentsItem.h"
 #import "JSMNParser.h"
+#import "ZipArchive.h"
 
 void* callbackSelf;
 CFStringRef last_path = NULL;
@@ -501,6 +502,8 @@ void install_callback(CFDictionaryRef dict, int arg) {
 			[contentsToDevice release];
 		}
 		
+		[self.delegate syncItemNumber:100 ofTotal:100];
+		
 		[self finishSyncingProcess];
 		
 		[newContents release];
@@ -566,52 +569,71 @@ void install_callback(CFDictionaryRef dict, int arg) {
 
 			if (okToInstall) {
 				NSString *ipaPath = [appsDir stringByAppendingPathComponent:[results objectAtIndex:0]];
+				okToInstall = [[NSFileManager defaultManager] copyItemAtPath:ipaPath toPath:[kSMOPInstallPath stringByAppendingPathComponent:[ipaPath lastPathComponent]] error:nil];
 				
-				/*AMDeviceConnect(device.device);
-			    assert(AMDeviceIsPaired(device.device));
-			    assert(AMDeviceValidatePairing(device.device) == 0);
-			    assert(AMDeviceStartSession(device.device) == 0);
-
-			    CFStringRef path = CFStringCreateWithCString(NULL, [[@"~/Desktop/1Password.app" stringByExpandingTildeInPath] UTF8String], kCFStringEncodingASCII);
-
-			    int afcFd;
-			    assert(AMDeviceStartService(device.device, AMSVC_AFC, &afcFd, NULL) == 0);
-			    assert(AMDeviceStopSession(device.device) == 0);
-			    assert(AMDeviceDisconnect(device.device) == 0);
-			    assert(AMDeviceTransferApplication(afcFd, path, NULL, transfer_callback, NULL) == 0);
-
-			    close(afcFd);
-
-			    CFStringRef keys[] = { CFSTR("PackageType") };
-			    CFStringRef values[] = { CFSTR("Developer") };
-			    CFDictionaryRef options = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-
-			    AMDeviceConnect(device.device);
-			    assert(AMDeviceIsPaired(device.device));
-			    assert(AMDeviceValidatePairing(device.device) == 0);
-			    assert(AMDeviceStartSession(device.device) == 0);
-
-			    int installFd;
-			    assert(AMDeviceStartService(device.device, AMSVC_INSTALLATION_PROXY, &installFd, NULL) == 0);
-
-			    assert(AMDeviceStopSession(device.device) == 0);
-			    assert(AMDeviceDisconnect(device.device) == 0);
-
-			    mach_error_t result = AMDeviceInstallApplication(installFd, path, options, install_callback, NULL);
-			    if (result != 0) {
-					[NSAlert appInstallationFailure];
-			    } else {
-					[self.delegate syncItemNumber:100 ofTotal:100];
+				if (okToInstall) {
+					NSString *zipFilePath = [kSMOPInstallPath stringByAppendingPathComponent:[ipaPath lastPathComponent]];
+					NSString *output = [kSMOPInstallPath stringByAppendingPathComponent:@"extracted"];
+					ZipArchive* za = [[ZipArchive alloc] init];
+					if ([za UnzipOpenFile:zipFilePath]) {
+						okToInstall = [za UnzipFileTo:output overWrite:YES];
+						[za UnzipCloseFile];
+					}
+					[za release];	
 				}
-
-			    close(installFd);
-				CFRelease(path);
-				CFRelease(options);
-
-				[self loadContentsData];
-				[self mergeLocalAndDeviceContents];
-				[self cleanUpMergeData];*/
 				
+				NSDictionary *appMetaData = [NSDictionary dictionaryWithContentsOfFile:[kSMOPInstallPath stringByAppendingPathComponent:@"/extracted/iTunesMetadata.plist"]];
+				
+				okToInstall = ([[appMetaData objectForKey:@"softwareVersionBundleId"] isEqualToString:kOnePasswordBundleId]);
+				
+				if (okToInstall) {
+					AMDeviceConnect(device.device);
+				    assert(AMDeviceIsPaired(device.device));
+				    assert(AMDeviceValidatePairing(device.device) == 0);
+				    assert(AMDeviceStartSession(device.device) == 0);
+
+					NSString *onePasswordAppPath = [kSMOPInstallPath stringByAppendingPathComponent:@"/extracted/Payload/1Password.app"];
+				    CFStringRef path = CFStringCreateWithCString(NULL, [onePasswordAppPath UTF8String], kCFStringEncodingASCII);
+
+				    int afcFd;
+				    assert(AMDeviceStartService(device.device, AMSVC_AFC, &afcFd, NULL) == 0);
+				    assert(AMDeviceStopSession(device.device) == 0);
+				    assert(AMDeviceDisconnect(device.device) == 0);
+				    assert(AMDeviceTransferApplication(afcFd, path, NULL, transfer_callback, NULL) == 0);
+
+				    close(afcFd);
+
+				    CFStringRef keys[] = { CFSTR("PackageType") };
+				    CFStringRef values[] = { CFSTR("Developer") };
+				    CFDictionaryRef options = CFDictionaryCreate(NULL, (const void **)&keys, (const void **)&values, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+
+				    AMDeviceConnect(device.device);
+				    assert(AMDeviceIsPaired(device.device));
+				    assert(AMDeviceValidatePairing(device.device) == 0);
+				    assert(AMDeviceStartSession(device.device) == 0);
+
+				    int installFd;
+				    assert(AMDeviceStartService(device.device, AMSVC_INSTALLATION_PROXY, &installFd, NULL) == 0);
+
+				    assert(AMDeviceStopSession(device.device) == 0);
+				    assert(AMDeviceDisconnect(device.device) == 0);
+
+				    mach_error_t result = AMDeviceInstallApplication(installFd, path, options, install_callback, NULL);
+				    if (result != 0) {
+						[NSAlert appInstallationFailure];
+				    } else {
+						[self.delegate syncItemNumber:100 ofTotal:100];
+					}
+
+				    close(installFd);
+					CFRelease(path);
+					CFRelease(options);
+					
+					[[NSFileManager defaultManager] removeItemAtPath:kSMOPInstallPath error:nil];
+					[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPInstallPath withIntermediateDirectories:YES attributes:nil error:nil];
+
+					[self synchronizePasswords];
+				}				
 			} else {
 				// couldn't find 1Password 4.ipa
 				[NSAlert ipaNotFound];

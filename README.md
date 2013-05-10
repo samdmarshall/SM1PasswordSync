@@ -17,6 +17,7 @@ Code Libraries
 --------------
 * [jsmn](https://bitbucket.org/zserge/jsmn)
 * [MobileDeviceAccess](https://bitbucket.org/tristero/mobiledeviceaccess)
+* [ZipArchive](http://code.google.com/p/ziparchive/)
 
 	### Notes:
 	* Included is a header file that has been floating around the internet called MobileDevice.h. The copy included in this project is a consolidated version of this header file, and it is used for accessing Apple's private MobileDevice.framework.
