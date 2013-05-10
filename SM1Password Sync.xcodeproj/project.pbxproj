@@ -150,7 +150,6 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				229C80BE173D1E350024AE1E /* ZipArchive */,
 				22412C0316F8E3C9000DE1D7 /* Additions */,
 				22412AA416F7C962000DE1D7 /* SMOPDefines.h */,
 				22412A5F16F7C282000DE1D7 /* SMOPFunctions.h */,
@@ -250,7 +249,7 @@
 				229C80CA173D1E350024AE1E /* ZipArchive.mm */,
 			);
 			path = ZipArchive;
-			sourceTree = SOURCE_ROOT;
+			sourceTree = "<group>";
 		};
 		229C80BF173D1E350024AE1E /* minizip */ = {
 			isa = PBXGroup;
@@ -273,6 +272,7 @@
 			children = (
 				2209892C172FF59100F291CC /* Resources */,
 				080E96DDFE201D6D7F000001 /* Classes */,
+				229C80BE173D1E350024AE1E /* ZipArchive */,
 				2203C05116FA1B8300D961E1 /* jsmn */,
 				22412A3716F7B302000DE1D7 /* MobileDeviceAccess */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
