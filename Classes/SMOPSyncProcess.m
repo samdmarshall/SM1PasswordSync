@@ -557,8 +557,27 @@ void install_callback(CFDictionaryRef dict, int arg) {
 
 - (void)installOnePassword {
 	BOOL directory;
-	NSString *appsDir = MobileApplicationsDirectory();
+	__block NSString *appsDir = MobileApplicationsDirectory(nil);
 	BOOL okToInstall = (appsDir != nil ? TRUE : FALSE);
+	if (!okToInstall) {
+		NSInteger result = [NSAlert mobileApplicationsNotFound];
+		if (result == 1000) {
+			NSOpenPanel *libraryLocationPanel = [NSOpenPanel openPanel];
+			[libraryLocationPanel setCanChooseFiles:YES];
+			[libraryLocationPanel setCanChooseDirectories:NO];
+			[libraryLocationPanel setAllowsMultipleSelection:NO];
+			[libraryLocationPanel setResolvesAliases:YES];
+			[libraryLocationPanel setAllowedFileTypes:[NSArray arrayWithObjects:@"xml",nil]];
+			[libraryLocationPanel beginWithCompletionHandler:^(NSInteger result){
+				if (result) {
+					appsDir = MobileApplicationsDirectory([[[libraryLocationPanel URLs] objectAtIndex:0] path]);
+				}
+			}];
+		}
+	}
+	
+	okToInstall = (appsDir != nil ? TRUE : FALSE);
+	
 	if (okToInstall) {
 		okToInstall = [[NSFileManager defaultManager] fileExistsAtPath:appsDir isDirectory:&directory];
 		if (okToInstall && directory) {
@@ -590,7 +609,7 @@ void install_callback(CFDictionaryRef dict, int arg) {
 					if (okToInstall) {
 						NSString *onePasswordAppPath = [kSMOPInstallPath stringByAppendingPathComponent:@"/extracted/Payload/1Password.app"];
 						CFStringRef installPath = CFStringCreateWithCString(NULL, [onePasswordAppPath UTF8String], kCFStringEncodingASCII);
-						BOOL result = InstallAppToDevice(installPath, device.device, transfer_callback, install_callback);
+						BOOL result = InstallAppToDevice(installPath, (struct am_device *)device.device, transfer_callback, install_callback);
 						if (result) {
 							[self.delegate syncItemNumber:100 ofTotal:100];
 						} else {
@@ -605,16 +624,13 @@ void install_callback(CFDictionaryRef dict, int arg) {
 					}
 				} else {
 					// failed to extract
-				}			
+				}
 			} else {
 				// couldn't find 1Password 4.ipa
 				[NSAlert ipaNotFound];
 			}
 		}
-	} else {
-		[NSAlert mobileApplicationsNotFound];
 	}
-	
 }
 
 @end

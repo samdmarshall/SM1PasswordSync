@@ -65,7 +65,7 @@
 	zip_fileinfo zipInfo = {0};
 //	zipInfo.dosDate = (unsigned long) current;
 	
-	NSDictionary* attr = [[NSFileManager defaultManager] fileAttributesAtPath:file traverseLink:YES];
+	NSDictionary* attr = [[NSFileManager defaultManager] attributesOfItemAtPath:file error:nil];
 	if( attr )
 	{
 		NSDate* fileDate = (NSDate*)[attr objectForKey:NSFileModificationDate];
@@ -207,7 +207,7 @@
 		filename[fileInfo.size_filename] = '\0';
 		
 		// check if it contains directory
-		NSString * strPath = [NSString  stringWithCString:filename];
+		NSString * strPath = [NSString  stringWithCString:filename encoding:NSUTF8StringEncoding];
 		BOOL isDirectory = NO;
 		if( filename[fileInfo.size_filename-1]=='/' || filename[fileInfo.size_filename-1]=='\\')
 			isDirectory = YES;

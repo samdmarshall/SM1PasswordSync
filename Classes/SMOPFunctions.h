@@ -54,9 +54,9 @@ static BOOL InstallAppToDevice(CFStringRef path, struct am_device *device, void 
 	return (copyResult && installResult);
 }
 
-static inline NSString* MobileApplicationsDirectory() {
+static inline NSString* MobileApplicationsDirectory(NSString *path) {
 	BOOL dir;
-	NSString *iTunesDatabasePath = [[[NSString alloc] initWithString:[@"~/Music/iTunes/iTunes Music Library.xml" stringByExpandingTildeInPath]] autorelease];
+	NSString *iTunesDatabasePath = [[[NSString alloc] initWithString:(path != nil ? path : [@"~/Music/iTunes/iTunes Music Library.xml" stringByExpandingTildeInPath])] autorelease];
 	if ([[NSFileManager defaultManager] fileExistsAtPath:iTunesDatabasePath isDirectory:&dir]) {
 		NSDictionary *iTunesDatabase = [[[NSDictionary alloc] initWithContentsOfFile:iTunesDatabasePath] autorelease];
 		return [[[NSURL URLWithString:[iTunesDatabase objectForKey:@"Music Folder"]] path] stringByAppendingPathComponent:@"Mobile Applications"];

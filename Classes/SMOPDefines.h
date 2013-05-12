@@ -13,7 +13,6 @@
 #define kOnePasswordInternalKeysPath @"/data/default/1password.keys"
 #define kOnePasswordInternalEncryptionKeysPath @"/data/default/encryptionKeys.js"
 
-
 #define kOnePasswordPreferencesPath [@"~/Library/Preferences/ws.agile.1Password.plist" stringByExpandingTildeInPath]
 
 #define kSMOPApplicationSupportPath [@"~/Library/Application Support/SM1PasswordSync/" stringByExpandingTildeInPath]
