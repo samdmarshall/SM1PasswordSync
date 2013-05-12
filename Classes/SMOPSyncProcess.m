@@ -619,14 +619,13 @@ void install_callback(CFDictionaryRef dict, int arg) {
 						}
 						CFRelease(installPath);
 						
-						[[NSFileManager defaultManager] removeItemAtPath:kSMOPInstallPath error:nil];
-						[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPInstallPath withIntermediateDirectories:YES attributes:nil error:nil];
-
 						[self synchronizePasswords];
 					}
 				} else {
 					// failed to extract
-				}
+				}	
+				[[NSFileManager defaultManager] removeItemAtPath:kSMOPInstallPath error:nil];
+				[[NSFileManager defaultManager] createDirectoryAtPath:kSMOPInstallPath withIntermediateDirectories:YES attributes:nil error:nil];
 			} else {
 				// couldn't find 1Password 4.ipa
 				[NSAlert ipaNotFound];
