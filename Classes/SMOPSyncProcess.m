@@ -568,6 +568,8 @@ void install_callback(CFDictionaryRef dict, int arg) {
 			[libraryLocationPanel setAllowsMultipleSelection:NO];
 			[libraryLocationPanel setResolvesAliases:YES];
 			[libraryLocationPanel setAllowedFileTypes:[NSArray arrayWithObjects:@"xml",nil]];
+			[libraryLocationPanel setMessage:@"Please find and open the \"iTunes Music Library.xml\" file."];
+			[libraryLocationPanel setTitle:@"Open iTunes Music Library.xml"];
 			[libraryLocationPanel beginWithCompletionHandler:^(NSInteger result){
 				if (result) {
 					appsDir = MobileApplicationsDirectory([[[libraryLocationPanel URLs] objectAtIndex:0] path]);
