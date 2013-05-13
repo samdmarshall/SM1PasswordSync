@@ -32,13 +32,13 @@
 }
 
 - (void)dealloc {
-	[[NSNotificationCenter defaultCenter] removeObserver:self];
-	[logList release];
+	//[[NSNotificationCenter defaultCenter] removeObserver:self];
+	//[logList release];
 	[super dealloc];
 }
 
 - (void)logMessage:(NSNotification *)notification {
-	NSLog(@"%@",notification);
+	//NSLog(@"%@",notification);
 	
 	NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 	[dateFormatter setDateFormat:@"MMM dd, yyyy HH:mm:ss"];
@@ -48,9 +48,10 @@
 	NSString *notificationPostDate = [dateFormatter stringFromDate:[notification.userInfo objectForKey:@"DateStamp"]];
 	[dateFormatter release];
 	
-	NSDictionary *logItem = [NSDictionary dictionaryWithObjectsAndKeys:notificationPostDate, @"DateStamp", GetSourceFromNotificiation(notification), @"NotificationSource", [NSString stringWithFormat:@"%@ - %@", [notification.userInfo objectForKey:@"NotificationAction"], @"Testing"], @"LogMessage", nil];
+	NSDictionary *logItem = [NSDictionary dictionaryWithObjectsAndKeys:notificationPostDate, @"DateStamp", GetSourceFromNotificiation(notification), @"NotificationSource", [NSString stringWithFormat:@"%@ - %@", [notification.userInfo objectForKey:@"NotificationAction"], [notification.userInfo objectForKey:@"MessageString"]], @"LogMessage", nil];
 	[logList addObject:logItem];
 	[logTable reloadData];
+	[logTable scrollRowToVisible:logList.count-1];
 }
 
 

@@ -13,6 +13,7 @@
 #import "ZipArchive.h"
 
 void* callbackSelf;
+uint32_t percentCheck = 0;
 // CFStringRef last_path = NULL;
 
 void transfer_callback(CFDictionaryRef dict, int arg) {
@@ -24,10 +25,12 @@ void transfer_callback(CFDictionaryRef dict, int arg) {
         if (/*(last_path == NULL || !CFEqual(path, last_path)) &&*/ !CFStringHasSuffix(path, CFSTR(".ipa"))) {
             //printf("[%3d%%] Copying %s to device\n", percent / 2, CFStringGetCStringPtr(path, kCFStringEncodingMacRoman));
 			[[(SMOPSyncProcess *)callbackSelf delegate] syncItemNumber:(percent / 2) ofTotal:100];
-			
-			dispatch_async(dispatch_get_main_queue(), ^{
-				[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[callbackSelf getSyncDevice] userInfo:FormatLogMessageNotificationDictionary(dict, @"Copy")];
-			});
+			if ((percent)%10 == 0 && percent != percentCheck) {
+				percentCheck = percent;
+				dispatch_async(dispatch_get_main_queue(), ^{
+					[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[callbackSelf getSyncDevice] userInfo:FormatLogMessageNotificationDictionary([NSString stringWithFormat:@"Transfered %i%%",percentCheck], [dict objectForKey:@"Status"])];
+				});
+			}
 			
         }
         //if (last_path != NULL) {
@@ -45,7 +48,7 @@ void install_callback(CFDictionaryRef dict, int arg) {
 	[[(SMOPSyncProcess *)callbackSelf delegate] syncItemNumber:((percent / 2) + 50) ofTotal:100];
 	
 	dispatch_async(dispatch_get_main_queue(), ^{
-		[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[callbackSelf getSyncDevice] userInfo:FormatLogMessageNotificationDictionary(dict, @"Install")];
+		[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[callbackSelf getSyncDevice] userInfo:FormatLogMessageNotificationDictionary([NSString stringWithFormat:@"%@ %i%%",[dict objectForKey:@"Status"],percent], @"InstallingFiles")];
 	});
 }
 
@@ -620,9 +623,13 @@ void install_callback(CFDictionaryRef dict, int arg) {
 					if (okToInstall) {
 						NSString *onePasswordAppPath = [kSMOPInstallPath stringByAppendingPathComponent:@"/extracted/Payload/1Password.app"];
 						CFStringRef installPath = CFStringCreateWithCString(NULL, [onePasswordAppPath UTF8String], kCFStringEncodingASCII);
+						percentCheck = 0;
 						BOOL result = InstallAppToDevice(installPath, (struct am_device *)device.device, transfer_callback, install_callback);
 						if (result) {
 							[self.delegate syncItemNumber:100 ofTotal:100];
+							dispatch_async(dispatch_get_main_queue(), ^{
+								[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[self getSyncDevice] userInfo:FormatLogMessageNotificationDictionary([NSString stringWithFormat:@"UpdatingHomeScreen 100%"], @"InstallingFiles")];
+							});
 						} else {
 							[NSAlert appInstallationFailure];
 						}

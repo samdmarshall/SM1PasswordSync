@@ -109,8 +109,8 @@ static inline NSString* GetSyncStateFileForDevice(NSString *udid) {
 	return [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist",udid]];
 }
 
-static NSDictionary* FormatLogMessageNotificationDictionary(NSDictionary *existingData, NSString *action) {
-	NSDictionary *formatedNotificationDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSDate date], @"DateStamp", existingData, @"DataDict", action, @"NotificationAction", nil];
+static NSDictionary* FormatLogMessageNotificationDictionary(NSString *message, NSString *action) {
+	NSDictionary *formatedNotificationDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSDate date], @"DateStamp", action, @"NotificationAction", message, @"MessageString", nil];
 	return formatedNotificationDict;
 }
 
