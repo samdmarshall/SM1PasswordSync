@@ -2891,6 +2891,7 @@ bail:
 		return;
 
 	case ADNCI_MSG_UNKNOWN:
+		[[NSNotificationCenter defaultCenter] postNotificationName:@"SMOPNotifivationPostLogMessageEvent" object:self userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSDate date], @"DateStamp", [NSDictionary dictionary], @"DataDict", @"Error", @"NotificationAction", nil]];
 		return;
 
 	case ADNCI_MSG_CONNECTED:
@@ -2898,6 +2899,7 @@ bail:
 		[_devices addObject:d];
 		if (_listener && [_listener respondsToSelector:@selector(deviceConnected:)]) {
 			[_listener deviceConnected:d];
+			[[NSNotificationCenter defaultCenter] postNotificationName:@"SMOPNotifivationPostLogMessageEvent" object:self userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSDate date], @"DateStamp", [NSDictionary dictionary], @"DataDict", @"Device Connected", @"NotificationAction", nil]];
 		}
 		break;
 
@@ -2907,6 +2909,7 @@ bail:
 				[d forgetDevice];
 				if (_listener && [_listener respondsToSelector:@selector(deviceDisconnected:)]) {
 					[_listener deviceDisconnected:d];
+					[[NSNotificationCenter defaultCenter] postNotificationName:@"SMOPNotifivationPostLogMessageEvent" object:self userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSDate date], @"DateStamp", [NSDictionary dictionary], @"DataDict", @"Device Disconnected", @"NotificationAction", nil]];
 				}
 				[_devices removeObject:d];
 				break;

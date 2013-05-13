@@ -108,3 +108,19 @@ static inline NSString* GetDeviceOnePasswordItemWithName(NSString *name) {
 static inline NSString* GetSyncStateFileForDevice(NSString *udid) {
 	return [kSMOPSyncStatePath stringByAppendingPathComponent:[NSString stringWithFormat:@"%@.plist",udid]];
 }
+
+static NSDictionary* FormatLogMessageNotificationDictionary(NSDictionary *existingData, NSString *action) {
+	NSDictionary *formatedNotificationDict = [NSDictionary dictionaryWithObjectsAndKeys:[NSDate date], @"DateStamp", existingData, @"DataDict", action, @"NotificationAction", nil];
+	return formatedNotificationDict;
+}
+
+@class SMOPInterfaceController;
+@class SMOPSyncProcess;
+
+static NSString* GetSourceFromNotificiation(NSNotification *notification) {
+	if ([notification.object isKindOfClass:[AMDevice class]]) {
+		return [notification.object deviceName];
+	} else {
+		return NSStringFromClass([notification.object class]);
+	}
+}

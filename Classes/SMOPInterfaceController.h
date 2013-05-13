@@ -9,12 +9,14 @@
 #import <Cocoa/Cocoa.h>
 #import "SMOPDeviceManager.h"
 #import "SMOPSyncProcess.h"
+#import "SMOPDebugLogController.h"
 
 @interface SMOPInterfaceController : NSObject <NSTableViewDataSource, NSTableViewDelegate, SMOPSyncProcessDelegate> {
 	IBOutlet NSTableView *deviceTable;
 	IBOutlet NSButton *syncButton;
 	IBOutlet NSButton *refreshButton;
 	IBOutlet NSProgressIndicator *syncProgress;
+	IBOutlet SMOPDebugLogController *logView;
 	
 	NSMutableArray *deviceList;
 	

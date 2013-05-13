@@ -24,6 +24,11 @@ void transfer_callback(CFDictionaryRef dict, int arg) {
         if (/*(last_path == NULL || !CFEqual(path, last_path)) &&*/ !CFStringHasSuffix(path, CFSTR(".ipa"))) {
             //printf("[%3d%%] Copying %s to device\n", percent / 2, CFStringGetCStringPtr(path, kCFStringEncodingMacRoman));
 			[[(SMOPSyncProcess *)callbackSelf delegate] syncItemNumber:(percent / 2) ofTotal:100];
+			
+			dispatch_async(dispatch_get_main_queue(), ^{
+				[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[callbackSelf getSyncDevice] userInfo:FormatLogMessageNotificationDictionary(dict, @"Copy")];
+			});
+			
         }
         //if (last_path != NULL) {
 				//  CFRelease(last_path);
@@ -38,6 +43,10 @@ void install_callback(CFDictionaryRef dict, int arg) {
     CFNumberGetValue(CFDictionaryGetValue(dict, CFSTR("PercentComplete")), kCFNumberSInt32Type, &percent);
     //printf("[%3d%%] %s\n", (percent / 2) + 50, CFStringGetCStringPtr(status, kCFStringEncodingMacRoman));
 	[[(SMOPSyncProcess *)callbackSelf delegate] syncItemNumber:((percent / 2) + 50) ofTotal:100];
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[callbackSelf getSyncDevice] userInfo:FormatLogMessageNotificationDictionary(dict, @"Install")];
+	});
 }
 
 @interface SMOPSyncProcess()

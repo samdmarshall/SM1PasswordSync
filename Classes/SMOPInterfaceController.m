@@ -134,6 +134,9 @@
 
 - (IBAction)refreshList:(id)sender {
 	[self updateDeviceList];
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:self userInfo:FormatLogMessageNotificationDictionary([NSDictionary dictionary],@"Refresh")];
+	});
 }
 
 - (IBAction)installAndSync:(id)sender {

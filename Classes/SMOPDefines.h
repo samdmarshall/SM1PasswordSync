@@ -7,6 +7,10 @@
  *
  */
 
+#define kDeviceConnectionEventPosted @"SMOPNotificationPostDeviceConnectedEvent"
+#define kLogMessageEventPosted @"SMOPNotifivationPostLogMessageEvent"
+
+
 #define kOnePasswordBundleId @"com.agilebits.onepassword-ios"
 #define kOnePasswordRemotePath @"/Documents/1Password.agilekeychain"
 #define kOnePasswordInternalContentsPath @"/data/default/contents.js"
@@ -19,8 +23,6 @@
 #define kSMOPSyncPath [@"~/Library/Application Support/SM1PasswordSync/sync/" stringByExpandingTildeInPath]
 #define kSMOPSyncStatePath [@"~/Library/Application Support/SM1PasswordSync/status/" stringByExpandingTildeInPath]
 #define kSMOPInstallPath [@"~/Library/Application Support/SM1PasswordSync/install/" stringByExpandingTildeInPath]
-
-#define kDeviceConnectionEventPosted @"SMOPNotificationPostDeviceConnectedEvent"
 
 #define kCopyToLocal @"ItemFromDevice"
 #define kCopyToDevice @"ItemFromLocal"
