@@ -362,6 +362,9 @@ void install_callback(CFDictionaryRef dict, int arg) {
 			for (NSString *item in copyToLocal) {
 				copyResult = [copyToLocalService copyRemoteFile:GetDeviceOnePasswordItemWithName(item) toLocalFile:GetLocalOnePasswordItemWithName(item)];
 				if (copyResult) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[self getSyncDevice] userInfo:FormatLogMessageNotificationDictionary([NSString stringWithFormat:@"%@.1password",item], @"1Password CopyToLocal")];
+					});
 					[self updateSyncingProcessToFile:item forSyncState:kCopyToLocal];
 					syncItem++;
 					NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",item];
@@ -380,6 +383,9 @@ void install_callback(CFDictionaryRef dict, int arg) {
 			for (NSString *item in copyToDevice) {
 				copyResult = [copyToDeviceService copyLocalFile:GetLocalOnePasswordItemWithName(item) toRemoteFile:GetDeviceOnePasswordItemWithName(item)];
 				if (copyResult) {
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[self getSyncDevice] userInfo:FormatLogMessageNotificationDictionary([NSString stringWithFormat:@"%@.1password",item], @"1Password CopyToRemote")];
+					});
 					[self updateSyncingProcessToFile:item forSyncState:kCopyToDevice];
 					syncItem++;
 					NSPredicate *filterPredicate = [NSPredicate predicateWithFormat:@"uniqueId == %@",item];
@@ -469,6 +475,9 @@ void install_callback(CFDictionaryRef dict, int arg) {
 							if (copyResult)
 								copyResult = [[NSFileManager defaultManager] moveItemAtPath:GetMergeOnePasswordItemWithName(obj) toPath:GetLocalOnePasswordItemWithName(obj) error:nil];
 							if (copyResult) {
+								dispatch_async(dispatch_get_main_queue(), ^{
+									[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[self getSyncDevice] userInfo:FormatLogMessageNotificationDictionary([NSString stringWithFormat:@"%@.1password",obj], @"1Password Merge")];
+								});
 								[self updateSyncingProcessToFile:obj forSyncState:kMerge];
 								[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];
 							}
@@ -501,6 +510,9 @@ void install_callback(CFDictionaryRef dict, int arg) {
 				if (_err == 0) {
 					copyResult = [contentsToDevice copyLocalFile:[OnePasswordKeychainPath() stringByAppendingPathComponent:kOnePasswordInternalContentsPath] toRemoteFile:[kOnePasswordRemotePath stringByAppendingPathComponent:kOnePasswordInternalContentsPath]];
 					if (copyResult) {
+						dispatch_async(dispatch_get_main_queue(), ^{
+							[[NSNotificationCenter defaultCenter] postNotificationName:kLogMessageEventPosted object:[self getSyncDevice] userInfo:FormatLogMessageNotificationDictionary(@"contents.js", @"1Password Updating")];
+						});
 						[self updateSyncingProcessToFile:@"contents.js" forSyncState:kContents];
 						syncItem++;
 						[self.delegate syncItemNumber:syncItem ofTotal:syncItemsCount];

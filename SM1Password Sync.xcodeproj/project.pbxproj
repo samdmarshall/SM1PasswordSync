@@ -38,6 +38,7 @@
 		229C80CF173D1E350024AE1E /* ZipArchive.mm in Sources */ = {isa = PBXBuildFile; fileRef = 229C80CA173D1E350024AE1E /* ZipArchive.mm */; };
 		229C80DB173D1E910024AE1E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229C8073173962790024AE1E /* libz.dylib */; };
 		229C82FF174110DA0024AE1E /* SMOPDebugLogController.m in Sources */ = {isa = PBXBuildFile; fileRef = 229C82FE174110DA0024AE1E /* SMOPDebugLogController.m */; };
+		229C864C17465DF90024AE1E /* LogStorage.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 229C864B17465DF90024AE1E /* LogStorage.xcdatamodel */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -111,6 +112,7 @@
 		229C80CA173D1E350024AE1E /* ZipArchive.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ZipArchive.mm; sourceTree = "<group>"; };
 		229C82FD174110DA0024AE1E /* SMOPDebugLogController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SMOPDebugLogController.h; sourceTree = "<group>"; };
 		229C82FE174110DA0024AE1E /* SMOPDebugLogController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SMOPDebugLogController.m; sourceTree = "<group>"; };
+		229C864B17465DF90024AE1E /* LogStorage.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = LogStorage.xcdatamodel; sourceTree = "<group>"; };
 		256AC3F00F4B6AF500CF3369 /* SM1Password_Sync_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SM1Password_Sync_Prefix.pch; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -306,9 +308,18 @@
 			name = Parsing;
 			sourceTree = "<group>";
 		};
+		229C844A17465D9A0024AE1E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				229C864B17465DF90024AE1E /* LogStorage.xcdatamodel */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
 		29B97314FDCFA39411CA2CEA /* SM1Password Sync */ = {
 			isa = PBXGroup;
 			children = (
+				229C844A17465D9A0024AE1E /* Models */,
 				2209892C172FF59100F291CC /* Resources */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				2203C05116FA1B8300D961E1 /* jsmn */,
@@ -507,6 +518,7 @@
 				229C80CE173D1E350024AE1E /* zip.c in Sources */,
 				229C80CF173D1E350024AE1E /* ZipArchive.mm in Sources */,
 				229C82FF174110DA0024AE1E /* SMOPDebugLogController.m in Sources */,
+				229C864C17465DF90024AE1E /* LogStorage.xcdatamodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

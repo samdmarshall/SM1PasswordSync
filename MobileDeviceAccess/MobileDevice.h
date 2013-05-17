@@ -484,12 +484,15 @@ mach_error_t AMDeviceRelease(struct am_device *device);
 * Uses24HourClock 
 * WeDelivered 
 * WiFiAddress 
+* WiFiMACAddress
 * // Updated by DiAifU 14.10.2010 for iOS5 and iTunes 5.0
 *
 * Possible values for domain:
 * com.apple.mobile.battery
 */
 CFStringRef AMDeviceCopyValue(struct am_device *device, unsigned int, CFStringRef cfstring);
+CFStringRef AMDeviceCopyValueWithError(struct am_device *device, CFStringRef domain, CFStringRef cfstring, unsigned int);
+
 CFStringRef AMDeviceCopyDeviceIdentifier(struct am_device *device);
 
 typedef void (*notify_callback)(CFStringRef notification, void *data);

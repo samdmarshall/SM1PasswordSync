@@ -36,7 +36,7 @@
 			IOObjectRelease(usbDevice);
 		}
 	} else {
-		NSLog (@"Error: Couldn't create a master I/O Kit port(%08x)", kr);
+		NSLog(@"Error: Couldn't create a master I/O Kit port(%08x)", kr);
 	}
 	mach_port_deallocate(mach_task_self(), masterPort);
 	return devices;
