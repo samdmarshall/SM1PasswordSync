@@ -431,12 +431,18 @@ mach_error_t AMDeviceRelease(struct am_device *device);
 * ActivationState 
 * ActivationStateAcknowledged 
 * ActivityURL 
+* ApNonce
 * BasebandBootloaderVersion 
+* BasebandGoldCertId
+* BasebandKeyHashInformation
+* BasebandNonce
 * BasebandSerialNumber 
 * BasebandStatus 
 * BasebandVersion 
+* BoardId
 * BluetoothAddress 
 * BuildVersion 
+* ChipID
 * CPUArchitecture 
 * DeviceCertificate 
 * DeviceClass 
@@ -444,6 +450,7 @@ mach_error_t AMDeviceRelease(struct am_device *device);
 * DeviceName 
 * DevicePublicKey 
 * DieID 
+* FirmwarePreflightInfo
 * FirmwareVersion 
 * HardwareModel 
 * HardwarePlatform 
@@ -485,9 +492,18 @@ mach_error_t AMDeviceRelease(struct am_device *device);
 * WeDelivered 
 * WiFiAddress 
 * WiFiMACAddress
-* // Updated by DiAifU 14.10.2010 for iOS5 and iTunes 5.0
 *
-* Possible values for domain:
+*/
+
+/* 
+* com.apple.mobile.wireless_lockdown
+* BonjourFullServiceName
+* EnableWifiConnections
+* SupportsWifiSyncing
+* WirelessBuddyID
+*/
+
+/* 
 * com.apple.mobile.battery
 */
 CFStringRef AMDeviceCopyValue(struct am_device *device, unsigned int, CFStringRef cfstring);

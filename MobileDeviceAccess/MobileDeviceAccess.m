@@ -24,9 +24,9 @@
 #pragma mark MobileDevice.framework internals
 
 // opaque structures
-typedef struct _afc_directory			*afc_directory;
-typedef struct _afc_dictionary			*afc_dictionary;
-typedef struct _afc_operation			*afc_operation;
+//typedef struct _afc_directory			*afc_directory;
+//typedef struct _afc_dictionary			*afc_dictionary;
+//typedef struct _afc_operation			*afc_operation;
 
 // Messages passed to device notification callbacks: passed as part of
 // am_device_notification_callback_info.
@@ -50,13 +50,13 @@ mach_error_t AMDeviceNotificationSubscribe(am_device_notification_callback callb
 mach_error_t AMDeviceNotificationUnsubscribe(am_device_notification subscription);
 
 // device related functions
-mach_error_t	AMDeviceConnect(am_device device);
-mach_error_t	AMDeviceDisconnect(am_device device);
+//mach_error_t	AMDeviceConnect(am_device device);
+//mach_error_t	AMDeviceDisconnect(am_device device);
 //uint32_t		AMDeviceGetInterfaceType(am_device device);
 //uint32_t		AMDeviceGetInterfaceSpeed(am_device device);
 //uint32_t		AMDeviceGetConnectionID(am_device device);
 //CFStringRef		AMDeviceCopyDeviceIdentifier(am_device device);
-CFStringRef		AMDeviceCopyValue(am_device device,CFStringRef domain,CFStringRef key);
+//CFStringRef		AMDeviceCopyValue(am_device device,CFStringRef domain,CFStringRef key);
 mach_error_t	AMDeviceRetain(am_device device);
 mach_error_t	AMDeviceRelease(am_device device);
 
@@ -107,11 +107,11 @@ mach_error_t AMDeviceLookupApplications(am_device device, CFDictionaryRef option
 // 000035d3 T _AMDeviceValidatePairing
 
 // session related functions
-mach_error_t AMDeviceStartSession(am_device device);
-mach_error_t AMDeviceStopSession(am_device device);
+//mach_error_t AMDeviceStartSession(am_device device);
+//mach_error_t AMDeviceStopSession(am_device device);
 
 // service related functions
-mach_error_t AMDeviceStartService(am_device device,CFStringRef service_name,am_service *handle,uint32_t *unknown);
+//mach_error_t AMDeviceStartService(am_device device,CFStringRef service_name,am_service *handle,uint32_t *unknown);
 // 00002f48 T _AMDeviceStartServiceWithOptions
 // 000067f9 T _AMDeviceStartHouseArrestService
 
@@ -155,7 +155,7 @@ CFTypeRef AFCConnectionCopyLastErrorInfo(afc_connection a);
 const char * AFCGetClientVersionString(void);		// "@(#)PROGRAM:afc  PROJECT:afc-80"
 
 // directory related functions
-afc_error_t AFCDirectoryOpen(afc_connection conn,const char *path,afc_directory *dir);
+afc_error_t AFCDirectoryOpen(afc_connection conn,const char *path, afc_directory *dir);
 afc_error_t AFCDirectoryRead(afc_connection conn,afc_directory dir,char **dirent);
 afc_error_t AFCDirectoryClose(afc_connection conn,afc_directory dir);
 
@@ -177,7 +177,7 @@ afc_error_t AFCFileRefWrite(afc_connection conn,afc_file_ref ref, const void *bu
 // 00019747 T _AFCFileRefUnlock
 
 // device/file information functions
-afc_error_t AFCDeviceInfoOpen(afc_connection conn, afc_dictionary *info);
+//afc_error_t AFCDeviceInfoOpen(afc_connection conn, afc_dictionary *info);
 afc_error_t AFCFileInfoOpen(afc_connection conn, const char *path, afc_dictionary *info);
 afc_error_t AFCKeyValueRead(afc_dictionary dict, const char **key, const char **val);
 afc_error_t AFCKeyValueClose(afc_dictionary dict);
@@ -533,7 +533,7 @@ AMDShutdownNotificationProxy(socket);
 - (NSDictionary*)deviceInfo
 {
 	if (![self ensureConnectionIsOpen]) return nil;
-	afc_dictionary dict;
+	CFDictionaryRef dict;
 	if ([self checkStatus:AFCDeviceInfoOpen(_afc, &dict) from:"AFCDeviceInfoOpen"]) {
 		NSMutableDictionary *result = [self readAfcDictionary:dict];
 		AFCKeyValueClose(dict);
@@ -613,7 +613,7 @@ AMDShutdownNotificationProxy(socket);
 	return nil;
 }
 
-- (NSData *)getFileHash:(NSString *)path {
+/*- (NSData *)getFileHash:(NSString *)path {
 	NSData *result = nil;
 	if (!path) {
 		[self setLastError:@"Input path is nil"];
@@ -646,7 +646,7 @@ AMDShutdownNotificationProxy(socket);
 		[self setLastError:@"AFCOperationCreateGetFileHash() failed"];
 	}
 	return result;
-}
+}*/
 
 - (BOOL)fileExistsAtPath:(NSString *)path
 {
@@ -839,7 +839,7 @@ static BOOL read_dir( AFCDirectoryAccess *self, afc_connection afc, NSString *pa
 }
 
 
-- (BOOL)symlink:(NSString*)path to:(NSString*)target
+/*- (BOOL)symlink:(NSString*)path to:(NSString*)target
 {
 	if (!path) {
 		[self setLastError:@"Path is nil"];
@@ -879,14 +879,14 @@ static BOOL read_dir( AFCDirectoryAccess *self, afc_connection afc, NSString *pa
 	}
 	CFRelease(op);
 	return result;
-}
+}*/
 
 /**
  * Set file modification time for a file on the device
  * @param filename Full pathname of file to modify
  * @param modtime time to set it to
  */
-- (BOOL)setmodtime:(NSString*)path to:(NSDate*)timestamp
+/*- (BOOL)setmodtime:(NSString*)path to:(NSDate*)timestamp
 {
 	if (!path) {
 		[self setLastError:@"Path is nil"];
@@ -905,7 +905,7 @@ static BOOL read_dir( AFCDirectoryAccess *self, afc_connection afc, NSString *pa
 	}
 	[self setLastError:@"AFCOperationCreateSetModTime() failed"];
 	return NO;
-}
+}*/
 
 - (AFCFileReference*)openForRead:(NSString*)path
 {
@@ -2407,7 +2407,7 @@ plist_t build_contact_hello_msg(iphone_env *env)
 
 - (bool)isDevice:(am_device) d
 {
-	return _device == d;
+	return _device->device_id == d->device_id;
 }
 
 - (void)forgetDevice
@@ -2419,7 +2419,7 @@ plist_t build_contact_hello_msg(iphone_env *env)
 {
 	am_service result;
 	uint32_t dummy;
-	mach_error_t ret = AMDeviceStartService(_device,(CFStringRef)name, &result, &dummy);
+	mach_error_t ret = AMDeviceStartService((SDM_AMDeviceRef)_device,(CFStringRef)name, &result, &dummy);
 	if (ret == 0) return result;
 	NSLog(@"AMDeviceStartService failed: %#x,%#x,%#x", err_get_system(ret), err_get_sub(ret), err_get_code(ret));
 	return 0;
@@ -2445,7 +2445,7 @@ plist_t build_contact_hello_msg(iphone_env *env)
 - (bool)startSession
 {
 	if (_device)
-	if ([self checkStatus:AMDeviceStartSession(_device) from:"AMDeviceStartSession"]) {
+	if ([self checkStatus:AMDeviceStartSession((SDM_AMDeviceRef)_device) from:"AMDeviceStartSession"]) {
 		_insession = YES;
 		return YES;
 	}
@@ -2454,7 +2454,7 @@ plist_t build_contact_hello_msg(iphone_env *env)
 
 - (bool)stopSession
 {
-	if ([self checkStatus:AMDeviceStopSession(_device) from:"AMDeviceStopSession"]) {
+	if ([self checkStatus:AMDeviceStopSession((SDM_AMDeviceRef)_device) from:"AMDeviceStopSession"]) {
 		_insession = NO;
 		return YES;
 	}
@@ -2502,7 +2502,7 @@ plist_t build_contact_hello_msg(iphone_env *env)
 	}
 
 	// ok we have a session running, just query and set up to return
-	result = (id)AMDeviceCopyValue(_device,(CFStringRef)domain,(CFStringRef)key);
+	result = (id)AMDeviceCopyValue((SDM_AMDeviceRef)_device,(CFStringRef)domain,(CFStringRef)key);
 
 bail:
 	if (opened_session) [self stopSession];
@@ -2577,7 +2577,7 @@ bail:
 	return platformType;
 }
 
-- (id)initWithDevice:(am_device)device orBust:(NSString**)msg {
+- (id)initWithDevice:(SDM_AMDeviceRef)device orBust:(NSString**)msg {
 	self=[super init];
 	if (self) {
 		_device = device;
@@ -2608,11 +2608,11 @@ bail:
 	return self;
 }
 
-+ (AMDevice*)deviceFrom:(am_device)device
++ (AMDevice *)deviceFrom:(SDM_AMDeviceRef)device
 {
 	NSString *msg = nil;
 	AMDevice *result = [[[self class] alloc] initWithDevice:device orBust:&msg];
-	if (result) return([result autorelease]);
+	if (result) return(result);
 	NSLog(@"Failed to create AMDevice: %@", msg);
 	return nil;
 }
@@ -2859,7 +2859,7 @@ bail:
 			CFDictionaryRef dict = nil;
 			CFDictionaryRef options = (CFDictionaryRef)[self defaultReturnAttributes];
 			if (_device)
-			if ([self checkStatus:AMDeviceLookupApplications(_device, options, &dict) from:"AMDeviceLookupApplications"]) {
+			if ([self checkStatus:AMDeviceLookupApplications((SDM_AMDeviceRef)_device, options, &dict) from:"AMDeviceLookupApplications"]) {
 				NSDictionary *info = [(NSDictionary*)dict objectForKey:id];
 				if (info) {
 					result = [[[AMApplication alloc] initWithDictionary:info] autorelease];
@@ -2890,11 +2890,11 @@ bail:
 		NSLog(@"Ignoring unknown message: %d",info->msg);
 		return;
 
-	case ADNCI_MSG_UNKNOWN:
+	case MDERR_NOTIFICATION_MSG_UNKNOWN:
 		[[NSNotificationCenter defaultCenter] postNotificationName:@"SMOPNotifivationPostLogMessageEvent" object:self userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[NSDate date], @"DateStamp", [NSDictionary dictionary], @"DataDict", @"Error", @"NotificationAction", nil]];
 		return;
 
-	case ADNCI_MSG_CONNECTED:
+	case MDERR_NOTIFICATION_MSG_CONNECTED:
 		d = [AMDevice deviceFrom:info->dev];
 		[_devices addObject:d];
 		if (_listener && [_listener respondsToSelector:@selector(deviceConnected:)]) {
@@ -2903,7 +2903,7 @@ bail:
 		}
 		break;
 
-	case ADNCI_MSG_DISCONNECTED:
+	case MDERR_NOTIFICATION_MSG_DISCONNECTED:
 		for (d in _devices) {
 			if ([d isDevice:info->dev]) {
 				[d forgetDevice];
@@ -2931,8 +2931,7 @@ bail:
 
 // this is called back by AMDeviceNotificationSubscribe()
 // we just punt back into a regular method
-static
-void notify_callback(struct am_device_notification_callback_info *info, void* arg)
+static void notify_callback(struct am_device_notification_callback_info *info, void* arg)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[(MobileDeviceAccess*)arg Notify:info];

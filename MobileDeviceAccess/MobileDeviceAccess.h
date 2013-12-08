@@ -45,15 +45,16 @@
 
 #import <Foundation/Foundation.h>
 //#import <CoreGraphics/CoreGraphics.h>
+#include "/Volumes/Data/Users/sam/git Projects/SDM_MD_Demo/MobileDevice/SDMMobileDevice.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+/*
 #define MDERR_APPLE_MOBILE  (err_system(0x3a))
 #define MDERR_IPHONE        (err_sub(0))
 
-		/* Apple Mobile (AM*) errors */
+		/* Apple Mobile (AM*) errors *
 #define MDERR_OK                ERR_SUCCESS
 #define MDERR_SYSCALL           (ERR_MOBILE_DEVICE | 0x01)
 #define MDERR_OUT_OF_MEMORY     (ERR_MOBILE_DEVICE | 0x03)
@@ -61,17 +62,17 @@ extern "C" {
 #define MDERR_INVALID_ARGUMENT  (ERR_MOBILE_DEVICE | 0x0b)
 #define MDERR_DICT_NOT_LOADED   (ERR_MOBILE_DEVICE | 0x25)
 
-		/* Apple File Connection (AFC*) errors */
+		/* Apple File Connection (AFC*) errors *
 #define MDERR_AFC_OUT_OF_MEMORY 0x03
 #define MDERR_AFC_NOT_FOUND		0x08
 #define MDERR_AFC_ACCESS_DENIED	0x09
 
-		/* USBMux errors */
+		/* USBMux errors *
 #define MDERR_USBMUX_ARG_NULL   0x16
 #define MDERR_USBMUX_FAILED     0xffffffff
 
 		/* Messages passed to device notification callbacks: passed as part of
-		* am_device_notification_callback_info. */
+		* am_device_notification_callback_info. *
 #define ADNCI_MSG_CONNECTED     1
 #define ADNCI_MSG_DISCONNECTED  2
 #define ADNCI_MSG_UNKNOWN       3
@@ -94,21 +95,33 @@ extern "C" {
 #define AMSVC_SPRINGBOARD_SERVICES  CFSTR("com.apple.springboardservices")
 #define AMSVC_INSTALLATION_PROXY	CFSTR("com.apple.mobile.installation_proxy")
 
-
+*/
 // Apple's opaque types
 typedef uint32_t afc_error_t;
 typedef uint64_t afc_file_ref;
 
 /* opaque structures */
-typedef struct _am_device				*am_device;
-typedef struct _afc_connection			*afc_connection;
+//typedef struct _am_device				*am_device;
+//typedef struct _afc_connection			*afc_connection;
 typedef struct _am_device_notification	*am_device_notification;
 
 // on OSX, this is a raw file descriptor, not a pointer - it ends up being
 // passed directly to send()
-//typedef struct _am_service				*am_service;
-typedef int								am_service;
-
+typedef struct _am_service				*am_service;
+//typedef int								am_service;
+#if 0
+	typedef struct afc_directory {
+		unsigned char unknown[0];   /* size unknown */
+	} __attribute__ ((packed)) afc_directory;
+#endif
+	typedef struct _afc_directory			*afc_directory;
+	
+#if 0
+	typedef struct afc_dictionary {
+		unsigned char unknown[0];   /* size unknown */
+	} __attribute__ ((packed)) afc_dictionary;
+#endif
+	typedef struct _afc_dictionary *afc_dictionary;
 typedef unsigned int usbmux_error_t;
 typedef unsigned int service_conn_t;
 
@@ -119,24 +132,24 @@ struct am_recovery_device;
 typedef void (*am_restore_device_notification_callback)(struct am_recovery_device *);
 
 /* This is a CoreFoundation object of class AMRecoveryModeDevice. */
-typedef struct am_recovery_device {
-		unsigned char unknown0[8];                          /* 0 */
-		am_restore_device_notification_callback callback;   /* 8 */
-		void *user_info;                                    /* 12 */
-		unsigned char unknown1[12];                         /* 16 */
-		unsigned int readwrite_pipe;                        /* 28 */
-		unsigned char read_pipe;                            /* 32 */
-		unsigned char write_ctrl_pipe;                      /* 33 */
-		unsigned char read_unknown_pipe;                    /* 34 */
-		unsigned char write_file_pipe;                      /* 35 */
-		unsigned char write_input_pipe;                     /* 36 */
-} __attribute__ ((packed)) am_recovery_device;
+/*typedef struct am_recovery_device {
+		unsigned char unknown0[8];                          /* 0 *
+		am_restore_device_notification_callback callback;   /* 8 *
+		void *user_info;                                    /* 12 *
+		unsigned char unknown1[12];                         /* 16 *
+		unsigned int readwrite_pipe;                        /* 28 
+		unsigned char read_pipe;                            /* 32 *
+		unsigned char write_ctrl_pipe;                      /* 33 
+		unsigned char read_unknown_pipe;                    /* 34 
+		unsigned char write_file_pipe;                      /* 35 
+		unsigned char write_input_pipe;                     /* 36 
+} __attribute__ ((packed)) am_recovery_device;*/
 
 /* A CoreFoundation object of class AMRestoreModeDevice. */
-typedef struct am_restore_device {
+/*typedef struct am_restore_device {
 		unsigned char unknown[32];
 		int port;
-} __attribute__ ((packed)) am_restore_device;
+} __attribute__ ((packed)) am_restore_device;*/
 
 /* The type of the _AMDDeviceAttached function.
  * TODO: change to correct type. */
@@ -162,8 +175,8 @@ typedef struct am_bootloader_control_packet {
 		unsigned char payload[0];   /* 4 */
 } __attribute__ ((packed)) am_bootloader_control_packet;
 
-extern int AMDeviceSecureTransferPath(int unknown0, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
-extern int AMDeviceSecureInstallApplication(bool dontStartInstallationProxyService, struct am_device *device, CFURLRef url, CFDictionaryRef options, void *callback, int cbarg);
+extern int AMDeviceSecureTransferPath(int unknown0, SDM_AMDeviceRef device, CFURLRef url, CFDictionaryRef options, void *callback, int callback_arg);
+extern int AMDeviceSecureInstallApplication(bool dontStartInstallationProxyService, SDM_AMDeviceRef device, CFURLRef url, CFDictionaryRef options, void *callback, int cbarg);
 
 
 /// This class represents a service running on the mobile device.  To create
@@ -983,7 +996,7 @@ com.apple.mobile.application_uninstalled
 /// (iPhone or iPod Touch).
 @interface AMDevice : NSObject {
 @private
-	am_device _device;
+	SDM_AMDeviceRef _device;
 	NSString *_lasterror;
 	NSString *_deviceName;
 	NSString *_udid;
@@ -992,7 +1005,7 @@ com.apple.mobile.application_uninstalled
 	bool _connected, _insession;
 }
 
-@property (readonly) am_device device;
+@property (readonly) SDM_AMDeviceRef device;
 
 /// The last error that occurred on this device
 ///
